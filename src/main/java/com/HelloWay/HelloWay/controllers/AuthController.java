@@ -14,6 +14,7 @@ import com.HelloWay.HelloWay.payload.response.InformationAfterScan;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
 import com.HelloWay.HelloWay.payload.response.UserInfoResponse;
 import com.HelloWay.HelloWay.repos.RoleRepository;
+import com.HelloWay.HelloWay.repos.SpaceRepository;
 import com.HelloWay.HelloWay.repos.UserRepository;
 import com.HelloWay.HelloWay.services.EmailService;
 import com.HelloWay.HelloWay.services.UserDetailsImpl;
@@ -37,8 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,6 +56,9 @@ public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    SpaceRepository spaceRepository;
+    
     @Autowired
     UserRepository userRepository;
 
@@ -78,7 +85,6 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -97,15 +103,25 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(userDetails.getId(),
-                        userDetails.getName(),
-                        userDetails.getLastname(),
-                        userDetails.getBirthday(),
-                        userDetails.getPhone(),
-                        userDetails.getUsername(),
-                        userDetails.getEmail(),
-                        roles));
+        // Construct the response body including additional fields
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", userDetails.getId());
+        responseBody.put("name", userDetails.getName());
+        responseBody.put("lastname", userDetails.getLastname());
+        responseBody.put("birthday", userDetails.getBirthday());
+        responseBody.put("phone", userDetails.getPhone());
+        responseBody.put("username", userDetails.getUsername());
+        responseBody.put("email", userDetails.getEmail());
+        responseBody.put("roles", roles);
+        responseBody.put("kind", "identitytoolkit#VerifyPasswordResponse");
+        responseBody.put("localId", "qmt6dRyipIad8UCc0QpMV2MENSy1");
+        responseBody.put("displayName", "");  // If you have displayName in your userDetails, replace this
+        responseBody.put("idToken", jwtCookie.getValue());
+        responseBody.put("registered", true);  // You might want to determine this based on your business logic
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(responseBody);
     }
 
     @PostMapping("/signup")
