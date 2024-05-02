@@ -73,7 +73,7 @@ public class ReservationController {
     }
 
     @PostMapping("/space/{spaceId}/user/{userId}")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('PROVIDER','USER')")
     public ResponseEntity<Reservation> createReservation(
             @RequestBody Reservation reservation,
             @PathVariable Long spaceId,
