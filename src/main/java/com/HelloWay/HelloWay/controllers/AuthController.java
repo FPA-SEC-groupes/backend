@@ -82,7 +82,38 @@ public class AuthController {
 
     @Autowired
     EmailService emailService;
+    
+    // @PostMapping("/signin")
+    // public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+    //     Authentication authentication = authenticationManager
+    //             .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+    //     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    //     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+    //     // Check if the user is activated
+    //     if (!userDetails.isActivated()) {
+    //         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not activated");
+    //     }
+
+    //     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
+    //     List<String> roles = userDetails.getAuthorities().stream()
+    //             .map(item -> item.getAuthority())
+    //             .collect(Collectors.toList());
+
+    //     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+    //             .body(new UserInfoResponse(userDetails.getId(),
+    //                     userDetails.getName(),
+    //                     userDetails.getLastname(),
+    //                     userDetails.getBirthday(),
+    //                     userDetails.getPhone(),
+    //                     userDetails.getUsername(),
+    //                     userDetails.getEmail(),
+    //                     roles));
+    // }
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
