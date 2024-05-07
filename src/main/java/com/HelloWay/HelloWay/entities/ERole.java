@@ -6,5 +6,4 @@ public enum ERole {
     ROLE_PROVIDER,
     ROLE_ADMIN,
     ROLE_GUEST
-
 }

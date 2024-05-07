@@ -102,19 +102,19 @@ public class BoardController {
         }
         Zone zone = zoneService.findZoneById(id_zone);
         Board boardObj =  boardService.addBoardByIdZone(board, id_zone);
-        User user = new User("Board"+boardObj.getIdTable()
-                ,"Temp",
-                zone.getSpace().getId_space().toString(),
-                LocalDate.now(),
-                null,
-                "email"+boardObj.getIdTable()+LocalDate.now()+"@HelloWay.com"
-                ,encoder.encode("Pass"+boardObj.getIdTable()+"*"+id_zone));
-        Set<Role> roles = new HashSet<>();
-        Role guestRole = roleRepository.findByName(ROLE_GUEST)
-                .orElseThrow(() -> new RuntimeException("Error: Role Guest is not found."));
-        roles.add(guestRole);
-        user.setRoles(roles);
-        userRepository.save(user);
+        // User user = new User("Board"+boardObj.getIdTable()
+        //         ,"Temp",
+        //         zone.getSpace().getId_space().toString(),
+        //         LocalDate.now(),
+        //         null,
+        //         "email"+boardObj.getIdTable()+LocalDate.now()+"@HelloWay.com"
+        //         ,encoder.encode("Pass"+boardObj.getIdTable()+"*"+id_zone));
+        // Set<Role> roles = new HashSet<>();
+        // Role guestRole = roleRepository.findByName(ROLE_GUEST)
+        //         .orElseThrow(() -> new RuntimeException("Error: Role Guest is not found."));
+        // roles.add(guestRole);
+        // user.setRoles(roles);
+        // userRepository.save(user);
         return ResponseEntity.ok().body(boardObj);
     }
 
