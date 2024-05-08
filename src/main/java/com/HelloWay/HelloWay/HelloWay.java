@@ -20,7 +20,7 @@ public class HelloWay {
 	}
 
 
-	@Bean
+	@Bean	
 	public CorsFilter corsFilter() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.setAllowCredentials(true);
