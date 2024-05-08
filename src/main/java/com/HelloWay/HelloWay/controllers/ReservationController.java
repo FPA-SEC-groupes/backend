@@ -158,18 +158,29 @@ public class ReservationController {
 
         // Update the reservation status to "ACCEPTED" (assuming you have an appropriate enumeration for status)
         reservation.setStatus(EReservation.CONFIRMED);
-
         reservation.setConfirmedDate(LocalDateTime.now());
-
         Reservation updatedReservation = reservationService.updateReservation(reservation);
 
-        // Create in-app notification for users
-
-        String messageForTheUser = "congratulation " + reservation.getUser().getName()+ " your reservation have been Confirmed  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle() + ", with board of number : " + reservation.getBoards().get(0).getNumTable();
-        notificationService.createNotification("Reservation Notification",messageForTheUser, reservation.getUser());
+        // Create in-app notification for users, ensuring we have at least one board to reference
+        if (!reservation.getBoards().isEmpty()) {
+            String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
+                                    " your reservation has been confirmed, To: " + 
+                                    reservation.getStartDate() + ", for your: " + 
+                                    reservation.getEventTitle() + ", with board number: " + 
+                                    reservation.getBoards().get(0).getNumTable();
+            notificationService.createNotification("Reservation Notification", messageForTheUser, reservation.getUser());
+        } else {
+            // Optionally handle the case where no boards are linked to the reservation
+            String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
+                                    " your reservation has been confirmed, To: " + 
+                                    reservation.getStartDate() + ", for your: " + 
+                                    reservation.getEventTitle();
+            notificationService.createNotification("Reservation Notification", messageForTheUser, reservation.getUser());
+        }
 
         return ResponseEntity.ok(updatedReservation);
     }
+
 
 
     @PostMapping("/{id}/refuse")
