@@ -46,7 +46,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static com.HelloWay.HelloWay.entities.ERole.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -83,6 +84,7 @@ public class AuthController {
     @Autowired
     EmailService emailService;
     
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     // @PostMapping("/signin")
     // public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -337,8 +339,8 @@ public class AuthController {
 
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
 
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy) , space))
-        {
+        // if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy) , space))
+        // {
             String userName = "Board"+ idTable;
             String password = "Pass"+ idTable +"*"+idZone;
 
@@ -378,23 +380,23 @@ public class AuthController {
                             userDetails.getEmail(),
                             roles,
                             sessionId));
-        }
-        else {
-            return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be connected");
-        }
+        // }
+        // else {
+        //     return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be connected");
+        // }
     }
 
     @PostMapping("/qr_Code_for_app_user/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
     public ResponseEntity<?> setUserInTable(@PathVariable String qr_Code, @PathVariable String userLatitude, @PathVariable String userLongitude, @PathVariable String accuracy) {
         String[] splitArray = qr_Code.split("-"); // Splitting using the hyphen character "-"
-
+        
         String idTable = splitArray[0];
         String idZone = splitArray[splitArray.length - 1];
-
+        logger.info("ID Zone: {}", idZone);
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
 
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space))
-        {
+        // if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space))
+        // {
 
             String sessionId =  RequestContextHolder.currentRequestAttributes().getSessionId();
             Value  value     = new Value(idTable, ROLE_USER.toString());
@@ -404,10 +406,10 @@ public class AuthController {
             InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(),idTable, sessionId) ;
             return ResponseEntity.ok()
                     .body( informationAfterScan);
-        }
-        else {
-            return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be sated in this table");
-        }
+        // }
+        // else {
+        //     return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be sated in this table");
+        // }
     }
 
     @PostMapping("/reset-password/email")

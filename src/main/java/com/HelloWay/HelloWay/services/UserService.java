@@ -97,7 +97,6 @@ public class UserService implements UserDetailsService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return userRepo.findAll(pageable);
     }
-
     public List<User> getAllModerators(){
         List<User> users = userRepo.findAll();
         List<User> moderators = new ArrayList<>();
