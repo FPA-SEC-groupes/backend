@@ -1,10 +1,12 @@
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ReservationController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\SpaceRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\QuantitysProduct.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ShiftRequest.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\UserService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Notification.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\TestController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\PrimaryMaterialController.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ShiftController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Promotion.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\QrCodeAuthenticationResponse.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\PrimaryMaterialService.java
@@ -24,6 +26,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\PdfController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\PrimaryMaterialRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\SpaceCategorie.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\ShiftRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\UserInfoResponse.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\ProductRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\SpaceController.java
@@ -34,6 +37,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\DistanceLogic\DistanceCalculator.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\HelloWay.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\RoleService.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Shift.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\exception\ResourceNotFoundException.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Categorie.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\Command_NumTableDTO.java
@@ -71,6 +75,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Basket.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\NotificationRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ProductService.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ShiftService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\Security\Jwt\AuthEntryPointJwt.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\SpaceService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\UserController.java
