@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-HelloWay<HelloWayLatestVersion>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.HelloWay.HelloWay.HelloWay",
+            "projectName": "HelloWayLatestVersion",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
