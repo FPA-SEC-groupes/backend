@@ -25,8 +25,7 @@ public class ShiftController {
     public Shift createShift(@RequestBody ShiftRequest shiftRequest) {
         LocalDate shiftDate = shiftRequest.getShiftDate();
         LocalTime startTime = shiftRequest.getStartTime();
-        LocalTime endTime = shiftRequest.getEndTime();
-        return shiftService.createShift(shiftRequest.getWaiterId(), shiftDate, startTime, endTime);
+        return shiftService.createShift(shiftRequest.getWaiterId(), shiftDate, startTime);
     }
 
     @GetMapping("/{shiftId}")
@@ -45,11 +44,9 @@ public class ShiftController {
     }
 
     @PutMapping("/{shiftId}")
-    public Shift updateShift(@PathVariable Long shiftId, @RequestParam String date, @RequestParam String start, @RequestParam String end) {
-        LocalDate shiftDate = LocalDate.parse(date);
-        LocalTime startTime = LocalTime.parse(start);
-        LocalTime endTime = LocalTime.parse(end);
-        return shiftService.updateShift(shiftId, shiftDate, startTime, endTime);
+    public Shift updateShift(@PathVariable Long shiftId, @RequestBody ShiftRequest shiftRequest) {
+        LocalTime endTime = shiftRequest.getEndTime();
+        return shiftService.updateShift(shiftId, endTime);
     }
 
     @DeleteMapping("/{shiftId}")
