@@ -25,7 +25,7 @@ public class ShiftService {
     @Autowired
     private UserRepository userRepository;
 
-    public Shift createShift(Long waiterId, LocalDate shiftDate, LocalTime startTime, LocalTime endTime) {
+    public Shift createShift(Long waiterId, LocalDate shiftDate, LocalTime startTime) {
         Optional<User> optionalUser = userRepository.findById(waiterId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -33,7 +33,6 @@ public class ShiftService {
                 shift.setWaiter(user);
                 shift.setShiftDate(shiftDate);
                 shift.setStartTime(startTime);
-                shift.setEndTime(endTime);
                 return shiftRepository.save(shift);
         } else {
             throw new IllegalArgumentException("User not found");
@@ -52,12 +51,10 @@ public class ShiftService {
         return shiftRepository.findByWaiterId(userId);
     }
 
-    public Shift updateShift(Long shiftId, LocalDate shiftDate, LocalTime startTime, LocalTime endTime) {
+    public Shift updateShift(Long shiftId, LocalTime endTime) {
         Optional<Shift> optionalShift = shiftRepository.findById(shiftId);
         if (optionalShift.isPresent()) {
             Shift shift = optionalShift.get();
-            shift.setShiftDate(shiftDate);
-            shift.setStartTime(startTime);
             shift.setEndTime(endTime);
             return shiftRepository.save(shift);
         } else {
