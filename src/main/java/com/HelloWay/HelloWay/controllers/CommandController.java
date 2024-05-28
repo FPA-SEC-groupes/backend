@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.Security.Jwt.CustomSessionRegistry;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.Command_NumTableDTO;
 import com.HelloWay.HelloWay.services.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -137,7 +138,11 @@ public class CommandController {
         List<Command_NumTableDTO> commandNumTableDTOS = new ArrayList<>();
         List<Command> commands = commandService.getServerCommands(server);
         for (Command command : commands){
-            commandNumTableDTOS.add(new Command_NumTableDTO(command, command.getBasket().getBoard().getNumTable()));
+            if (command.getBasket() != null) { 
+                commandNumTableDTOS.add(new Command_NumTableDTO(command, command.getBasket().getBoard().getNumTable()));
+            } else {
+                ResponseEntity.ok(null); // Log the warning
+            }
         }
         return ResponseEntity.ok(commandNumTableDTOS);
     }
