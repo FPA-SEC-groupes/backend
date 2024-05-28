@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class HelloWay {
-
+	public String PORT =System.getenv("PORT");
 	public static void main(String[] args) {
 		SpringApplication.run(HelloWay.class, args);
 	}
