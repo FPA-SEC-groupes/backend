@@ -1,6 +1,8 @@
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ReservationController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\SpaceRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\QuantitysProduct.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\ShiftSystemRepository.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\ShiftSystem.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ShiftRequest.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\UserService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Notification.java
@@ -33,6 +35,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ResetPasswordRequestIntern.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Space.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\QrCodeAuthenticationRequest.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ShiftSystemService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\BasketProductRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\DistanceLogic\DistanceCalculator.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\HelloWay.java
@@ -61,6 +64,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\config\ModelMapperConfig.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\Security\Jwt\JwtUtils.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\EventService.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ShiftTimeDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\CategorieRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\PdfGenerationService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\EmailService.java
@@ -71,6 +75,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\BasketController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\UserRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ReservationService.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ShiftSystemController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\RoleRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Basket.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\NotificationRepository.java
@@ -100,12 +105,15 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Board.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\ERole.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Image.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ShiftUpdateDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\ZoneRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ZoneService.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\User.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Event.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\UserDetailsImpl.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\DayOfWeek.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Status.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\ShiftSystemRequestDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\Security\Jwt\AuthTokenFilter.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\ReservationRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Command.java
