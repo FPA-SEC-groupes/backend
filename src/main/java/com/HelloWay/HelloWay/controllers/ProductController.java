@@ -78,18 +78,33 @@ public class ProductController {
     @PutMapping("/update/{productId}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     @ResponseBody
-    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId){
-        Product exestingProduct = productService.findProductById(productId);
-        Categorie categorie = exestingProduct.getCategorie();
+    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId) {
+        Product existingProduct = productService.findProductById(productId);
+        if (existingProduct == null) {
+            return ResponseEntity.badRequest().body("Product not found");
+        }
+        
+        // Check for duplicate title in the same category
+        Categorie categorie = existingProduct.getCategorie();
         List<Product> categorieProducts = categorie.getProducts();
-        categorieProducts.remove(exestingProduct);
-        for (Product p : categorieProducts){
-            if (p.getProductTitle().equals(product.getProductTitle())){
-                return ResponseEntity.badRequest().body("product exist with this title please try with an other");
+        for (Product p : categorieProducts) {
+            if (!p.getIdProduct().equals(productId) && p.getProductTitle().equals(product.getProductTitle())) {
+                return ResponseEntity.badRequest().body("Product exists with this title, please try another");
             }
         }
-        return ResponseEntity.ok().body(productService.updateProduct(product));
+
+        // Update product properties
+        existingProduct.setProductTitle(product.getProductTitle());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setAvailable(product.getAvailable());
+
+        // Save updated product
+        productService.updateProduct(existingProduct);
+
+        return ResponseEntity.ok().body(existingProduct);
     }
+
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     @ResponseBody
@@ -115,6 +130,7 @@ public class ProductController {
     public List<Product> getProductsByIDCategory(@PathVariable Long id_categorie) {
         return productService.getProductsByIdCategorie(id_categorie);
     }
+
 //TODO :: add idPromotion in the true case
     @GetMapping("/all/dto/id_categorie/{id_categorie}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER', 'USER', 'GUEST')")

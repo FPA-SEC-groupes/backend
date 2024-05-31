@@ -29,11 +29,12 @@ public class Space {
     @Column(length = 20)
     private String titleSpace;
 
-    @NotBlank
+    @Column(length = 20)
+    private String validation;
+
     private String latitude ;
 
 
-    @NotBlank
     @Column(length = 40)
     private String longitude;
 

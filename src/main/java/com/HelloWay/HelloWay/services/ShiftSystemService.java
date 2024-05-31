@@ -28,33 +28,49 @@ public class ShiftSystemService {
     @Autowired
     private UserRepository userRepository;
     
-    public List<ShiftSystem> createShift(ShiftSystemRequestDTO shiftSystemRequest) {
-        List<ShiftSystem> shiftSystems = new ArrayList<>();
-        Optional<User> userOptional = userRepository.findById(shiftSystemRequest.getWaiterId());
+    // public List<ShiftSystem> createShift(ShiftSystemRequestDTO shiftSystemRequest) {
+    //     List<ShiftSystem> shiftSystems = new ArrayList<>();
+    //     Optional<User> userOptional = userRepository.findById(shiftSystemRequest.getWaiterId());
         
-        if (userOptional.isPresent()) {
-            User waiter = userOptional.get();
+    //     if (userOptional.isPresent()) {
+    //         User waiter = userOptional.get();
             
-            for (ShiftTimeDTO shiftTimeDTO : shiftSystemRequest.getShiftTimes()) {
-                DayOfWeek dayOfWeek = DayOfWeek.valueOf(shiftTimeDTO.getDayOfWeek().toUpperCase());
-                LocalTime startTime = LocalTime.parse(shiftTimeDTO.getStartTime());
-                LocalTime endTime = LocalTime.parse(shiftTimeDTO.getEndTime());
-                LocalDate shiftDate = shiftTimeDTO.getShiftDate();
+    //         for (ShiftTimeDTO shiftTimeDTO : shiftSystemRequest.getShiftTimes()) {
+    //             DayOfWeek dayOfWeek = DayOfWeek.valueOf(shiftTimeDTO.getDayOfWeek().toUpperCase());
+    //             LocalTime startTime = LocalTime.parse(shiftTimeDTO.getStartTime());
+    //             LocalTime endTime = LocalTime.parse(shiftTimeDTO.getEndTime());
+    //             LocalDate shiftDate = shiftTimeDTO.getShiftDate();
 
-                ShiftSystem shiftSystem = new ShiftSystem();
-                shiftSystem.setWaiter(waiter);
-                shiftSystem.setDayOfWeek(dayOfWeek);
-                shiftSystem.setStartTime(startTime);
-                shiftSystem.setEndTime(endTime);
-                shiftSystem.setDate(shiftDate);
+    //             ShiftSystem shiftSystem = new ShiftSystem();
+    //             shiftSystem.setWaiter(waiter);
+    //             shiftSystem.setDayOfWeek(dayOfWeek);
+    //             shiftSystem.setStartTime(startTime);
+    //             shiftSystem.setEndTime(endTime);
+    //             shiftSystem.setDate(shiftDate);
                 
-                shiftSystems.add(shiftSystem);
-            }
-        }
+    //             shiftSystems.add(shiftSystem);
+    //         }
+    //     }
         
-        return shiftSystemRepository.saveAll(shiftSystems);
+    //     return shiftSystemRepository.saveAll(shiftSystems);
+    // }
+    
+    public ShiftSystem createShiftSystem(ShiftSystemRequestDTO shiftSystemRequestDTO) {
+        Optional<User> user = userRepository.findById(shiftSystemRequestDTO.getWaiterId());
+        DayOfWeek dayOfWeek = DayOfWeek.valueOf(shiftSystemRequestDTO.getDayOfWeek().toUpperCase());
+        if (!user.isPresent()) {
+            throw new RuntimeException("User not found");
+        }
+        User waiter = user.get();
+        ShiftSystem shiftSystem = new ShiftSystem();
+        shiftSystem.setWaiter(waiter);
+        shiftSystem.setDayOfWeek(dayOfWeek);
+        shiftSystem.setDate(shiftSystemRequestDTO.getDate());
+        shiftSystem.setStartTime(shiftSystemRequestDTO.getStartTime());
+        shiftSystem.setEndTime(shiftSystemRequestDTO.getEndTime());
+        return shiftSystem;
     }
-
+    
     public Optional<ShiftSystem> getShiftById(Long id) {
         return shiftSystemRepository.findById(id);
     }
@@ -87,11 +103,5 @@ public class ShiftSystemService {
         shiftSystemRepository.deleteById(id);
     }
 
-    // private ShiftSystem createShiftSystem(User waiter, DayOfWeek dayOfWeek, String shiftTime) {
-    //     ShiftSystem shiftSystem = new ShiftSystem();
-    //     shiftSystem.setWaiter(waiter);
-    //     shiftSystem.setDayOfWeek(dayOfWeek);
-    //     shiftSystem.setShiftDate(shiftTime);
-    //     return shiftSystem;
-    // }
+    
 }

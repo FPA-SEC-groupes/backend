@@ -41,11 +41,14 @@ com\HelloWay\HelloWay\services\ImageServiceImp.class
 com\HelloWay\HelloWay\services\ShiftService.class
 com\HelloWay\HelloWay\entities\PrimaryMaterial.class
 com\HelloWay\HelloWay\payload\Value.class
+com\HelloWay\HelloWay\services\WifiService.class
+com\HelloWay\HelloWay\entities\Wifi.class
 com\HelloWay\HelloWay\services\ReservationService.class
 com\HelloWay\HelloWay\services\SpaceService.class
 com\HelloWay\HelloWay\payload\request\ShiftSystemRequestDTO.class
 com\HelloWay\HelloWay\Security\Jwt\AuthTokenFilter.class
 com\HelloWay\HelloWay\controllers\EmailController.class
+com\HelloWay\HelloWay\controllers\WifiController.class
 com\HelloWay\HelloWay\config\ModelMapperConfig.class
 com\HelloWay\HelloWay\repos\BasketProductRepository.class
 com\HelloWay\HelloWay\controllers\ReservationController.class
@@ -84,6 +87,7 @@ com\HelloWay\HelloWay\services\CommandService.class
 com\HelloWay\HelloWay\Security\Jwt\JwtUtils.class
 com\HelloWay\HelloWay\repos\UserRepository.class
 com\HelloWay\HelloWay\entities\Status.class
+com\HelloWay\HelloWay\repos\WifiRepository.class
 com\HelloWay\HelloWay\services\UserService.class
 com\HelloWay\HelloWay\services\PdfGenerationService.class
 com\HelloWay\HelloWay\services\BasketService.class

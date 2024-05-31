@@ -1,8 +1,10 @@
 package com.HelloWay.HelloWay.services;
 
+import com.HelloWay.HelloWay.entities.Basket;
 import com.HelloWay.HelloWay.entities.Board;
 import com.HelloWay.HelloWay.entities.Zone;
 import com.HelloWay.HelloWay.exception.ResourceNotFoundException;
+import com.HelloWay.HelloWay.repos.BasketRepository;
 import com.HelloWay.HelloWay.repos.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,10 @@ import java.util.List;
 public class BoardService {
     @Autowired
     BoardRepository boardRepository ;
-
+    
+    @Autowired
+    private BasketRepository basketRepository;
+    
     @Autowired
     ZoneService zoneService;
 
@@ -48,8 +53,20 @@ public class BoardService {
     }
 
     public void deleteBoard(Long id) {
-        boardRepository.deleteById(id);
+        Board board = boardRepository.findById(id).orElse(null);
+        if (board != null) {
+            // Ensure baskets are disassociated from the board
+            if (board.getBaskets() != null) {
+                for (Basket basket : board.getBaskets()) {
+                    basket.setBoard(null);
+                    basketRepository.save(basket); // Save the updated basket
+                }
+            }
+            boardRepository.delete(board);
+        }
     }
+    
+    
 
     public Board addBoardByIdZone(Board board, Long id_zone) {
          Board boardObject = new Board();

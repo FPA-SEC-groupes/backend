@@ -44,19 +44,20 @@ public class ProductService {
     public Product updateProduct(Product updatedProduct) {
         Product existingProduct = productRepository.findById(updatedProduct.getIdProduct()).orElse(null);
         if (existingProduct != null) {
-            // Copy the properties from the updatedProduct to the existingProduct
             existingProduct.setProductTitle(updatedProduct.getProductTitle());
             existingProduct.setPrice(updatedProduct.getPrice());
             existingProduct.setDescription(updatedProduct.getDescription());
             existingProduct.setAvailable(updatedProduct.getAvailable());
-            productRepository.save(existingProduct);
-            return existingProduct;
+            existingProduct.setCategorie(updatedProduct.getCategorie());
+            
+            // Save updated product
+            return productRepository.save(existingProduct);
         } else {
             // Handle the case where the product doesn't exist in the database
-            // You may throw an exception or handle it based on your use case.
-            return null;
+            throw new RuntimeException("Product not found");
         }
     }
+    
     public Product findProductById(Long id) {
         return productRepository.findById(id)
                 .orElse(null);

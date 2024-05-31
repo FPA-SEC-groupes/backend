@@ -20,41 +20,36 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTable ;
+    private Long idTable;
 
-    //Unique
     @Positive
     @Unique
-    private int numTable ;
-
+    private int numTable;
 
     @Column(length = 20)
-    private boolean availability ;
-
-
+    private boolean availability;
 
     @Positive
     private int placeNumber;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "board")
-    List<Basket> baskets ;
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Basket> baskets;
 
     @JsonIgnore
     @ManyToOne
-    Zone zone ;
+    private Zone zone;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name = "id")
     private User user;
 
-
-
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="id_reservation")
-    private Reservation reservation ;
+    @JoinColumn(name = "id_reservation")
+    private Reservation reservation;
+    
 
     public void removeBaskets() {
         if (baskets != null) {

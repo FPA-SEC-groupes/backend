@@ -27,9 +27,8 @@ public class Basket {
     @OneToOne
     Command command;
 
-    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "idTable")
-    Board board;
+    @JoinColumn(name = "id_table")
+    private Board board;
 
 }
