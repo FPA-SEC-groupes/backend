@@ -2,20 +2,25 @@ package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
+import com.HelloWay.HelloWay.repos.BasketRepository;
+import com.HelloWay.HelloWay.repos.BoardRepository;
 import com.HelloWay.HelloWay.repos.RoleRepository;
 import com.HelloWay.HelloWay.repos.UserRepository;
 import com.HelloWay.HelloWay.services.BoardService;
 import com.HelloWay.HelloWay.services.ZoneService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.HelloWay.HelloWay.entities.ERole.ROLE_GUEST;
@@ -32,6 +37,11 @@ public class BoardController {
     RoleRepository roleRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private BasketRepository basketRepository;
     @Autowired
     public BoardController( BoardService boardService,ZoneService zoneService) {
 
@@ -85,11 +95,42 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.updateBoard(board));
     }
 
-    @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
-    @ResponseBody
-    public void deleteBoard(@PathVariable("id") long id){
-        boardService.deleteBoard(id); }
+    public ResponseEntity<?> deleteBoard(Long id, boolean step) {
+        Board board = boardRepository.findById(id).orElse(null);
+        if (board != null) {
+            if (!step) {
+                // First step: Disassociate baskets from the board
+                if (board.getBaskets() != null) {
+                    for (Basket basket : board.getBaskets()) {
+                        basket.setBoard(null);
+                        basketRepository.save(basket); // Save the updated basket
+                    }
+                }
+                // Mark the board as processed
+                boardRepository.save(board);
+    
+                // Create response for first step
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "step1");
+                response.put("message", "Baskets disassociated. Call again to delete the board.");
+    
+                return ResponseEntity.ok(response);
+            } else {
+                // Second step: Delete the board
+                boardRepository.delete(board);
+    
+                // Create response for second step
+                Map<String, String> response = new HashMap<>();
+                response.put("status", "delete");
+                response.put("message", "Board deleted successfully.");
+    
+                return ResponseEntity.ok(response);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Board not found");
+        }
+    }
+
 
 
     // exist exeption for num table

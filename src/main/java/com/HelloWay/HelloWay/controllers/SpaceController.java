@@ -2,6 +2,7 @@ package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.request.SignupRequest;
+import com.HelloWay.HelloWay.payload.request.SpaceCreationDTO;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
 import com.HelloWay.HelloWay.payload.response.SpaceDTO;
 import com.HelloWay.HelloWay.repos.*;
@@ -126,8 +127,8 @@ public class SpaceController {
     @PostMapping("/add/idModerator/{idModerator}/idSpaceCategory/{idSpaceCategory}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     @ResponseBody
-    public Space addNewSpaceByIdModeratorAndIdSpaceCategory(@RequestBody Space space, @PathVariable Long idModerator, @PathVariable Long idSpaceCategory) {
-        return spaceService.addSpaceByIdModeratorAndSpaceCategory(space, idModerator, idSpaceCategory);
+    public Space addNewSpaceByIdModeratorAndIdSpaceCategory(@RequestBody SpaceCreationDTO spaceDTO, @PathVariable Long idModerator, @PathVariable Long idSpaceCategory) {
+        return spaceService.addSpaceByIdModeratorAndSpaceCategory(spaceDTO, idModerator, idSpaceCategory);
     }
 
     @GetMapping("/idModerator/{idModerator}")

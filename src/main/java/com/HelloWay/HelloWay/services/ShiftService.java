@@ -25,6 +25,7 @@ public class ShiftService {
     @Autowired
     private UserRepository userRepository;
 
+   
     public Shift createShift(Long waiterId, LocalDate shiftDate, LocalTime startTime) {
         Optional<User> optionalUser = userRepository.findById(waiterId);
         if (optionalUser.isPresent()) {

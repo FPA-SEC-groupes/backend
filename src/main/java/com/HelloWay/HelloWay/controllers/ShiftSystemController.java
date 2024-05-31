@@ -25,8 +25,8 @@ public class ShiftSystemController {
     
  
     @PostMapping
-    public List<ShiftSystem> createShift(@RequestBody ShiftSystemRequestDTO shiftSystemRequest) {
-        return shiftSystemService.createShift(shiftSystemRequest);
+    public ShiftSystem createShift(@RequestBody ShiftSystemRequestDTO shiftSystemRequest) {
+        return shiftSystemService.createShiftSystem(shiftSystemRequest);
     }
 
 

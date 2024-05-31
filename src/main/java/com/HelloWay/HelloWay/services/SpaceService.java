@@ -2,6 +2,9 @@ package com.HelloWay.HelloWay.services;
 
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.exception.ResourceNotFoundException;
+import com.HelloWay.HelloWay.payload.request.SpaceCreationDTO;
+import com.HelloWay.HelloWay.payload.request.WifiDTO;
+import com.HelloWay.HelloWay.payload.request.SpaceCreationDTO.WifiInfo;
 import com.HelloWay.HelloWay.payload.response.SpaceDTO;
 import com.HelloWay.HelloWay.repos.SpaceRepository;
 import com.HelloWay.HelloWay.repos.ZoneRepository;
@@ -11,9 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.*;
+
+import javax.persistence.EntityNotFoundException;
 
 import static com.HelloWay.HelloWay.DistanceLogic.DistanceCalculator.calculateDistance;
 
@@ -35,6 +41,8 @@ public class SpaceService {
     @Autowired
     private  ZoneRepository zoneRepository;
 
+    @Autowired
+    private WifiService wifiService;
 
     public List<Space> findAllSpaces() {
         return spaceRepository.findAll();
@@ -96,30 +104,71 @@ public class SpaceService {
 
     }
 
-    public  Space addSpaceByIdModeratorAndSpaceCategory(Space space, Long idG,Long idSpaceCategorie){
-
-
-        Space spaceObject= new Space();
-        spaceObject = space ;
-        if (idSpaceCategorie == 1){spaceObject.setSpaceCategorie(SpaceCategorie.Restaurant);}
-        if (idSpaceCategorie == 2){spaceObject.setSpaceCategorie(SpaceCategorie.Bar);}
-        if (idSpaceCategorie == 3){spaceObject.setSpaceCategorie(SpaceCategorie.Cafes);}
-
+    public Space addSpaceByIdModeratorAndSpaceCategory(SpaceCreationDTO spaceDTO, Long idG, Long idSpaceCategorie) {
+        Space spaceObject = new Space();
+    
+        // Set fields from DTO
+        spaceObject.setTitleSpace(spaceDTO.getTitleSpace());
+        spaceObject.setDescription(spaceDTO.getDescription());
+        spaceObject.setLatitude(spaceDTO.getLatitude());
+        spaceObject.setLongitude(spaceDTO.getLongitude());
+        spaceObject.setValidation(spaceDTO.getValidation());
+        spaceObject.setPhoneNumber(spaceDTO.getPhoneNumber());
+        spaceObject.setNumberOfRate(spaceDTO.getNumberOfRate());
+        spaceObject.setSurfaceEnM2(spaceDTO.getSurfaceEnM2());
+    
+        // Set space category based on idSpaceCategorie
+        int categoryId = Math.toIntExact(idSpaceCategorie); // Safe if you control the input
+        switch (categoryId) {
+            case 1:
+                spaceObject.setSpaceCategorie(SpaceCategorie.Restaurant);
+                break;
+            case 2:
+                spaceObject.setSpaceCategorie(SpaceCategorie.Bar);
+                break;
+            case 3:
+                spaceObject.setSpaceCategorie(SpaceCategorie.Cafes);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid space category ID");
+        }
+    
+        // Retrieve and set moderator
         User user = userService.findUserById(idG);
-
+        // .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idG));
         spaceObject.setModerator(user);
-
-        spaceRepository.save(spaceObject);
-
+    
+        // Save the Space object
+        Space space = spaceRepository.save(spaceObject);
+        if(!spaceDTO.getWifis().isEmpty()){
+            WifiDTO wifiDTO = new WifiDTO();
+            wifiDTO.setSpaceId(space.getId_space());
+        
+            // Map SpaceCreationDTO.WifiInfo to WifiDTO.WifiInfo
+            List<WifiDTO.WifiInfo> wifiInfos = new ArrayList<>();
+            for (SpaceCreationDTO.WifiInfo wifiInfo : spaceDTO.getWifis()) {
+                WifiDTO.WifiInfo dtoWifiInfo = new WifiDTO.WifiInfo();
+                dtoWifiInfo.setSsid(wifiInfo.getSsid());
+                dtoWifiInfo.setPassword(wifiInfo.getPassword());
+                wifiInfos.add(dtoWifiInfo);
+            }
+        
+            wifiDTO.setWifis(wifiInfos);
+            
+            // Save WiFi information
+            wifiService.saveWifis(wifiDTO);
+        }
+        // Create WifiDTO and set its fields
+       
+    
+        // Update user with the space moderator role
         user.setModeratorSpace(spaceObject);
         userService.updateUser(user);
-
+    
         return spaceObject;
-
-
     }
-
-    public Space getSpaceByIdModerator(Long idModerator){
+    
+        public Space getSpaceByIdModerator(Long idModerator){
 
         User user = userService.findUserById(idModerator);
         return  user.getModeratorSpace();
@@ -286,5 +335,13 @@ public class SpaceService {
 
         return sortedMap;
     }
-
+    public String getValidationById(Long id) {
+        Optional<Space> space = spaceRepository.findById(id);
+        if (space.isPresent()) {
+            return space.get().getValidation();
+        } else {
+            throw new IllegalArgumentException("Space with id " + id + " not found");
+        }
+    }
+    
 }
