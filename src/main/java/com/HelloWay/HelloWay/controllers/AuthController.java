@@ -487,10 +487,15 @@ public class AuthController {
     }
 
     @GetMapping("/{id}/validation")
-    public ResponseEntity<String> getValidation(@PathVariable Long id) {
+    public ResponseEntity<?> getValidation(@PathVariable Long id) {
         try {
-            String validation = spaceService.getValidationById(id);
-            return ResponseEntity.ok(validation);
+            Space space = zoneService.findZoneById(id).getSpace();
+            String validation = spaceService.getValidationById(space.getId_space());
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("validation", validation);
+            responseBody.put("id", space.getId_space());
+            return ResponseEntity.ok()
+                .body(responseBody);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }

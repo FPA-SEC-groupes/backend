@@ -1,3 +1,4 @@
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\WifiDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ReservationController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\SpaceRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\QuantitysProduct.java
@@ -92,6 +93,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\BasketRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\CategorieController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Role.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\WifiInfo.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\PrimaryMaterial.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\Security\Jwt\SessionUtils.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\QRCodeController.java
@@ -104,6 +106,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\EmailController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Reclamation.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\ZoneController.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\SpaceCreationDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Board.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\WifiRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\ERole.java
@@ -114,6 +117,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\WifiController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\User.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Event.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\exception\DuplicateEntityException.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\UserDetailsImpl.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\DayOfWeek.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Status.java
