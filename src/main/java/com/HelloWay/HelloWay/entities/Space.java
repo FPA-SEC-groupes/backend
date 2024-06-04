@@ -264,4 +264,15 @@ public class Space {
     public void setNumberOfRate(Long numberOfRate) {
         this.numberOfRate = numberOfRate;
     }
+    
+    @OneToMany(mappedBy = "space")
+    private List<Wifi> wifis; // Add this line for the Wifi relationship
+
+    public List<Wifi> getWifis() {
+        return wifis;
+    }
+
+    public void setWifis(List<Wifi> wifis) {
+        this.wifis = wifis;
+    }
 }
