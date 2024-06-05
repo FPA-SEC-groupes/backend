@@ -3,6 +3,7 @@ package com.HelloWay.HelloWay.controllers;
 import com.HelloWay.HelloWay.entities.Board;
 import com.HelloWay.HelloWay.entities.EReservation;
 import com.HelloWay.HelloWay.entities.Reservation;
+import com.HelloWay.HelloWay.payload.request.ReservationDTO;
 import com.HelloWay.HelloWay.services.NotificationService;
 import com.HelloWay.HelloWay.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,10 +136,9 @@ public class ReservationController {
     }
 
     @GetMapping("/space/{spaceId}")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
-    public ResponseEntity<List<Reservation>> getReservationsBySpaceId(@PathVariable Long spaceId) {
-        List<Reservation> reservations = reservationService.findReservationsBySpaceId(spaceId);
-        return ResponseEntity.ok(reservations);
+    public ResponseEntity<List<ReservationDTO>> getReservationsBySpaceId(@PathVariable Long spaceId) {
+        List<ReservationDTO> reservations = reservationService.findReservationsBySpaceId(spaceId);
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
     }
 
     @GetMapping("/user/{userId}")

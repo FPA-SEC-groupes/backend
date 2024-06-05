@@ -2,6 +2,7 @@ package com.HelloWay.HelloWay.services;
 
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.exception.ResourceNotFoundException;
+import com.HelloWay.HelloWay.payload.request.ReservationDTO;
 import com.HelloWay.HelloWay.repos.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -98,12 +99,10 @@ public class ReservationService {
         return reservationObject;
     }
 
-    public List<Reservation> findReservationsBySpaceId(Long spaceId) {
+    public List<ReservationDTO> findReservationsBySpaceId(Long spaceId) {
         Space space = spaceService.findSpaceById(spaceId);
-        if (space == null) {
-            return new ArrayList<>();
-        }
-        return space.getReservations();
+        List<Reservation> reservations = space.getReservations();
+        return reservations.stream().map(ReservationDTO::new).collect(Collectors.toList());
     }
 
     public List<Reservation> findReservationsByUserId(Long userId) {
