@@ -31,7 +31,6 @@ public class Product {
     @Column(length = 20)
     private Float price;
 
-    @NotBlank
     @Column(length = 100)
     private String description;
 

@@ -1,0 +1,694 @@
+{
+	"info": {
+		"_postman_id": "00cb35e5-f772-4f8f-a419-993bda9de952",
+		"name": "HelloWay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "21959122"
+	},
+	"item": [
+		{
+			"name": "GetAllUsers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/users/all"
+			},
+			"response": []
+		},
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"username\":\"super\",\r\n   \"name\":\"boss from tekup\",\r\n   \"lastname\":\"any think\",\r\n   \"phone\":\"51987345\",\r\n   \"password\":\"12345678\",\r\n   \"email\":\"super@hello_way.com\",\r\n   \"role\":[\"admin\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "refreshToken",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyIiwiaWF0IjoxNjc4OTIxNDQ3LCJleHAiOjE2Nzg5MjE1MDd9.ljwqWqiitd4_kFOVH0y9bNaU6pam47wg-WuO4zLdOnjbNICbPjYe_dcwNDfDq8PwfpeIrWrC_Y0S_WqgB8OxEg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth/refreshtoken"
+			},
+			"response": []
+		},
+		{
+			"name": "signout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/auth/signout"
+			},
+			"response": []
+		},
+		{
+			"name": "signin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"username\":\"admin\",\r\n   \"password\":\"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth/signin"
+			},
+			"response": []
+		},
+		{
+			"name": "resetPasswordIntern",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\":\"manager\",\r\n    \"currentPassword\":\"12345678\",\r\n    \"newPassword\":\"alaeddine\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth/reset-password/intern"
+			},
+			"response": []
+		},
+		{
+			"name": "resetPassword",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth/reset-password/intern"
+			},
+			"response": []
+		},
+		{
+			"name": "forgotPassword",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"riahi_aroussi@outlook.fr\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/auth//forgot-password"
+			},
+			"response": []
+		},
+		{
+			"name": "addSpace",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titleSpace\":\"HelloWayRestaurent\",\r\n    \"latitude\":\"35,1672\",\r\n    \"longitude\":\"8,8253\",\r\n    \"description\":\"first space in the moon\",\r\n    \"rating\":\"5\",\r\n    \"numberOfRating\":\"100000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/spaces/add"
+			},
+			"response": []
+		},
+		{
+			"name": "addSpaceTest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titleSpace\": \"Example Space\",\r\n    \"latitude\": \"40.7128° N\",\r\n    \"longitude\": \"74.0060° W\",\r\n    \"description\": \"This is an example space.\",\r\n    \"rating\": 4.5,\r\n    \"numberOfRating\": 50,\r\n    \"moderator\": {\r\n        \"id\":\"5\",\r\n        \"userName\": \"moderator\",\r\n        \"email\": \"moderator@hello_way.com\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/spaces/add"
+			},
+			"response": []
+		},
+		{
+			"name": "addSpace ByModAndCategorie",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"titleSpace\":\"HelloWayRestaurent\",\r\n    \"latitude\":\"35,1672\",\r\n    \"longitude\":\"8,8253\",\r\n    \"description\":\"first space in the moon Test\",\r\n    \"rating\":\"5\",\r\n    \"numberOfRating\":\"100000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/spaces/add/idModerator/3/idCategory/1"
+			},
+			"response": []
+		},
+		{
+			"name": "addImageToSpaceByIdModAndIdSpace",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/alaed/OneDrive/Images/Captures d’écran/Capture d’écran (4).png"
+						}
+					]
+				},
+				"url": "localhost:8082/api/spaces/4/images"
+			},
+			"response": []
+		},
+		{
+			"name": "addImageByidProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/alaed/OneDrive/Images/Captures d’écran/Capture d’écran (69).png"
+						}
+					]
+				},
+				"url": "localhost:8082/api/products/2/images"
+			},
+			"response": []
+		},
+		{
+			"name": "getSpaceByModerator",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/spaces/idModerator/3"
+			},
+			"response": []
+		},
+		{
+			"name": "addCategorie",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"cafe\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/categories/add"
+			},
+			"response": []
+		},
+		{
+			"name": "getSpaces",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/spaces/all"
+			},
+			"response": []
+		},
+		{
+			"name": "getCategoris",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/categories/all"
+			},
+			"response": []
+		},
+		{
+			"name": "addProduct",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productTitle\":\"Express\",\r\n    \"price\":\"5500\",\r\n    \"description\":\"it keeps a good vibes\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/products/add"
+			},
+			"response": []
+		},
+		{
+			"name": "getProducts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/products/all"
+			},
+			"response": []
+		},
+		{
+			"name": "addProductByIdCategorie",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"productTitle\":\"express\",\r\n    \"price\":\"7000\",\r\n    \"description\":\"it keeps a good vibes\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/products/add/id_categorie/1"
+			},
+			"response": []
+		},
+		{
+			"name": "getProductsByIdCategorie",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/products/all/id_categorie/1"
+			},
+			"response": []
+		},
+		{
+			"name": "addZone",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"zoneTitle\" : \"Nord\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/zones/add"
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllZones",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/zones/all"
+			},
+			"response": []
+		},
+		{
+			"name": "getZonesByIdSpace",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/zones/all/id_space/1"
+			},
+			"response": []
+		},
+		{
+			"name": "addZoneByIdSpace",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"zoneTitle\" : \"FloraChtar\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/zones/add/id_space/1"
+			},
+			"response": []
+		},
+		{
+			"name": "addImageToUser",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/C:/Users/alaed/OneDrive/Bureau/Alaeddine_mansouri.jpg"
+						}
+					]
+				},
+				"url": "localhost:8082/api/users/2/add-image"
+			},
+			"response": []
+		},
+		{
+			"name": "addBoardByIdZone",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"numTable\" : \"1\",\r\n \"availability\" : \"false\",\r\n \"qrCode\":\"helloWayDrCode\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/boards/add/id_zone/2"
+			},
+			"response": []
+		},
+		{
+			"name": "getCategoriesByQrCodeTable",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/categories/qr_code/helloWayDrCode"
+			},
+			"response": []
+		},
+		{
+			"name": "addNewBasket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/baskets/add"
+			},
+			"response": []
+		},
+		{
+			"name": "addProductToBasket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"quantity\" : \"3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8082/api/products/add/productToBasket/1/2?quantity=3",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"products",
+						"add",
+						"productToBasket",
+						"1",
+						"2"
+					],
+					"query": [
+						{
+							"key": "quantity",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteProductFromBasket",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "localhost:8082/api/products/deleteProductFromBasket/2/1"
+			},
+			"response": []
+		},
+		{
+			"name": "qrCode",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/qrcodes/12345"
+			},
+			"response": []
+		},
+		{
+			"name": "tableToken",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"tableIdentifier\": \"2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8082/api/auth/login-qr"
+			},
+			"response": []
+		},
+		{
+			"name": "latestQrCode",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/qrcodes/9/zoneId/2"
+			},
+			"response": []
+		},
+		{
+			"name": "add Board With Creating User Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"numTable\" : \"4\",\r\n \"availability\" : \"true\",\r\n \"qrCode\":\"helloWayDrCodeA\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/boards/add/id_zone/2"
+			},
+			"response": []
+		},
+		{
+			"name": "sugn in with the QrCode",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/auth/signin/qr_Code/9-2023-06-08T20:12:34.139274-2"
+			},
+			"response": []
+		},
+		{
+			"name": "sessions test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/sessions/validate-session"
+			},
+			"response": []
+		},
+		{
+			"name": "advanced authentification",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/auth/signin/qr_Code/9-2023-06-08T20:12:34.139274-2/userLatitude/35.1672/userLongitude/8.7853"
+			},
+			"response": []
+		},
+		{
+			"name": "Set User On a Table",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/auth/qr_Code_for_app_user/9-2023-06-08T20:12:34.139274-2/userLatitude/35.1672/userLongitude/8.7853"
+			},
+			"response": []
+		},
+		{
+			"name": "session Test for connected user withn app",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "localhost:8082/api/sessions/validate-session/latest/9"
+			},
+			"response": []
+		},
+		{
+			"name": "set server to zone",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/spaces/moderatorUserId/1/1/servers/9/zones/2"
+			},
+			"response": []
+		},
+		{
+			"name": "setUserToSapce",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8082/api/spaces/moderatorUserId/1/1/servers/8"
+			},
+			"response": []
+		},
+		{
+			"name": "add categorie by id space",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"categoryTitle\": \"Restaurent\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/categories/add/id_space/1"
+			},
+			"response": []
+		},
+		{
+			"name": "Crate server for space",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"username\":\"server1\",\r\n   \"name\":\"server from tekup\",\r\n   \"lastname\":\"any think\",\r\n   \"phone\":\"51987345\",\r\n   \"password\":\"12345678\",\r\n   \"email\":\"server1@hello_way.com\",\r\n   \"role\":[\"waiter\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8082/api/spaces/moderatorUserId/1/1/servers"
+			},
+			"response": []
+		},
+		{
+			"name": "getUsers with paging",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8082/api/users/all/paging?page=1&size=1",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"users",
+						"all",
+						"paging"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
