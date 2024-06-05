@@ -24,7 +24,6 @@ public class PrimaryMaterial {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String description;
 
     @NotBlank

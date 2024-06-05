@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.HelloWay.HelloWay.entities.ERole.ROLE_GUEST;
@@ -95,6 +96,14 @@ public class BoardController {
         return ResponseEntity.ok().body(boardService.updateBoard(board));
     }
 
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Board> updateActivatedStatus(
+            @PathVariable Long id, @RequestParam boolean activated) {
+        Optional<Board> updatedBoard = boardService.updateActivatedStatus(id, activated);
+        return updatedBoard.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+    
     public ResponseEntity<?> deleteBoard(Long id, boolean step) {
         Board board = boardRepository.findById(id).orElse(null);
         if (board != null) {

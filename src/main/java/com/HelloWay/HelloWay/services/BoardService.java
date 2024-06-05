@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BoardService {
@@ -47,6 +48,16 @@ public class BoardService {
         }
     }
 
+    public Optional<Board> updateActivatedStatus(Long id, boolean activated) {
+        Optional<Board> boardOptional = boardRepository.findById(id);
+        if (boardOptional.isPresent()) {
+            Board board = boardOptional.get();
+            board.setActivated(activated);
+            boardRepository.save(board);
+            return Optional.of(board);
+        }
+        return Optional.empty();
+    }
     public Board findBoardById(Long id) {
         return boardRepository.findById(id)
                 .orElse(null);
