@@ -4,9 +4,9 @@ import com.HelloWay.HelloWay.entities.Command;
 
 public class Command_NumTableDTO {
     private Command command;
-    private int numTable;
+    private Integer numTable; // Use Integer instead of int
 
-    public Command_NumTableDTO(Command command, int numTable) {
+    public Command_NumTableDTO(Command command, Integer numTable) {
         this.command = command;
         this.numTable = numTable;
     }
@@ -19,11 +19,11 @@ public class Command_NumTableDTO {
         this.command = command;
     }
 
-    public int getNumTable() {
+    public Integer getNumTable() {
         return numTable;
     }
 
-    public void setNumTable(int numTable) {
+    public void setNumTable(Integer numTable) {
         this.numTable = numTable;
     }
 }

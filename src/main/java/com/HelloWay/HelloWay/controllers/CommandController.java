@@ -130,20 +130,23 @@ public class CommandController {
     // wissal will test (my dataBase effected) TODO ::
     @GetMapping("/for/server/{serverId}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
-    public ResponseEntity<?> getServersCommand(@PathVariable long serverId){
+    public ResponseEntity<?> getServersCommand(@PathVariable long serverId) {
         User server = userService.findUserById(serverId);
-        if (server == null){
+        if (server == null) {
             return ResponseEntity.badRequest().body("server doesn't exist with this id");
         }
+        
         List<Command_NumTableDTO> commandNumTableDTOS = new ArrayList<>();
         List<Command> commands = commandService.getServerCommands(server);
-        for (Command command : commands){
-            if (command.getBasket() != null) { 
-                commandNumTableDTOS.add(new Command_NumTableDTO(command, command.getBasket().getBoard().getNumTable()));
-            } else {
-                ResponseEntity.ok(null); // Log the warning
+        
+        for (Command command : commands) {
+            Integer numTable = null;
+            if (command.getBasket() != null && command.getBasket().getBoard() != null) {
+                numTable = command.getBasket().getBoard().getNumTable();
             }
+            commandNumTableDTOS.add(new Command_NumTableDTO(command, numTable));
         }
+        
         return ResponseEntity.ok(commandNumTableDTOS);
     }
 

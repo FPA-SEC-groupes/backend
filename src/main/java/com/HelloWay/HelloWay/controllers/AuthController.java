@@ -13,6 +13,7 @@ import com.HelloWay.HelloWay.payload.request.SignupRequest;
 import com.HelloWay.HelloWay.payload.response.InformationAfterScan;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
 import com.HelloWay.HelloWay.payload.response.UserInfoResponse;
+import com.HelloWay.HelloWay.repos.BoardRepository;
 import com.HelloWay.HelloWay.repos.RoleRepository;
 import com.HelloWay.HelloWay.repos.SpaceRepository;
 import com.HelloWay.HelloWay.repos.UserRepository;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -90,6 +92,9 @@ public class AuthController {
 
     @Autowired
     private WifiService wifiService;
+
+    @Autowired
+    private BoardRepository boardRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     // @PostMapping("/signin")
@@ -409,22 +414,25 @@ public class AuthController {
         logger.info("ID Zone: {}", idZone);
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
 
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space))
-        {
-
-            String sessionId =  RequestContextHolder.currentRequestAttributes().getSessionId();
-            Value  value     = new Value(idTable, ROLE_USER.toString());
-             customSessionRegistry.setNewUserOnTable(sessionId,idTable);
-            customSessionRegistry.setNewUserOnTableWithRole(sessionId,value);
-
-            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(),idTable, sessionId) ;
-            return ResponseEntity.ok()
-                    .body( informationAfterScan);
+        // Fetch table details to check if it's activated
+        Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
+        if (tableOptional.isEmpty() || !tableOptional.get().isActivated()) {
+            return ResponseEntity.ok().body("The table is not active.");
         }
-        else {
-            return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be sated in this table");
+        
+        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
+            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+            Value value = new Value(idTable, ROLE_USER.toString());
+            customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+            customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+
+            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+            return ResponseEntity.ok().body(informationAfterScan);
+        } else {
+            return ResponseEntity.ok().body("The user is not in the space, so we are sorry you can't be seated at this table.");
         }
     }
+
 
     @PostMapping("/reset-password/email")
     public MessageResponse resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {

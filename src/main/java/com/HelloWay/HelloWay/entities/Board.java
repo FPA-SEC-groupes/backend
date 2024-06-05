@@ -50,6 +50,7 @@ public class Board {
     @JoinColumn(name = "id_reservation")
     private Reservation reservation;
     
+    private boolean activated=true;
 
     public void removeBaskets() {
         if (baskets != null) {
