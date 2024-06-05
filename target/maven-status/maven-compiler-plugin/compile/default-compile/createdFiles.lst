@@ -1,12 +1,15 @@
 com\HelloWay\HelloWay\repos\SpaceRepository.class
 com\HelloWay\HelloWay\controllers\SessionController.class
 com\HelloWay\HelloWay\entities\DayOfWeek.class
+com\HelloWay\HelloWay\payload\request\WifiDTO.class
 com\HelloWay\HelloWay\entities\EReservation.class
 com\HelloWay\HelloWay\payload\response\SpaceDTO.class
 com\HelloWay\HelloWay\entities\Image.class
 com\HelloWay\HelloWay\services\ProductService.class
 com\HelloWay\HelloWay\services\PrimaryMaterialService.class
+com\HelloWay\HelloWay\payload\request\SpaceCreationDTO$WifiInfo.class
 com\HelloWay\HelloWay\entities\ReclamationStatus.class
+com\HelloWay\HelloWay\exception\DuplicateEntityException.class
 com\HelloWay\HelloWay\repos\CommandRepository.class
 com\HelloWay\HelloWay\entities\Zone.class
 com\HelloWay\HelloWay\payload\response\QrCodeAuthenticationResponse.class
@@ -93,10 +96,12 @@ com\HelloWay\HelloWay\services\PdfGenerationService.class
 com\HelloWay\HelloWay\services\BasketService.class
 com\HelloWay\HelloWay\DistanceLogic\DistanceCalculator.class
 com\HelloWay\HelloWay\entities\Notification.class
+com\HelloWay\HelloWay\payload\request\WifiInfo.class
 com\HelloWay\HelloWay\payload\response\ProductDTO.class
 com\HelloWay\HelloWay\services\SpaceService$1.class
 com\HelloWay\HelloWay\payload\response\InformationAfterScan.class
 com\HelloWay\HelloWay\entities\Shift.class
+com\HelloWay\HelloWay\payload\request\WifiDTO$WifiInfo.class
 com\HelloWay\HelloWay\entities\ERole.class
 com\HelloWay\HelloWay\controllers\ZoneController.class
 com\HelloWay\HelloWay\services\ReclamationService.class
@@ -113,6 +118,7 @@ com\HelloWay\HelloWay\controllers\TestController.class
 com\HelloWay\HelloWay\repos\PrimaryMaterialRepository.class
 com\HelloWay\HelloWay\config\MvcConfig.class
 com\HelloWay\HelloWay\payload\request\LoginRequest.class
+com\HelloWay\HelloWay\payload\request\SpaceCreationDTO.class
 com\HelloWay\HelloWay\controllers\UserController.class
 com\HelloWay\HelloWay\repos\ReclamationRepository.class
 com\HelloWay\HelloWay\payload\request\QrCodeAuthenticationRequest.class
