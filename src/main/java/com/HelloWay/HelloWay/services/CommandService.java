@@ -104,19 +104,25 @@ public class CommandService {
     public void setServerForCommand(Long commandId, User server) {
         Command command = findCommandById(commandId);
         Zone zone = command.getBasket().getBoard().getZone();
-        List<User> servers = new ArrayList<>();
-        servers = zone.getServers();
-        List<Command> commands = new ArrayList<>();
-        if (servers.contains(server)){
+        User zoneServer = zone.getServer();
+    
+        if (zoneServer != null && zoneServer.getId().equals(server.getId())) {
             command.setServer(server);
             commandRepository.save(command);
-            commands = server.getCommands();
+            
+            List<Command> commands = server.getServer_commands();
+            if (commands == null) {
+                commands = new ArrayList<>();
+                server.setServer_commands(commands);
+            }
             commands.add(command);
+            
             userService.updateUser(server);
-            lastServerWithBoardIdForCommand.put(zone.getIdZone().toString(),server.getId().toString());
+            
+            lastServerWithBoardIdForCommand.put(zone.getIdZone().toString(), server.getId().toString());
         }
-
     }
+    
 
     public double CalculateSum(Command command) {
         double result = 0;

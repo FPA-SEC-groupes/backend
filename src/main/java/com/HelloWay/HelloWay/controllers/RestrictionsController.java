@@ -53,4 +53,8 @@ public class RestrictionsController {
         int numberOfRestrictions = restrictionsService.getNumberOfRestrictionsByUserId(userId);
         return new ResponseEntity<>(numberOfRestrictions, HttpStatus.OK);
     }
+    @GetMapping("/restrictions/{reservationId}")
+    public Restrictions findByReservationId(@PathVariable Long reservationId) {
+        return restrictionsService.findByReservationId(reservationId);
+    }
 }

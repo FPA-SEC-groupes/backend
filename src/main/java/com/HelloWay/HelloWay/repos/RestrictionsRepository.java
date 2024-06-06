@@ -10,4 +10,7 @@ public interface RestrictionsRepository extends JpaRepository<Restrictions, Long
 
     @Query("SELECT COUNT(r) FROM Restrictions r WHERE r.user.id = :userId")
     int countByUserId(Long userId);
+    
+    @Query("SELECT r FROM Restrictions r WHERE r.reservation.id = :reservationId")
+    Restrictions findByReservationId(Long reservationId);
 }

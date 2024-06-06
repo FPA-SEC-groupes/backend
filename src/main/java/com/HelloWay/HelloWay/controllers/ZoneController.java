@@ -132,24 +132,33 @@ public class ZoneController {
 
     @DeleteMapping("/server/{serverId}/zone/{zoneId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER')")
-    public ResponseEntity<?> removeServerFromZone(@PathVariable long serverId, @PathVariable long zoneId){
+    public ResponseEntity<?> removeServerFromZone(@PathVariable long serverId, @PathVariable long zoneId) {
         User server = userService.findUserById(serverId);
-        if (server == null){
-            return ResponseEntity.badRequest().body("server doesn't exist with this id" + serverId);
+        if (server == null) {
+            return ResponseEntity.badRequest().body("Server doesn't exist with this id: " + serverId);
         }
+    
         Zone zone = zoneService.findZoneById(zoneId);
-        if (zone == null){
-            return ResponseEntity.badRequest().body("zone doesn't exist with this id" + zoneId);
+        if (zone == null) {
+            return ResponseEntity.badRequest().body("Zone doesn't exist with this id: " + zoneId);
         }
-        List<User> zoneServers = zone.getServers();
-        zoneServers.remove(server);
-        zone.setServers(zoneServers);
+    
+        User currentServer = zone.getServer();
+        if (currentServer == null || !currentServer.getId().equals(serverId)) {
+            return ResponseEntity.badRequest().body("Server is not assigned to this zone or the server ID does not match");
+        }
+    
+        // Remove the server from the zone
+        zone.setServer(null);
         zoneService.updateZone(zone);
-        server.setZone(null);
+    
+        // Remove the zone from the server
+        server.setServersSpace(null);
         userService.updateUser(server);
-
-        return ResponseEntity.ok().body("server removed successfully");
+    
+        return ResponseEntity.ok().body("Server removed successfully");
     }
+    
 
 
 }

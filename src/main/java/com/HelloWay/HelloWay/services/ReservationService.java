@@ -191,29 +191,34 @@ public class ReservationService {
     public List<Board> getTablesByDisponibilitiesDate(LocalDate date, long spaceId) {
 
         Space space = spaceService.findSpaceById(spaceId);
-
+    
         List<Board> allBoards = new ArrayList<>();
-
+    
         List<Zone> zones = space.getZones();
         for (Zone zone : zones){
             allBoards.addAll(zone.getBoards());
         }
-
+    
         List<Board> availableTables = allBoards.stream()
                 .filter(board -> isTableAvailable(board, date))
                 .collect(Collectors.toList());
-
+    
         return availableTables;
     }
-
+    
     private boolean isTableAvailable(Board board, LocalDate date) {
+        if (!board.isActivated()) {
+            return false;
+        }
+        
         if (board.getReservation() == null) {
             return true;
         }
-
+    
         LocalDate reservationDate = board.getReservation().getStartDate().toLocalDate();
-
+    
         return !date.equals(reservationDate);
     }
+    
 
 }
