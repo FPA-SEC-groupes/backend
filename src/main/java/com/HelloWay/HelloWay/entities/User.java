@@ -66,9 +66,7 @@ public  class User implements Serializable {
     @JoinColumn(name="id_space_for_server")
     private Space serversSpace;
 
-    @ManyToOne
-    @JoinColumn(name = "zone_id")
-    private Zone zone;
+    
 
     @OneToOne
     private Space moderatorSpace ;
@@ -82,21 +80,27 @@ public  class User implements Serializable {
     @OneToMany(mappedBy="recipient")
     private List<Notification> notifications;
 
+    @Column(name = "number_of_restrictions", nullable = false, columnDefinition = "int default 0")
+    private int numberOfRestrictions = 0;
+    
     public List<Command> getServer_commands() {
         return server_commands;
     }
 
+    public int getNumberOfRestrictions(){
+        return numberOfRestrictions;
+    }
     public void setServer_commands(List<Command> server_commands) {
         this.server_commands = server_commands;
     }
 
-    public Zone getZone() {
-        return zone;
-    }
+    // public Zone getZone() {
+    //     return zone;
+    // }
 
-    public void setZone(Zone zone) {
-        this.zone = zone;
-    }
+    // public void setZone(Zone zone) {
+    //     this.zone = zone;
+    // }
 
     public List<Reservation> getReservations() {
         return reservations;

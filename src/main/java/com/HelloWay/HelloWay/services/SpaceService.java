@@ -198,29 +198,39 @@ public class SpaceService {
     public void setServerInZone(Long spaceId, Long moderatorUserId, Long serverId, Long zoneId) throws NotFoundException {
         Space space = spaceRepository.findById(spaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Space not found"));
-
+    
         User moderator = userService.findUserById(moderatorUserId);
-
-
+    
         // Check if the user is the moderator of the space
         if (!space.getModerator().equals(moderator)) {
             throw new ResourceNotFoundException("User is not the moderator of the space");
         }
-
+    
         User server = userService.findUserById(serverId);
-
-        // Check if the user is the moderator of the space
+    
+        // Check if the user is a server in the space
         if (!space.getServers().contains(server)) {
-            throw new ResourceNotFoundException("User is not a server in  the space");
+            throw new ResourceNotFoundException("User is not a server in the space");
         }
-
+    
         Zone zone = zoneRepository.findById(zoneId)
                 .orElseThrow(() -> new ResourceNotFoundException("Zone not found"));
-
-        // Update the server's zone
-        server.setZone(zone);
-        userService.addUser(server);
+    
+        // Check if the zone already has a server
+        User currentServer = zone.getServer();
+        if (currentServer != null && !currentServer.equals(server)) {
+            // Remove the current server from the zone
+            currentServer.setServersSpace(null);
+            userService.updateUser(currentServer);
+        }
+    
+        // Update the zone with the new server
+        zone.setServer(server);
+        zoneRepository.save(zone);
+    
     }
+    
+    
 
     public void addServerInSpace(Long spaceId, Long moderatorUserId, Long serverId) throws NotFoundException {
         Space space = spaceRepository.findById(spaceId)
@@ -254,29 +264,34 @@ public class SpaceService {
     public void deleteServerFromZone(Long spaceId, Long moderatorUserId, Long serverId, Long zoneId) throws NotFoundException {
         Space space = spaceRepository.findById(spaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Space not found"));
-
+    
         User moderator = userService.findUserById(moderatorUserId);
-
-
+    
         // Check if the user is the moderator of the space
         if (!space.getModerator().equals(moderator)) {
             throw new ResourceNotFoundException("User is not the moderator of the space");
         }
-
+    
         User server = userService.findUserById(serverId);
-
-        // Check if the user is the moderator of the space
+    
+        // Check if the user is a server in the space
         if (!space.getServers().contains(server)) {
-            throw new ResourceNotFoundException("User is not a server in  the space");
+            throw new ResourceNotFoundException("User is not a server in the space");
         }
-
+    
         Zone zone = zoneRepository.findById(zoneId)
                 .orElseThrow(() -> new ResourceNotFoundException("Zone not found"));
-
-        // Update the server's zone
-        server.setZone(null);
-        userService.addUser(server);
+    
+        // Check if the zone has the server to be removed
+        if (!server.equals(zone.getServer())) {
+            throw new ResourceNotFoundException("Server is not assigned to the specified zone");
+        }
+    
+        // Remove the server from the zone
+        server.setServersSpace(null);
+        userService.updateUser(server);
     }
+    
 
     public List<User> getServersBySpace(Space space){
         return space.getServers();

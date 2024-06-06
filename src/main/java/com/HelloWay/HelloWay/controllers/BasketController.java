@@ -7,6 +7,7 @@ import com.HelloWay.HelloWay.repos.UserRepository;
 import com.HelloWay.HelloWay.services.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -148,38 +149,29 @@ public class BasketController {
     @PreAuthorize("hasAnyRole('GUEST','USER')")
     public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
         Basket basket = basketService.findBasketById(basketId);
-       /* List<BasketProduct> basketProducts = basketProductService.getBasketProductsByBasketId(basketId);
-        for (BasketProduct basketProduct : basketProducts){
-           basketProduct.setOldQuantity(basketProduct.getQuantity());
-            basketProductService.updateBasketProduct(basketProduct);
-        }
-        */
+        
         Board board = basket.getBoard();
         User user = userService.findUserById(userId);
-        List<User> servers = board.getZone().getServers();
-        User currentAvailableServer = servers.get(0);
-        if (commandService.getLastServerWithBoardIdForCommand().get(board.getZone().getIdZone().toString()) != null){
-        User lastServer = userService.findUserById(Long.parseLong(commandService.getLastServerWithBoardIdForCommand().get(board.getZone().getIdZone().toString())));
-        int indexOfTheLastServer = servers.indexOf(lastServer);
-        if (indexOfTheLastServer != servers.size() - 1) {
-            currentAvailableServer = servers.get(indexOfTheLastServer + 1);
-        }
+        User server = board.getZone().getServer();
+
+        if (server == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
 
         Command command = commandService.createCommand(new Command());
         basketService.assignCommandToBasket(basketId, command);
-        commandService.setServerForCommand(command.getIdCommand(), currentAvailableServer);
+        commandService.setServerForCommand(command.getIdCommand(), server);
         command.setUser(user);
         commandService.updateCommand(command);
 
-        String messageForTheServer = "New command placed by the table number : " + command.getBasket().getBoard().getNumTable();
+        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
         String messageForTheUser = "Your command has been placed successfully";
         notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
-
+        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
 
         return ResponseEntity.ok(command);
     }
+
 
     //Get products by id basket : done
     @GetMapping("/products/by_basket/{basketId}")

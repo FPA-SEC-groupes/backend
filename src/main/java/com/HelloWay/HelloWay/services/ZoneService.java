@@ -58,14 +58,14 @@ public class ZoneService {
     public void deleteZone(Long id) {
         Zone zone = zoneRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Zone not found with this id: " + id));
-
-        // Disassociate related servers
-        List<User> servers = new ArrayList<>(zone.getServers());
-        for (User user : servers) {
-            user.setZone(null);
-            userService.updateUser(user);
+    
+        // Disassociate the server
+        User server = zone.getServer();
+        if (server != null) {
+            server.setServersSpace(null);
+            userService.updateUser(server);
         }
-
+    
         // Disassociate related boards and baskets
         List<Board> boards = new ArrayList<>(zone.getBoards());
         for (Board board : boards) {
@@ -76,14 +76,14 @@ public class ZoneService {
             board.setZone(null); // Assuming there is a zone attribute in the Board entity
             boardService.updateBoard(board);
         }
-
+    
         // Now you can safely delete the Zone entity
         zoneRepository.deleteById(id);
     }
+    
 
-
-    public List<User> getServersByZone(Zone zone){
-        return  zone.getServers();
+    public User getServersByZone(Zone zone){
+        return  zone.getServer();
     }
 
 

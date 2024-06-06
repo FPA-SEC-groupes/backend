@@ -33,8 +33,10 @@ public class Zone {
 
     @OneToMany(mappedBy = "zone")
     List<Board> boards ;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User server;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "zone")
-    private List<User> servers = new ArrayList<>();
+    
 }

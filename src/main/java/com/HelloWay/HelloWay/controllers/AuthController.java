@@ -141,7 +141,11 @@ public class AuthController {
         if (!userDetails.isActivated()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Account not activated");
         }
-
+        Optional<User> userOptional = userRepository.findById(userDetails.getId());
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = userOptional.get();
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -162,7 +166,8 @@ public class AuthController {
         responseBody.put("localId", "qmt6dRyipIad8UCc0QpMV2MENSy1");
         responseBody.put("displayName", "");  // If you have displayName in your userDetails, replace this
         responseBody.put("idToken", jwtCookie.getValue());
-        responseBody.put("registered", true);  // You might want to determine this based on your business logic
+        responseBody.put("registered", true); 
+        responseBody.put("numberOfRestrictions", user.getNumberOfRestrictions()); // You might want to determine this based on your business logic
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
