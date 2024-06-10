@@ -12,7 +12,7 @@ public class MvcConfig implements WebMvcConfigurer {
  
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        exposeDirectory("users-photos", registry);
+        exposeDirectory("photos", registry);
     }
      
     private void exposeDirectory(String dirName, ResourceHandlerRegistry registry) {

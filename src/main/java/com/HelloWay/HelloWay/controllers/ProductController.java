@@ -1,5 +1,6 @@
 package com.HelloWay.HelloWay.controllers;
 
+import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
 import com.HelloWay.HelloWay.payload.response.ProductDTO;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -168,10 +170,14 @@ public class ProductController {
             // Create the Image entity and set the reference to the Space entity
             Image image = new Image();
             image.setProduct(product);
-            image.setFileName(file.getOriginalFilename());
+            image.setFileName(file.getOriginalFilename()+file.getOriginalFilename()+product.getIdProduct());
             image.setFileType(file.getContentType());
             image.setData(file.getBytes());
-
+             String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+            String uploadDir = "photos/product/";
+            String fileName =  file.getOriginalFilename()+product.getIdProduct() + ext;
+            FileUploadUtil.saveFile(uploadDir,fileName,file);
             // Persist the Image entity to the database
             imageRepository.save(image);
 

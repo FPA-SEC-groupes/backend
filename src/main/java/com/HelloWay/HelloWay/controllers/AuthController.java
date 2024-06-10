@@ -311,7 +311,7 @@ public class AuthController {
 
         String idTable = splitArray[0];
         String idZone = splitArray[splitArray.length - 1];
-
+        Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
         String userName = "Board"+ idTable;
         String password = "Pass"+ idTable +"*"+idZone;
 
@@ -333,8 +333,103 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-
+        Value value = new Value(idTable, ROLE_USER.toString());
+        customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+        customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+        InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(
+                    // new UserInfoResponse(userDetails.getId(),
+                    //     userDetails.getName(),
+                    //     userDetails.getLastname(),
+                    //     userDetails.getBirthday(),
+                    //     userDetails.getPhone(),
+                    //     userDetails.getUsername(),
+                    //     userDetails.getEmail(),
+                    //     roles,
+                    //     sessionId),
+                        informationAfterScan);
+    }
+
+
+    @PostMapping("/signin/qr_Code/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
+    public ResponseEntity<?> authenticateUser(
+            @PathVariable String qr_Code,
+            @PathVariable String userLatitude,
+            @PathVariable String userLongitude,
+            @PathVariable String accuracy,
+            HttpServletRequest request) {
+    
+        String[] splitArray = qr_Code.split("-");
+        String idTable = splitArray[0];
+        String idZone = splitArray[splitArray.length - 1];
+    
+        Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
+    
+        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
+            String userName = "Board" + idTable;
+            String password = "Pass" + idTable + "*" + idZone;
+    
+            // Check if user exists, if not create one
+            Optional<User> existingUser = userRepository.findByUsername(userName);
+            if (existingUser.isEmpty()) {
+                // Create new user
+                User newUser = new User(
+                        userName,
+                        null, // Assuming other fields are not required for this user
+                        space.getId_space().toString(),
+                        null,
+                        null,
+                        null,
+                        encoder.encode(password));
+                newUser.setActivated(true);
+    
+                // Log the role retrieval attempt
+                System.out.println("Retrieving ROLE_GUEST from the database");
+
+
+                Set<Role> roles = new HashSet<>();
+
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+                roles.add(userRole);
+                
+                // Assign ROLE_GUEST to the new user
+                Role guestRole = roleRepository.findByName(ROLE_GUEST)
+                                .orElseThrow(() -> new RuntimeException("Error: Role GUEST is not found."));
+                roles.add(guestRole);
+                
+                newUser.setRoles(roles);
+                
+                userRepository.save(newUser);
+            }
+    
+            // Log the generated credentials
+            System.out.println("Generated credentials: username=" + userName + ", password=" + password);
+    
+            LoginRequest loginRequest = new LoginRequest(userName, password);
+            try {
+                Authentication authentication = authenticationManager
+                        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+    
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+    
+                ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+    
+                List<String> roles = userDetails.getAuthorities().stream()
+                        .map(item -> item.getAuthority())
+                        .collect(Collectors.toList());
+    
+                Value value = new Value(idTable, roles.get(0));
+                customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+                HttpSession session = request.getSession();
+                sessionUtils.addSession(session);
+                customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+                InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
                         userDetails.getName(),
                         userDetails.getLastname(),
@@ -344,61 +439,6 @@ public class AuthController {
                         userDetails.getEmail(),
                         roles,
                         sessionId));
-    }
-
-
-    @PostMapping("/signin/qr_Code/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
-    public ResponseEntity<?> authenticateUser(
-        @PathVariable String qr_Code,
-        @PathVariable String userLatitude,
-        @PathVariable String userLongitude,
-        HttpServletRequest request,
-        @PathVariable String accuracy) {
-
-        String[] splitArray = qr_Code.split("-");
-        String idTable = splitArray[0];
-        String idZone = splitArray[splitArray.length - 1];
-
-        Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
-
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
-            String userName = "Board" + idTable;
-            String password = "Pass" + idTable + "*" + idZone;
-
-            // Log the generated credentials
-            System.out.println("Generated credentials: username=" + userName + ", password=" + password);
-
-            LoginRequest loginRequest = new LoginRequest(userName, password);
-            try {
-                Authentication authentication = authenticationManager
-                        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-
-                ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
-                List<String> roles = userDetails.getAuthorities().stream()
-                        .map(item -> item.getAuthority())
-                        .collect(Collectors.toList());
-
-                Value value = new Value(idTable, roles.get(0));
-                customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
-                HttpSession session = request.getSession();
-                sessionUtils.addSession(request.getSession());
-
-                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                        .body(new UserInfoResponse(userDetails.getId(),
-                                userDetails.getName(),
-                                userDetails.getLastname(),
-                                userDetails.getBirthday(),
-                                userDetails.getPhone(),
-                                userDetails.getUsername(),
-                                userDetails.getEmail(),
-                                roles,
-                                sessionId));
             } catch (Exception e) {
                 // Log the exception for debugging
                 System.err.println("Authentication failed: " + e.getMessage());
@@ -408,7 +448,7 @@ public class AuthController {
             return ResponseEntity.ok().body("The user is not in the space, so we are sorry you can't be connected.");
         }
     }
-
+    
 
     @PostMapping("/qr_Code_for_app_user/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
     public ResponseEntity<?> setUserInTable(@PathVariable String qr_Code, @PathVariable String userLatitude, @PathVariable String userLongitude, @PathVariable String accuracy) {

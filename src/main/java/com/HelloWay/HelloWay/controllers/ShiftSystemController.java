@@ -19,16 +19,16 @@ import javax.annotation.PostConstruct;
 @RequestMapping("/api/shiftsystems")
 public class ShiftSystemController {
 
-    @Autowired
-    private ShiftSystemService shiftSystemService;
+    private final ShiftSystemService shiftSystemService;
 
-    
- 
-    @PostMapping
-    public ShiftSystem createShift(@RequestBody ShiftSystemRequestDTO shiftSystemRequest) {
-        return shiftSystemService.createShiftSystem(shiftSystemRequest);
+    public ShiftSystemController(ShiftSystemService shiftSystemService) {
+        this.shiftSystemService = shiftSystemService;
     }
 
+    @PostMapping
+    public List<ShiftSystem> createShift(@RequestBody ShiftSystemRequestDTO shiftSystemRequest) {
+        return shiftSystemService.createShiftSystem(shiftSystemRequest);
+    }
 
     @GetMapping("/{shiftId}")
     public Optional<ShiftSystem> getShiftById(@PathVariable Long shiftId) {
