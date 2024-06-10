@@ -35,7 +35,6 @@ public class Event {
     @Column()
     private LocalDateTime endDate ;
 
-    @NotBlank
     @Column(length = 40)
     private String description;
 
