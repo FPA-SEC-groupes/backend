@@ -60,11 +60,11 @@ public class ZoneService {
                 .orElseThrow(() -> new ResourceNotFoundException("Zone not found with this id: " + id));
     
         // Disassociate the server
-        User server = zone.getServer();
-        if (server != null) {
-            server.setServersSpace(null);
-            userService.updateUser(server);
-        }
+        // User server = zone.getServer();
+        // if (server != null) {
+        //     server.setServersSpace(null);
+        //     userService.updateUser(server);
+        // }
     
         // Disassociate related boards and baskets
         List<Board> boards = new ArrayList<>(zone.getBoards());

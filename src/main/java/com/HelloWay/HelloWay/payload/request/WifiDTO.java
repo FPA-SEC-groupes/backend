@@ -2,7 +2,6 @@ package com.HelloWay.HelloWay.payload.request;
 
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
