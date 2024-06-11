@@ -86,7 +86,8 @@ public class ZoneController {
     @ResponseBody
     public void deleteZone(@PathVariable("id") long id){
         // deleteAllBoardsAttachedWithThisZone
-        zoneService.deleteZone(id); }
+        zoneService.deleteZone(id);
+     }
 
     @PostMapping("/add/id_space/{id_space}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
@@ -127,7 +128,10 @@ public class ZoneController {
         if (zone == null){
             return ResponseEntity.badRequest().body("zone doesn't exist with zone id : " + zoneId);
         }
-        return ResponseEntity.ok().body(zoneService.getServersByZone(zone));
+        zoneService.getServersByZone(zone);
+        List<User> servers = new ArrayList<>();
+        servers.add(zoneService.getServersByZone(zone));
+        return ResponseEntity.ok().body(servers);
     }
 
     @DeleteMapping("/server/{serverId}/zone/{zoneId}")
