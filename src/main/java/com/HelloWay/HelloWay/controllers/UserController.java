@@ -9,6 +9,7 @@ import com.HelloWay.HelloWay.services.UserService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -81,38 +83,51 @@ public class UserController {
     public void supp_user(@PathVariable("id") long id){
         userService.deleteUser(id); }
 
-    @PostMapping("/{sid}/add-image")
-    public void addImage(@PathVariable Long sid, @RequestParam("image") MultipartFile multipartFile) throws IOException {
-
-        User user = userService.findUserById(sid);
-
-        userService.addUser(user);
-        if (!multipartFile.isEmpty()) {
-            String orgFileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
-            String uploadDir = "photos/";
-            String fileName = "user-" + user.getId() + ext;
-            Image img = new Image(multipartFile, fileName, ext, multipartFile.getBytes());
-            Image image = imageService.addImageLa(img);
-            user.setImage(image);
-            FileUploadUtil.saveFile(uploadDir,fileName,multipartFile);
-            userService.updateUser(user);
+        @PostMapping("/{sid}/add-image")
+        public ResponseEntity<?> addImage(@PathVariable Long sid, @RequestParam("image") MultipartFile multipartFile) {
+            try {
+                User user = userService.findUserById(sid);
+                if (user == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+                }
+        
+                if (!multipartFile.isEmpty()) {
+                    LocalDateTime currentDateTime = LocalDateTime.now();
+                    String orgFileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+                    String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+                    String uploadDir = "photos/user/";
+                    String fileName = multipartFile.getOriginalFilename() + "_" + currentDateTime.toString().replace(":", "-") + ext;
+        
+                    Image img = new Image(multipartFile, fileName, ext);
+                    Image image = imageService.addImageLa(img);
+                    user.setImage(image);
+                    userService.updateUser(user);
+        
+                    FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+                    return ResponseEntity.ok("Image uploaded successfully");
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Multipart file is empty");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
+            }
         }
-    }
+        
 
 
 
-    @RequestMapping(value = "/{sid}/display-image")
-    public void getUserPhoto(HttpServletResponse response, @PathVariable("sid") long sid) throws Exception {
-        User user = userService.findUserById(sid);
-        Image image = user.getImage();
 
-        if(image != null) {
-            response.setContentType(image.getFileType());
-            InputStream inputStream = new ByteArrayInputStream(image.getData());
-            IOUtils.copy(inputStream, response.getOutputStream());
-        }
-    }
+    // @RequestMapping(value = "/{sid}/display-image")
+    // public void getUserPhoto(HttpServletResponse response, @PathVariable("sid") long sid) throws Exception {
+    //     User user = userService.findUserById(sid);
+    //     Image image = user.getImage();
+
+    //     if(image != null) {
+    //         response.setContentType(image.getFileType());
+    //         InputStream inputStream = new ByteArrayInputStream(image.getData());
+    //         IOUtils.copy(inputStream, response.getOutputStream());
+    //     }
+    // }
 
     @GetMapping("/all/paging")
     @PreAuthorize("hasAnyRole('ADMIN')")

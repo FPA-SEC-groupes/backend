@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
@@ -163,31 +164,33 @@ public class ProductController {
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     public ResponseEntity<String> addImage(@PathVariable("id") Long id,
-                                           @RequestParam("file") MultipartFile file) {
+                                        @RequestParam("file") MultipartFile file) {
         try {
             Product product = productService.findProductById(id);
+            if (product == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+            }
 
-            // Create the Image entity and set the reference to the Space entity
+            // Create the Image entity and set the reference to the Product entity
             Image image = new Image();
-            image.setProduct(product);
-            image.setFileName(file.getOriginalFilename()+file.getOriginalFilename()+product.getIdProduct());
-            image.setFileType(file.getContentType());
-            image.setData(file.getBytes());
-             String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
             String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
             String uploadDir = "photos/product/";
-            String fileName =  file.getOriginalFilename()+product.getIdProduct() + ext;
-            FileUploadUtil.saveFile(uploadDir,fileName,file);
+            String fileName = file.getOriginalFilename() + "_" + product.getIdProduct() + ext;
+            FileUploadUtil.saveFile(uploadDir, fileName, file);
+
+            image.setProduct(product);
+            image.setFileName(fileName);
+            image.setFileType(file.getContentType());
+            
             // Persist the Image entity to the database
             imageRepository.save(image);
 
             return ResponseEntity.ok().body("Image uploaded successfully");
-        } catch (IOException ex) {
-            throw new RuntimeException("Error uploading file", ex);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + ex.getMessage());
         }
-
     }
-
     @DeleteMapping("{idImage}/images/{idSpace}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     public ResponseEntity<?> deleteImage(@PathVariable String idImage, @PathVariable Long idSpace){
