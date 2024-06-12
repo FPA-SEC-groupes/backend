@@ -1,5 +1,6 @@
 package com.HelloWay.HelloWay.controllers;
 
+import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.request.SignupRequest;
 import com.HelloWay.HelloWay.payload.request.SpaceCreationDTO;
@@ -18,10 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.HelloWay.HelloWay.entities.ERole.ROLE_WAITER;
@@ -176,12 +179,19 @@ public class SpaceController {
         List<Image> spaceImages = new ArrayList<>();
         for (MultipartFile image : images) {
             Image spaceImage = new Image();
-            spaceImage.setFileName(image.getOriginalFilename());
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            String orgFileName = StringUtils.cleanPath(image.getOriginalFilename());
+            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+            String uploadDir = "photos/space/";
+            String fileName =  image.getOriginalFilename()+currentDateTime + ext;
+            FileUploadUtil.saveFile(uploadDir,fileName,image);
+            spaceImage.setFileName(fileName);
             spaceImage.setFileType(image.getContentType());
-            spaceImage.setData(image.getBytes());
+            // spaceImage.setData(image.getBytes());
             spaceImage.setSpace(space);
             imageService.addImageLa(spaceImage);
             spaceImages.add(spaceImage);
+           
         }
         space.setImages(spaceImages);
 
@@ -200,17 +210,21 @@ public class SpaceController {
 
             // Create the Image entity and set the reference to the Space entity
             Image image = new Image();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+            String uploadDir = "photos/space/";
+            String fileName =  file.getOriginalFilename()+currentDateTime + ext;
+            FileUploadUtil.saveFile(uploadDir,fileName,file);
             image.setSpace(space);
-            image.setFileName(file.getOriginalFilename());
+            image.setFileName(fileName);
             image.setFileType(file.getContentType());
-            image.setData(file.getBytes());
-
+            // image.setData(file.getBytes());
+            
             // Persist the Image entity to the database
             imageRepository.save(image);
 
             return ResponseEntity.ok().body("Image uploaded successfully");
-        } catch (IOException ex) {
-            throw new RuntimeException("Error uploading file", ex);
         } catch (ChangeSetPersister.NotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -242,18 +256,22 @@ public class SpaceController {
             Product product = productRepository.findById(idProduct).orElse(null);
             // Create the Image entity and set the reference to the Space entity
             Image image = new Image();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+            String uploadDir = "photos/space/";
+            String fileName =  file.getOriginalFilename()+currentDateTime + ext;
+            FileUploadUtil.saveFile(uploadDir,fileName,file);
             image.setSpace(space);
             image.setProduct(product);
-            image.setFileName(file.getOriginalFilename());
+            image.setFileName(fileName);
             image.setFileType(file.getContentType());
-            image.setData(file.getBytes());
-
+            // image.setData(file.getBytes());
+           
             // Persist the Image entity to the database
             imageRepository.save(image);
 
             return ResponseEntity.ok().body("Image uploaded successfully");
-        } catch (IOException ex) {
-            throw new RuntimeException("Error uploading file", ex);
         } catch (ChangeSetPersister.NotFoundException e) {
             throw new RuntimeException(e);
         }

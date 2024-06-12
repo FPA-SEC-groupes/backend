@@ -1,5 +1,6 @@
 package com.HelloWay.HelloWay.controllers;
 
+import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.repos.ImageRepository;
 import com.HelloWay.HelloWay.services.EventService;
@@ -11,11 +12,13 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -237,23 +240,25 @@ public class EventController {
     @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<String> addImage(@PathVariable("id") Long id,
                                            @RequestParam("file") MultipartFile file) {
-        try {
-            Event event = eventService.findEventById(id);
+        Event event = eventService.findEventById(id);
 
-            // Create the Image entity and set the reference to the event entity
-            Image image = new Image();
-            image.setEvent(event);
-            image.setFileName(file.getOriginalFilename());
-            image.setFileType(file.getContentType());
-            image.setData(file.getBytes());
+        // Create the Image entity and set the reference to the event entity
+        Image image = new Image();
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+        String uploadDir = "photos/event/";
+        String fileName =  file.getOriginalFilename()+currentDateTime + ext;
+        FileUploadUtil.saveFile(uploadDir,fileName,file);
+        image.setEvent(event);
+        image.setFileName(fileName);
+        image.setFileType(file.getContentType());
+        // image.setData(file.getBytes());
+         
+        // Persist the Image entity to the database
+        imageRepository.save(image);
 
-            // Persist the Image entity to the database
-            imageRepository.save(image);
-
-            return ResponseEntity.ok().body("Image uploaded successfully");
-        } catch (IOException ex) {
-            throw new RuntimeException("Error uploading file", ex);
-        }
+        return ResponseEntity.ok().body("Image uploaded successfully");
     }
 
     @PutMapping("/update/promotion")

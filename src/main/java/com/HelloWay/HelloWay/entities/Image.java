@@ -19,8 +19,8 @@ public class Image {
     private String id;
     private String fileName;
     private String fileType;
-    @Lob
-    private byte[] data;
+    // @Lob
+    // private byte[] data;
 
     @JsonIgnore
     @OneToOne(mappedBy = "image")
@@ -41,10 +41,12 @@ public class Image {
     @ManyToOne
     @JoinColumn(name="idEvent")
     private Event event;
-    public Image(Object o, String fileName, String fileType, byte[] data) {
+    public Image(Object o, String fileName, String fileType 
+    // byte[] data
+    ) {
         this.id = o.toString();
         this.fileName = fileName;
         this.fileType = fileType ;
-        this.data = data;
+        // this.data = data;
     }
 }
