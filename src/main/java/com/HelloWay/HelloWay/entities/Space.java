@@ -46,7 +46,6 @@ public class Space {
     private Long numberOfRate;
 
 
-    @NotBlank
     @Column(length = 40)
     private String description;
 
