@@ -48,19 +48,40 @@ public class SpaceService {
         return spaceRepository.findAll();
     }
 
-    public Space updateSpace(Space updatedSpace) {
-        Space existingSpace = spaceRepository.findById(updatedSpace.getId_space()).orElse(null);
+    public Space updateSpace(Space spaceDTO) {
+        Space existingSpace = spaceRepository.findById(spaceDTO.getId_space()).orElse(null);
         if (existingSpace != null) {
-            // Copy the properties from the updatedSpace to the existingSpace
-            existingSpace.setTitleSpace(updatedSpace.getTitleSpace());
-            existingSpace.setLatitude(updatedSpace.getLatitude());
-            existingSpace.setLongitude(updatedSpace.getLongitude());
-            existingSpace.setPhoneNumber(updatedSpace.getPhoneNumber());
-            existingSpace.setNumberOfRate(updatedSpace.getNumberOfRate());
-            existingSpace.setDescription(updatedSpace.getDescription());
-            existingSpace.setRating(updatedSpace.getRating());
-            existingSpace.setSurfaceEnM2(updatedSpace.getSurfaceEnM2());
-
+            // Copy the properties from the spaceDTO to the existingSpace
+            existingSpace.setTitleSpace(spaceDTO.getTitleSpace());
+            existingSpace.setLatitude(spaceDTO.getLatitude());
+            existingSpace.setLongitude(spaceDTO.getLongitude());
+            existingSpace.setPhoneNumber(spaceDTO.getPhoneNumber());
+            existingSpace.setNumberOfRate(spaceDTO.getNumberOfRate());
+            existingSpace.setDescription(spaceDTO.getDescription());
+            existingSpace.setSurfaceEnM2(spaceDTO.getSurfaceEnM2());
+    
+            // Check validation and handle WiFi information if validation is "wifi"
+            if ("wifi".equalsIgnoreCase(spaceDTO.getValidation())) {
+                if (!spaceDTO.getWifis().isEmpty()) {
+                    WifiDTO wifiDTO = new WifiDTO();
+                    wifiDTO.setSpaceId(existingSpace.getId_space());
+    
+                    // Map SpaceCreationDTO.WifiInfo to WifiDTO.WifiInfo
+                    List<WifiDTO.WifiInfo> wifiInfos = new ArrayList<>();
+                    for (Wifi wifiInfo : spaceDTO.getWifis()) {
+                        WifiDTO.WifiInfo dtoWifiInfo = new WifiDTO.WifiInfo();
+                        dtoWifiInfo.setSsid(wifiInfo.getSsid());
+                        dtoWifiInfo.setPassword(wifiInfo.getPassword());
+                        wifiInfos.add(dtoWifiInfo);
+                    }
+    
+                    wifiDTO.setWifis(wifiInfos);
+                    
+                    // Save WiFi information
+                    wifiService.saveWifis(wifiDTO);
+                }
+            }
+    
             spaceRepository.save(existingSpace);
             return existingSpace;
         } else {
@@ -68,7 +89,7 @@ public class SpaceService {
             // You may throw an exception or handle it based on your use case.
             return null;
         }
-    }
+    }    
     public Space addNewSpace(Space space) throws IOException {
 
         return spaceRepository.save(space);

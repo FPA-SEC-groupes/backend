@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.HelloWay.HelloWay.entities.ERole.ROLE_WAITER;
@@ -204,9 +205,13 @@ public class SpaceController {
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<String> addImage(@PathVariable("id") Long id,
-                                           @RequestParam("file") MultipartFile file) {
+                                        @RequestParam("file") MultipartFile file) {
         try {
-            Space space = spaceRepository.findById(id).orElseThrow(() -> new ChangeSetPersister.NotFoundException()) ;
+            // Log the incoming request
+            System.out.println("Received request to upload image for space id: " + id);
+            
+            Space space = spaceRepository.findById(id)
+                .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
 
             // Create the Image entity and set the reference to the Space entity
             Image image = new Image();
@@ -214,22 +219,29 @@ public class SpaceController {
             String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
             String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
             String uploadDir = "photos/space/";
-            String fileName =  file.getOriginalFilename()+currentDateTime + ext;
-            FileUploadUtil.saveFile(uploadDir,fileName,file);
+            // Format the currentDateTime string to avoid illegal characters
+            String fileName = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")) + ext;
+
+            // Save the file to the server
+            FileUploadUtil.saveFile(uploadDir, fileName, file);
+
+            // Set image properties
             image.setSpace(space);
             image.setFileName(fileName);
             image.setFileType(file.getContentType());
-            // image.setData(file.getBytes());
-            
+
             // Persist the Image entity to the database
             imageRepository.save(image);
 
+            System.out.println("Image uploaded successfully with file name: " + fileName);
             return ResponseEntity.ok().body("Image uploaded successfully");
-        } catch (ChangeSetPersister.NotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + ex.getMessage());
         }
     }
-    @DeleteMapping("{idImage}/images/{idSpace}")
+
+        @DeleteMapping("{idImage}/images/{idSpace}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<?> deleteImage(@PathVariable String idImage, @PathVariable Long idSpace){
         Image image = imageService.getImage(idImage);

@@ -5,6 +5,7 @@ import java.util.List;
 
 @Data
 public class SpaceCreationDTO {
+    private Long spcaeId;
     private String titleSpace;
     private String description;
     private String latitude;
