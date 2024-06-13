@@ -10,6 +10,7 @@ import com.HelloWay.HelloWay.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
@@ -238,28 +239,35 @@ public class EventController {
 
     @PostMapping("/{id}/images")
     @PreAuthorize("hasAnyRole('PROVIDER')")
-    public ResponseEntity<String> addImage(@PathVariable("id") Long id,
-                                           @RequestParam("file") MultipartFile file) {
-        Event event = eventService.findEventById(id);
+    public ResponseEntity<String> addImage(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            Event event = eventService.findEventById(id);
+            if (event == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+            }
 
-        // Create the Image entity and set the reference to the event entity
-        Image image = new Image();
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
-        String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
-        String uploadDir = "photos/event/";
-        String fileName =  file.getOriginalFilename()+currentDateTime + ext;
-        FileUploadUtil.saveFile(uploadDir,fileName,file);
-        image.setEvent(event);
-        image.setFileName(fileName);
-        image.setFileType(file.getContentType());
-        // image.setData(file.getBytes());
-         
-        // Persist the Image entity to the database
-        imageRepository.save(image);
+            // Create the Image entity and set the reference to the event entity
+            Image image = new Image();
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            String orgFileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+            String uploadDir = "photos/event/";
+            String fileName = orgFileName.substring(0, orgFileName.lastIndexOf(".")) + "_" + currentDateTime.toString().replaceAll(":", "-") + ext;
+            FileUploadUtil.saveFile(uploadDir, fileName, file);
 
-        return ResponseEntity.ok().body("Image uploaded successfully");
+            image.setEvent(event);
+            image.setFileName(fileName);
+            image.setFileType(file.getContentType());
+
+            // Persist the Image entity to the database
+            imageRepository.save(image);
+
+            return ResponseEntity.ok().body("Image uploaded successfully");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + ex.getMessage());
+        }
     }
+
 
     @PutMapping("/update/promotion")
     @ResponseBody

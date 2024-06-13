@@ -27,7 +27,9 @@ public class ImageServiceImp implements ImageService {
         String fileName = StringUtils.cleanPath(image.getOriginalFilename());
         String fileType = image.getContentType();
         byte[] data = image.getBytes();
-        Image img = new Image(null, fileName, fileType, data);
+        Image img = new Image(null, fileName, fileType 
+        // data
+        );
         return imageRepository.save(img);
     }
 
