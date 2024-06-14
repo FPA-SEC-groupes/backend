@@ -7,6 +7,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Data
@@ -81,7 +84,12 @@ public class Product {
     }
 
     public void setPrice(Float price) {
-        this.price = price;
+        if (price != null) {
+            BigDecimal bd = new BigDecimal(price).setScale(2, RoundingMode.HALF_UP);
+            this.price = bd.floatValue();
+        } else {
+            this.price = null;
+        }
     }
 
     public String getDescription() {

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/auth")
 public class ProductController {
     ProductService productService;
     ImageRepository imageRepository;
