@@ -1,5 +1,6 @@
 package com.HelloWay.HelloWay.controllers;
 
+import com.HelloWay.HelloWay.config.CommandWebSocketHandler;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.ProductQuantity;
 import com.HelloWay.HelloWay.payload.response.QuantitysProduct;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.TextMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +22,15 @@ import java.util.Map;
 @RequestMapping("/api/baskets")
 public class BasketController {
 
-    BasketService basketService;
-    ProductService productService;
-    BasketProductService basketProductService;
-
+    private final BasketService basketService;
+    private final ProductService productService;
+    private final BasketProductService basketProductService;
     private final CommandService commandService;
+    private final UserService userService;
+    private final BoardService boardService;
+    private final NotificationService notificationService;
+    private final CommandWebSocketHandler commandWebSocketHandler;
 
-    private  UserService userService;
-
-    private BoardService boardService ;
-
-    private NotificationService notificationService;
     @Autowired
     public BasketController(UserService userService,
                             BasketService basketService,
@@ -38,7 +38,8 @@ public class BasketController {
                             ProductService productService,
                             CommandService commandService,
                             BoardService boardService,
-                            NotificationService notificationService) {
+                            NotificationService notificationService,
+                            CommandWebSocketHandler commandWebSocketHandler) {
         this.basketService = basketService;
         this.basketProductService = basketProductService;
         this.productService = productService;
@@ -46,6 +47,35 @@ public class BasketController {
         this.boardService = boardService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.commandWebSocketHandler = commandWebSocketHandler;
+    }
+
+    @PostMapping("/{basketId}/commands/add/user/{userId}")
+    @PreAuthorize("hasAnyRole('GUEST','USER')")
+    public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
+        Basket basket = basketService.findBasketById(basketId);
+        Board board = basket.getBoard();
+        User user = userService.findUserById(userId);
+        User server = board.getZone().getServer();
+
+        if (server == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
+        }
+
+        Command command = commandService.createCommand(new Command());
+        basketService.assignCommandToBasket(basketId, command);
+        commandService.setServerForCommand(command.getIdCommand(), server);
+        command.setUser(user);
+        commandService.updateCommand(command);
+
+        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = "Your command has been placed successfully";
+        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
+        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
+
+        commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
+
+        return ResponseEntity.ok(command);
     }
 
     @PostMapping("/add")
@@ -145,32 +175,32 @@ public class BasketController {
         return ResponseEntity.ok(command);
     }
 
-    @PostMapping("/{basketId}/commands/add/user/{userId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
-    public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
-        Basket basket = basketService.findBasketById(basketId);
+    // @PostMapping("/{basketId}/commands/add/user/{userId}")
+    // @PreAuthorize("hasAnyRole('GUEST','USER')")
+    // public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
+    //     Basket basket = basketService.findBasketById(basketId);
         
-        Board board = basket.getBoard();
-        User user = userService.findUserById(userId);
-        User server = board.getZone().getServer();
+    //     Board board = basket.getBoard();
+    //     User user = userService.findUserById(userId);
+    //     User server = board.getZone().getServer();
 
-        if (server == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
-        }
+    //     if (server == null) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
+    //     }
 
-        Command command = commandService.createCommand(new Command());
-        basketService.assignCommandToBasket(basketId, command);
-        commandService.setServerForCommand(command.getIdCommand(), server);
-        command.setUser(user);
-        commandService.updateCommand(command);
+    //     Command command = commandService.createCommand(new Command());
+    //     basketService.assignCommandToBasket(basketId, command);
+    //     commandService.setServerForCommand(command.getIdCommand(), server);
+    //     command.setUser(user);
+    //     commandService.updateCommand(command);
 
-        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Your command has been placed successfully";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
+    //     String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
+    //     String messageForTheUser = "Your command has been placed successfully";
+    //     notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
+    //     notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
 
-        return ResponseEntity.ok(command);
-    }
+    //     return ResponseEntity.ok(command);
+    // }
 
 
     //Get products by id basket : done

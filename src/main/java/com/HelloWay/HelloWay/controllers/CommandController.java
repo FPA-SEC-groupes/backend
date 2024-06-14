@@ -27,7 +27,7 @@ public class CommandController {
     private final BasketProductService basketProductService ;
 
     private final NotificationService notificationService;
-
+    
     public CommandController(CommandService commandService,
                              BasketProductService basketProductService,
                              UserService userService,
@@ -41,7 +41,7 @@ public class CommandController {
         this.basketProductService = basketProductService;
         this.notificationService = notificationService;
     }
-
+    
     @PostMapping("/{commandId}/accept")
     @PreAuthorize("hasAnyRole('WAITER')")
     public ResponseEntity<String> acceptCommand(@PathVariable Long commandId) {

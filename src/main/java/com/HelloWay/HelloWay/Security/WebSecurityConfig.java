@@ -68,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/api/auth/login-qr").permitAll()
             .antMatchers(HttpMethod.GET, "/api/spaces/all/dto").permitAll()
             .antMatchers("/photos/**").permitAll()  // Allow public access to the photos directory
+            .antMatchers("/ws/**").permitAll()  // Allow WebSocket connections
             .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
