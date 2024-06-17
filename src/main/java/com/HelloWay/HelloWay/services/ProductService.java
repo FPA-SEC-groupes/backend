@@ -124,4 +124,14 @@ public class ProductService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return productRepository.findAll(pageable);
     }
+    
+    @Transactional
+    public void updateProductOrder(List<Long> productIds) {
+        for (int i = 0; i < productIds.size(); i++) {
+            Long productId = productIds.get(i);
+            Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+            product.setOrderIndex(i); // Assume you have an 'orderIndex' field in your Product entity
+            productRepository.save(product);
+        }
+    }
 }

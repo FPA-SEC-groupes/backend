@@ -31,9 +31,8 @@ public class ShiftSystem implements Serializable {
     @JoinColumn(name = "waiter_id", nullable = false)
     private User waiter;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day_of_week", nullable = false)
-    private DayOfWeek dayOfWeek;
+    @Column(name = "type", nullable = false)
+    private String type;
 
     @Column(name = "shift_date", nullable = false)
     private LocalDate date;

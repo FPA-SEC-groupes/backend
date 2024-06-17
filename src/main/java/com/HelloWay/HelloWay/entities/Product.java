@@ -39,6 +39,9 @@ public class Product {
 
     private Boolean available = true ;
 
+    @Column(name = "order_index")
+    private int orderIndex;
+
     @ToString.Exclude
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
