@@ -54,11 +54,12 @@ public class ShiftSystemController {
         return shiftSystemService.updateShiftsByDate(shiftUpdateDTOs);
     }
     @PutMapping("/updateDayOff")
-    public boolean updateDayOff(@RequestBody UpdateDayOffRequest request) {
+    public int updateDayOff(@RequestBody UpdateDayOffRequest request) {
         LocalDate start = LocalDate.parse(request.getStartDate());
         DayOfWeek newDay = DayOfWeek.valueOf(request.getNewDayOff().toUpperCase());
         return shiftSystemService.updateDayOff(request.getWaiterId(), newDay, start, request.getDurationInWeeks());
     }
+    
     @DeleteMapping("/{shiftId}")
     public void deleteShift(@PathVariable Long shiftId) {
         shiftSystemService.deleteShift(shiftId);

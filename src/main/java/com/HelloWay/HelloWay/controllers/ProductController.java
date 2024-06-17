@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/products")
 public class ProductController {
     ProductService productService;
     ImageRepository imageRepository;
@@ -237,5 +237,16 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return productService.getProducts(page, size);
+    }
+
+    @PutMapping("/reorder")
+    @PreAuthorize("hasAnyRole('PROVIDER','WAITER', 'USER', 'GUEST')")
+    public ResponseEntity<?> updateProductOrder(@RequestBody List<Long> productIds) {
+        try {
+            productService.updateProductOrder(productIds);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update product order");
+        }
     }
 }

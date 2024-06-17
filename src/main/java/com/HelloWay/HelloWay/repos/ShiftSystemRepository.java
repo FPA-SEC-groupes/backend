@@ -1,6 +1,7 @@
 package com.HelloWay.HelloWay.repos;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.HelloWay.HelloWay.entities.ShiftSystem;
+import com.HelloWay.HelloWay.entities.User;
 
 public interface ShiftSystemRepository extends JpaRepository<ShiftSystem, Long> {
     
@@ -22,4 +24,5 @@ public interface ShiftSystemRepository extends JpaRepository<ShiftSystem, Long> 
     @Transactional
     @Query("DELETE FROM ShiftSystem s WHERE s.waiter.id = :waiterId AND s.date IN :date")
     void deleteByWaiterIdAndDate(Long waiterId, LocalDate date);
+    Optional<ShiftSystem> findByWaiterAndDateAndStartTimeAndEndTime(User waiter, LocalDate date, LocalTime startTime, LocalTime endTime);
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ShiftTimeDTO {
     private Long waiterId;
-    private String dayOfWeek;
+    private String type;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
