@@ -4,7 +4,7 @@ import com.HelloWay.HelloWay.entities.BasketProduct;
 import com.HelloWay.HelloWay.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import java.util.Optional;
 import java.util.List;
 
 @Repository
@@ -18,7 +18,7 @@ public interface BasketProductRepository extends JpaRepository<BasketProduct, Lo
     BasketProduct findBasketProductByProduct_idProduct(Long id);
 
     BasketProduct findById_IdBasketAndId_IdProduct(Long idBasket, Long idProduct);
-
+    Optional<BasketProduct> findByBasketAndProduct(Basket basket, Product product);
     void deleteAllBasketProductByProduct(Product product);
     void deleteAllBasketProductByBasket(Basket basket);
 

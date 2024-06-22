@@ -75,7 +75,7 @@ public class ShiftSystemService {
         List<ShiftSystem> updatedShifts = new ArrayList<>();
 
         for (ShiftTimeDTO shiftTimeDTO : shiftUpdateDTOs) {
-            Optional<ShiftSystem> existingShiftOpt = shiftSystemRepository.findByDate(shiftTimeDTO.getDate());
+            Optional<ShiftSystem> existingShiftOpt = shiftSystemRepository.findByDateAndWaiterId(shiftTimeDTO.getDate(), shiftTimeDTO.getWaiterId());
 
             User waiter = userRepository.findById(shiftTimeDTO.getWaiterId())
                     .orElseThrow(() -> new RuntimeException("Waiter not found with ID: " + shiftTimeDTO.getWaiterId()));
@@ -152,7 +152,7 @@ public class ShiftSystemService {
             int updatedShiftsCount = 0;
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
                 DayOfWeek dayOfWeek = date.getDayOfWeek();
-                Optional<ShiftSystem> existingShiftOptional = shiftSystemRepository.findByDate(date);
+                Optional<ShiftSystem> existingShiftOptional = shiftSystemRepository.findByDateAndWaiterId(date, waiterId);
     
                 if (existingShiftOptional.isPresent()) {
                     ShiftSystem existingShift = existingShiftOptional.get();

@@ -24,5 +24,6 @@ public interface ShiftSystemRepository extends JpaRepository<ShiftSystem, Long> 
     @Transactional
     @Query("DELETE FROM ShiftSystem s WHERE s.waiter.id = :waiterId AND s.date IN :date")
     void deleteByWaiterIdAndDate(Long waiterId, LocalDate date);
-    Optional<ShiftSystem> findByWaiterAndDateAndStartTimeAndEndTime(User waiter, LocalDate date, LocalTime startTime, LocalTime endTime);
+    @Query("SELECT s FROM ShiftSystem s WHERE s.waiter.id = :waiterId AND s.date = :date")
+    Optional<ShiftSystem> findByDateAndWaiterId(LocalDate date, Long waiterId);
 }

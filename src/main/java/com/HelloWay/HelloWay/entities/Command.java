@@ -20,7 +20,7 @@ public class Command {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCommand;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Status status = Status.NOT_YET;
 

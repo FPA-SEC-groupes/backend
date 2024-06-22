@@ -37,9 +37,9 @@ public class WifiService {
         List<WifiDTO> savedWifiDTOs = new ArrayList<>();
         for (WifiDTO.WifiInfo wifiInfo : wifiDTO.getWifis()) { // Use WifiDTO.WifiInfo
             // 3. (Optional) Check for Duplicate WiFi (within this space)
-            if (wifiRepository.existsBySsidAndSpace(wifiInfo.getSsid(), space)) {
-                throw new DuplicateEntityException("WiFi with SSID '" + wifiInfo.getSsid() + "' already exists for this space.");
-            }
+            // if (wifiRepository.existsBySsidAndSpace(wifiInfo.getSsid(), space)) {
+            //     throw new DuplicateEntityException("WiFi with SSID '" + wifiInfo.getSsid() + "' already exists for this space.");
+            // }
     
             // 4. Convert to Wifi Entity (with Password Hashing)
             Wifi wifi = new Wifi();

@@ -1,17 +1,19 @@
 package com.HelloWay.HelloWay.payload.response;
 
 import com.HelloWay.HelloWay.entities.Product;
-
+import com.HelloWay.HelloWay.entities.ProductStatus;
 
 public class ProductQuantity {
-    Product product;
-    int oldQuantity;
-    int quantity;
+    private Product product;
+    private int oldQuantity;
+    private int quantity;
+    private ProductStatus status;
 
-    public ProductQuantity(Product product, int oldQuantity, int quantity) {
+    public ProductQuantity(Product product, int oldQuantity, int quantity, ProductStatus status) {
         this.product = product;
         this.oldQuantity = oldQuantity;
         this.quantity = quantity;
+        this.status = status;
     }
 
     public Product getProduct() {
@@ -36,5 +38,13 @@ public class ProductQuantity {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public ProductStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProductStatus status) {
+        this.status = status;
     }
 }

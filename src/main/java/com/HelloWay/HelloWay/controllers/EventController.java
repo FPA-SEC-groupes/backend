@@ -151,6 +151,7 @@ public class EventController {
         // Set the space for the party
         party.setSpace(space);
 
+        
         // Save the party
         Party createdParty = eventService.createParty(party);
 

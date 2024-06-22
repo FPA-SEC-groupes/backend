@@ -5,11 +5,14 @@ import com.HelloWay.HelloWay.entities.Basket;
 import com.HelloWay.HelloWay.entities.BasketProduct;
 import com.HelloWay.HelloWay.entities.BasketProductKey;
 import com.HelloWay.HelloWay.entities.Product;
+import com.HelloWay.HelloWay.entities.ProductStatus;
+import com.HelloWay.HelloWay.entities.Product;
 import com.HelloWay.HelloWay.payload.response.QuantitysProduct;
 import com.HelloWay.HelloWay.repos.BasketProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,32 +43,41 @@ public class BasketProductService {
         basketProductRepository.deleteById(id);
     }
 
+    public Optional<BasketProduct> findBasketProductByBasketAndProduct(Basket basket, Product product) {
+        return basketProductRepository.findByBasketAndProduct(basket, product);
+    }
     //TODO : add the attribute of oldQuantity :: Done
     public void addProductToBasket(Basket basket, Product product, int quantity) {
-        // if the product exist in this basket we must update the quantity
-        List<Product> products = new ArrayList<>();
-        products = getProductsByBasketId(basket.getId_basket());
+        // Retrieve products already in the basket
+        List<Product> products = getProductsByBasketId(basket.getId_basket());
+        
+        // Check if the product already exists in the basket
         if (products.contains(product)) {
-            List<BasketProduct> basketProducts = new ArrayList<>();
-            basketProducts = getBasketProductsByBasketId(basket.getId_basket());
+            List<BasketProduct> basketProducts = getBasketProductsByBasketId(basket.getId_basket());
             for (BasketProduct basketProduct : basketProducts) {
                 if (basketProduct.getProduct().equals(product)) {
-               //     basketProduct.setOldQuantity(basketProduct.getQuantity());
+                    // Update the quantity of the existing product
+                    basketProduct.setOldQuantity(basketProduct.getQuantity());
                     basketProduct.setQuantity(basketProduct.getQuantity() + quantity);
+                    // basketProduct.setStatus(ProductStatus.NEW); 
                     basketProductRepository.save(basketProduct);
+                    return; // Exit after updating the existing product
                 }
             }
         } else {
-            basketProductRepository.save(new BasketProduct(
+            // Add a new product to the basket
+            BasketProduct newBasketProduct = new BasketProduct(
                     new BasketProductKey(basket.getId_basket(), product.getIdProduct()),
                     basket,
                     product,
-                    // we add 0 there place of old quantity TODO :: Done
-                    quantity,
-                    0
-            ));
+                    quantity, // Current quantity
+                    0 // Old quantity is set to 0
+            );
+            newBasketProduct.setStatus(ProductStatus.NEW); 
+            basketProductRepository.save(newBasketProduct);
         }
     }
+    
 
 
     public List<BasketProduct> getBasketProductsByBasketId(Long id) {
