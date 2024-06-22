@@ -38,7 +38,9 @@ public class CommandService {
     public List<Command> findAllCommands() {
         return commandRepository.findAll();
     }
-
+    public Command findCommandByBasketId(Long basketId) {
+        return commandRepository.findCommandByBasketId(basketId);
+    }
     public Command updateCommand(Command updatedCommand) {
         Command existingCommand = commandRepository.findById(updatedCommand.getIdCommand()).orElse(null);
         if (existingCommand != null) {
@@ -75,7 +77,7 @@ public class CommandService {
         // Logic to accept the command and process it accordingly
         // For example, update the status of the command or trigger external operations
         command.setStatus(CONFIRMED);
-        commandRepository.save(command);
+        commandRepository.save(command);    
     }
 
     public void payCommand(Long commandId) {
@@ -162,7 +164,7 @@ public class CommandService {
         List<Command> serverCommands = server.getServer_commands();
         List<Command> actualServerCommand = new ArrayList<>();
         for (Command command : serverCommands){
-            if (command.getStatus().equals(NOT_YET) || command.getStatus().equals(CONFIRMED) || command.getStatus().equals(PAYED)
+            if (command.getStatus().equals(NOT_YET) || command.getStatus().equals(CONFIRMED) ||command.getStatus().equals(UPDATED)|| command.getStatus().equals(PAYED)
                     && command.getTimestamp().getHour() < currentTime.getHour() + 13){
                 actualServerCommand.add(command);
             }

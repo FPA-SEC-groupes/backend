@@ -29,6 +29,18 @@ public class BasketProduct {
 
     private int oldQuantity;
 
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+    
+    public BasketProduct(BasketProductKey id, Basket basket, Product product, int quantity, int oldQuantity) {
+        this.id = id;
+        this.basket = basket;
+        this.product = product;
+        this.quantity = quantity;
+        this.oldQuantity = oldQuantity;
+        this.status = ProductStatus.NEW;
+    }
+
     public BasketProductKey getId() {
         return id;
     }

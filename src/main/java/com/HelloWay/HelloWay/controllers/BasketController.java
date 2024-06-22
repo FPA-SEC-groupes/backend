@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.config.CommandWebSocketHandler;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.ProductQuantity;
 import com.HelloWay.HelloWay.payload.response.QuantitysProduct;
+import com.HelloWay.HelloWay.repos.CommandRepository;
 import com.HelloWay.HelloWay.repos.UserRepository;
 import com.HelloWay.HelloWay.services.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.TextMessage;
+import java.util.Optional;
+
+import static com.HelloWay.HelloWay.entities.Status.UPDATED;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +34,7 @@ public class BasketController {
     private final BoardService boardService;
     private final NotificationService notificationService;
     private final CommandWebSocketHandler commandWebSocketHandler;
-
+    private final CommandRepository commandRepository ;
     @Autowired
     public BasketController(UserService userService,
                             BasketService basketService,
@@ -39,7 +43,8 @@ public class BasketController {
                             CommandService commandService,
                             BoardService boardService,
                             NotificationService notificationService,
-                            CommandWebSocketHandler commandWebSocketHandler) {
+                            CommandWebSocketHandler commandWebSocketHandler,
+                            CommandRepository commandRepository) {
         this.basketService = basketService;
         this.basketProductService = basketProductService;
         this.productService = productService;
@@ -48,10 +53,11 @@ public class BasketController {
         this.userService = userService;
         this.notificationService = notificationService;
         this.commandWebSocketHandler = commandWebSocketHandler;
+        this.commandRepository=commandRepository;
     }
 
     @PostMapping("/{basketId}/commands/add/user/{userId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
     public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
         Basket basket = basketService.findBasketById(basketId);
         Board board = basket.getBoard();
@@ -61,21 +67,32 @@ public class BasketController {
         if (server == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
+        Command command1 = commandService.findCommandByBasketId(basketId);
+        if(command1==null){
+            Command command = commandService.createCommand(new Command());
+            basketService.assignCommandToBasket(basketId, command);
+            commandService.setServerForCommand(command.getIdCommand(), server);
+            command.setUser(user);
+            commandService.updateCommand(command);
 
-        Command command = commandService.createCommand(new Command());
-        basketService.assignCommandToBasket(basketId, command);
-        commandService.setServerForCommand(command.getIdCommand(), server);
-        command.setUser(user);
-        commandService.updateCommand(command);
+            String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
+            String messageForTheUser = "Your command has been placed successfully";
+            notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
+            notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
 
-        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Your command has been placed successfully";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
-
-        commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
-
-        return ResponseEntity.ok(command);
+            commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
+            return ResponseEntity.ok(command);
+        }
+        else {
+            command1.setStatus(UPDATED);
+            commandService.updateCommand(command1);
+            String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
+            String messageForTheUser = "Your command has been updated successfully";
+            notificationService.createNotification("Command Notification", messageForTheServer, command1.getServer());
+            notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
+            return ResponseEntity.ok(command1);
+        }
+        
     }
 
     @PostMapping("/add")
@@ -128,31 +145,42 @@ public class BasketController {
     @PreAuthorize("hasAnyRole('PROVIDER')")
     @ResponseBody
     public void deleteBasket(@PathVariable("id") long id){
-        basketService.deleteBasket(id); }
-
-    @PostMapping("/add/product/{productId}/to_basket/{basketId}/quantity/{quantity}")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
-    public ResponseEntity<?> addProductToBasket(@PathVariable long basketId, @PathVariable long productId, @PathVariable int quantity) {
-        Basket basket = basketService.findBasketById(basketId);
-        if (basket == null){
-            return ResponseEntity.badRequest().body("basket doesn't exist");
-        }
-        Product product = productService.findProductById(productId);
-        if (product == null){
-            return ResponseEntity.badRequest().body("product doesn't exist");
-        }
-        basketProductService.addProductToBasket(basket, product,quantity);
-        Map<Product, QuantitysProduct> productQuantityMap= basketProductService.getProductsQuantityByBasketId(basketId);
-        List<ProductQuantity> productQuantities = new ArrayList<>() ;
-        for (Product p : productQuantityMap.keySet()){
-            productQuantities.add(new ProductQuantity(p, productQuantityMap.get(p).getOldQuantity(), productQuantityMap.get(p).getQuantity()));
-        }
-        return ResponseEntity.ok().body(productQuantities);
+        basketService.deleteBasket(id); 
     }
+
+        @PostMapping("/add/product/{productId}/to_basket/{basketId}/quantity/{quantity}")
+        @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
+        public ResponseEntity<?> addProductToBasket(@PathVariable long basketId, @PathVariable long productId, @PathVariable int quantity) {
+            Basket basket = basketService.findBasketById(basketId);
+            if (basket == null){
+                return ResponseEntity.badRequest().body("Basket doesn't exist with this id");
+            }
+            
+            Product product = productService.findProductById(productId);
+            if (product == null){
+                return ResponseEntity.badRequest().body("Product doesn't exist with this id");
+            }
+            
+            basketProductService.addProductToBasket(basket, product, quantity);
+            
+            Map<Product, QuantitysProduct> productQuantityMap = basketProductService.getProductsQuantityByBasketId(basketId);
+            List<ProductQuantity> productQuantities = new ArrayList<>();
+            
+            for (Map.Entry<Product, QuantitysProduct> entry : productQuantityMap.entrySet()) {
+                Product p = entry.getKey();
+                QuantitysProduct quantitiesProduct = entry.getValue();
+                ProductStatus status = determineProductStatus(basket,p);
+                productQuantities.add(new ProductQuantity(p, quantitiesProduct.getOldQuantity(), quantitiesProduct.getQuantity(), status));
+            }
+            
+            return ResponseEntity.ok().body(productQuantities);
+        }
+        
+        
 
     // with update of the quantity
     @PostMapping("/delete/one/product/{productId}/from_basket/{basketId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
     public ResponseEntity<?> deleteOneProductFromBasket(@PathVariable long basketId, @PathVariable long productId) {
         basketProductService.deleteProductFromBasket(basketId, productId);
         return ResponseEntity.ok().body("product deleted with success");
@@ -160,14 +188,14 @@ public class BasketController {
 
     // delete the product from the basket what ever the quantity
     @PostMapping("/delete/product/{productId}/from_basket/{basketId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
     public ResponseEntity<?> deleteProductFromBasket(@PathVariable long basketId, @PathVariable long productId) {
         basketProductService.deleteProductFromBasketV2(basketId, productId);
         return ResponseEntity.ok().body("product deleted with success");
     }
 
     @PostMapping("/{basketId}/commands")
-    @PreAuthorize("hasAnyRole('GUEST','USER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
     public ResponseEntity<Command> createCommand(@PathVariable Long basketId) {
         Basket basket = basketService.findBasketById(basketId);
         Command command = commandService.createCommand(new Command());
@@ -205,22 +233,35 @@ public class BasketController {
 
     //Get products by id basket : done
     @GetMapping("/products/by_basket/{basketId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER','PROVIDER')")
     public ResponseEntity<?> getProductsByIdBasket(@PathVariable long basketId){
         Basket basket = basketService.findBasketById(basketId);
         if (basket == null){
-            return  ResponseEntity.badRequest().body("basket doesn't exist with this id");
+            return ResponseEntity.badRequest().body("basket doesn't exist with this id");
         }
-        Map<Product,QuantitysProduct> productQuantityMap= basketProductService.getProductsQuantityByBasketId(basketId);
-        List<ProductQuantity> productQuantities = new ArrayList<>() ;
+        Map<Product, QuantitysProduct> productQuantityMap = basketProductService.getProductsQuantityByBasketId(basketId);
+        List<ProductQuantity> productQuantities = new ArrayList<>();
         for (Product p : productQuantityMap.keySet()){
-            productQuantities.add(new ProductQuantity(p, productQuantityMap.get(p).getOldQuantity(), productQuantityMap.get(p).getQuantity()));
+            QuantitysProduct quantitiesProduct = productQuantityMap.get(p);
+            ProductStatus status = determineProductStatus(basket,p);  // This method should determine the status
+            productQuantities.add(new ProductQuantity(p, quantitiesProduct.getOldQuantity(), quantitiesProduct.getQuantity(), status));
         }
         return ResponseEntity.ok().body(productQuantities);
     }
 
+    private ProductStatus determineProductStatus(Basket basket, Product product) {
+        Optional<BasketProduct> basketProducts = basketProductService.findBasketProductByBasketAndProduct(basket, product);
+        BasketProduct basketProduct = basketProducts.get(); 
+        if (basketProduct != null) {
+            return basketProduct.getStatus();
+        } else {
+            return ProductStatus.NEW; // Default or handle as needed
+        }
+    }
+    
+
     @GetMapping("/latest/basket/by_table/{tableId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER','PROVIDER')")
     public ResponseEntity<?> getLatestBasketByIdTable(@PathVariable long tableId){
         Board board = boardService.findBoardById(tableId);
         if (board == null){
@@ -233,7 +274,7 @@ public class BasketController {
     }
 
     @GetMapping("/product/quantity/{productId}/by_basket/{basketId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER')")
+    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER','PROVIDER')")
     public ResponseEntity<?> getProductQuantityByIdBasketAndIdProduct(@PathVariable long basketId, @PathVariable long productId){
         Basket basket = basketService.findBasketById(basketId);
         QuantitysProduct quantity = new QuantitysProduct(0, 0) ;
@@ -256,21 +297,28 @@ public class BasketController {
 
     //TODO : getProductsByIdCommand() : product , oldQuantity , Quantity :: Done
     @GetMapping("/products/by_command/{commandId}")
-    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER')")
-    public ResponseEntity<?> getProductsByIdCommand(@PathVariable long commandId){
+    @PreAuthorize("hasAnyRole('GUEST','USER','WAITER','PROVIDER')")
+    public ResponseEntity<?> getProductsByIdCommand(@PathVariable long commandId) {
         Command command = commandService.findCommandById(commandId);
-        if (command == null){
-            return  ResponseEntity.badRequest().body("command doesn't exist with this id");
+        if (command == null) {
+            return ResponseEntity.badRequest().body("Command doesn't exist with this id");
         }
+        
         Basket basket = command.getBasket();
-        if (basket == null){
-            return  ResponseEntity.badRequest().body("basket doesn't exist with this id");
+        if (basket == null) {
+            return ResponseEntity.badRequest().body("Basket doesn't exist with this id");
         }
-        Map<Product,QuantitysProduct> productQuantityMap= basketProductService.getProductsQuantityByBasketId(basket.getId_basket());
-        List<ProductQuantity> productQuantities = new ArrayList<>() ;
-        for (Product p : productQuantityMap.keySet()){
-            productQuantities.add(new ProductQuantity(p, productQuantityMap.get(p).getOldQuantity(), productQuantityMap.get(p).getQuantity()));
+        
+        Map<Product, QuantitysProduct> productQuantityMap = basketProductService.getProductsQuantityByBasketId(basket.getId_basket());
+        List<ProductQuantity> productQuantities = new ArrayList<>();
+        
+        for (Map.Entry<Product, QuantitysProduct> entry : productQuantityMap.entrySet()) {
+            Product p = entry.getKey();
+            QuantitysProduct quantitiesProduct = entry.getValue();
+            ProductStatus status = determineProductStatus(basket,p); // Method to determine the status
+            productQuantities.add(new ProductQuantity(p, quantitiesProduct.getOldQuantity(), quantitiesProduct.getQuantity(), status));
         }
+        
         return ResponseEntity.ok().body(productQuantities);
     }
 }

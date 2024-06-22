@@ -221,7 +221,15 @@ public class ProductController {
     public void addProductToBasketByIds(@PathVariable Long id_basket, int quantity, @PathVariable Long id_product) {
         Basket basket = basketService.findBasketById(id_basket);
         Product product = productService.findProductById(id_product);
-        basketProductService.addProductToBasket(basket, product, quantity);
+        Product Product = new Product();
+        Product.setIdProduct(product.getIdProduct());
+        Product.setProductTitle(product.getProductTitle());
+        Product.setPrice(product.getPrice());
+        Product.setDescription(product.getDescription());
+        Product.setAvailable(product.getAvailable());
+        Product.setOrderIndex(product.getOrderIndex());
+
+        basketProductService.addProductToBasket(basket, Product, quantity);
     }
     @DeleteMapping("/deleteProductFromBasket/{id_product}/{id_basket}")
     @PreAuthorize("hasAnyRole('USER', 'GUEST')")

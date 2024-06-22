@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import static com.HelloWay.HelloWay.entities.Status.UPDATED;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -46,11 +48,13 @@ public class CommandController {
     @PreAuthorize("hasAnyRole('WAITER')")
     public ResponseEntity<String> acceptCommand(@PathVariable Long commandId) {
         Command command = commandService.findCommandById(commandId);
-        Basket basket = command.getBasket();
+        if(command.getStatus().equals(UPDATED)){
+            Basket basket = command.getBasket();
         List<BasketProduct> basketProducts = basketProductService.getBasketProductsByBasketId(basket.getId_basket());
         for (BasketProduct basketProduct : basketProducts){
-            basketProduct.setOldQuantity(basketProduct.getQuantity());
-            basketProductService.updateBasketProduct(basketProduct);
+                basketProduct.setOldQuantity(basketProduct.getQuantity());
+                basketProduct.setStatus(ProductStatus.CONFIRMED);
+                basketProductService.updateBasketProduct(basketProduct);            
         }
         commandService.acceptCommand(commandId);
 
@@ -60,6 +64,26 @@ public class CommandController {
         notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
 
         return ResponseEntity.ok("Command accepted");
+
+        } 
+        else{
+            Basket basket = command.getBasket();
+            List<BasketProduct> basketProducts = basketProductService.getBasketProductsByBasketId(basket.getId_basket());
+            for (BasketProduct basketProduct : basketProducts){
+                basketProduct.setOldQuantity(basketProduct.getQuantity());
+                basketProduct.setStatus(ProductStatus.CONFIRMED);
+                basketProductService.updateBasketProduct(basketProduct);
+            }
+            commandService.acceptCommand(commandId);
+    
+            String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
+            String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
+            notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
+            notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
+    
+            return ResponseEntity.ok("Command accepted");
+     
+        }
     }
 
 
@@ -116,7 +140,7 @@ public class CommandController {
 
 
     @GetMapping("/calculate/sum/{commandId}")
-    @PreAuthorize("hasAnyRole('WAITER', 'GUEST', 'USER')")
+    @PreAuthorize("hasAnyRole('WAITER', 'GUEST', 'USER','PROVIDER')")
     public ResponseEntity<?> getSumOfCommand(@PathVariable long commandId){
         Command command = commandService.findCommandById(commandId);
         if (command == null){
@@ -152,7 +176,7 @@ public class CommandController {
 
     // we will use this after update the basket (after adding a product to the basket)
     @PutMapping("/update/{commandId}/basket/{basketId}")
-    @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST')")
+    @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST','PROVIDER')")
     public ResponseEntity<?> updateCommand(@PathVariable long basketId, @PathVariable long commandId){
         Command command = commandService.findCommandById(commandId);
         if (command == null){
@@ -163,13 +187,13 @@ public class CommandController {
             return ResponseEntity.badRequest().body("basket doesn't exist with id");
         }
         command.setBasket(basket);
-        command.setStatus(Status.NOT_YET);
+        command.setStatus(Status.UPDATED);
         Command updatedCommand = commandService.updateCommand(command);
         return ResponseEntity.ok(updatedCommand);
     }
 
     @GetMapping("/by/basket/{basketId}")
-    @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST')")
+    @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST','PROVIDER')")
     public ResponseEntity<?> getCommandByBasketId(@PathVariable long basketId){
         Basket basket = basketService.findBasketById(basketId);
         if (basket == null){
@@ -180,7 +204,7 @@ public class CommandController {
     }
 
     @GetMapping("/by/user/{userId}")
-    @PreAuthorize("hasAnyRole('PROVIDER', 'USER')")
+    @PreAuthorize("hasAnyRole('PROVIDER', 'USER','PROVIDER')")
     public ResponseEntity<?> getCommandsByUserId(@PathVariable long userId){
         User user = userService.findUserById(userId);
         if (user == null){
@@ -194,7 +218,7 @@ public class CommandController {
     }
 
     @GetMapping("/latest/by/user/{userId}")
-    @PreAuthorize("hasAnyRole('PROVIDER','USER')")
+    @PreAuthorize("hasAnyRole('PROVIDER','USER','PROVIDER')")
     public ResponseEntity<?> getLatestCommandByUserId(@PathVariable long userId){
         User user = userService.findUserById(userId);
         if (user == null){
