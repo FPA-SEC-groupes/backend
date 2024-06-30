@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.MessageResponse;
 import com.HelloWay.HelloWay.payload.response.ProductDTO;
+import com.HelloWay.HelloWay.payload.response.ProductOrderUpdate;
 import com.HelloWay.HelloWay.repos.ImageRepository;
 import com.HelloWay.HelloWay.services.BasketProductService;
 import com.HelloWay.HelloWay.services.BasketService;
@@ -78,10 +79,10 @@ public class ProductController {
        return productService.updateProduct(product);
     }
 
-    @PutMapping("/update/{productId}")
+    @PutMapping("/update/{productId}/{percentage}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     @ResponseBody
-    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId) {
+    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId,@PathVariable Long percentage) {
         Product existingProduct = productService.findProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.badRequest().body("Product not found");
@@ -98,7 +99,7 @@ public class ProductController {
 
         // Update product properties
         existingProduct.setProductTitle(product.getProductTitle());
-        existingProduct.setPrice(product.getPrice());
+        existingProduct.setPrice(product.getPrice()*(1 + percentage / 100));
         existingProduct.setDescription(product.getDescription());
         existingProduct.setAvailable(product.getAvailable());
 
@@ -115,14 +116,14 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
-    @PostMapping("/add/id_categorie/{id_categorie}")
+    @PostMapping("/add/id_categorie/{id_categorie}/{percentage}")
     @ResponseBody
-    public ResponseEntity<?> addNewProductByIdCategorie(@RequestBody Product product, @PathVariable Long id_categorie) {
+    public ResponseEntity<?> addNewProductByIdCategorie(@RequestBody Product product, @PathVariable Long id_categorie,@PathVariable Long percentage) {
         if (productService.productExistsByTitleInCategorie(product, id_categorie)){
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Product title is already taken! in this Categorie"));
         }else
         {
-            Product productObject =  productService.addProductByIdCategorie(product, id_categorie);
+            Product productObject =  productService.addProductByIdCategorie(product, id_categorie,percentage);
             return ResponseEntity.ok().body(productObject);
         }
     }
@@ -247,14 +248,15 @@ public class ProductController {
         return productService.getProducts(page, size);
     }
 
-    @PutMapping("/reorder")
+    @PutMapping("/updateOrder")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER', 'USER', 'GUEST')")
-    public ResponseEntity<?> updateProductOrder(@RequestBody List<Long> productIds) {
+    public ResponseEntity<?> updateProductOrder(@RequestBody List<ProductOrderUpdate> productOrderUpdates) {
         try {
-            productService.updateProductOrder(productIds);
+            productService.updateProductOrder(productOrderUpdates);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update product order");
         }
     }
+
 }

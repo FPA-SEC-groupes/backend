@@ -40,7 +40,8 @@ public  class User implements Serializable {
     private String password ;
 
     private boolean activated;
-
+    private int percentage;
+    private String token;
     @OneToOne(cascade = CascadeType.ALL)
     Image image;
 
@@ -205,6 +206,13 @@ public  class User implements Serializable {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+    public int getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(int percentage) {
+        this.percentage = percentage;
+    }
 
     public String getEmail() {
         return email;
@@ -250,12 +258,13 @@ public  class User implements Serializable {
 
 
 
-    public User(String username, String name, String lastname, LocalDate birthday, String phone, String email, String password ) {
+    public User(String username, String name, String lastname, LocalDate birthday, String phone, int percentage, String email, String password ) {
         this.username = username;
         this.name = name;
         this.lastname = lastname;
         this.birthday = birthday;
         this.phone = phone;
+        this.percentage= percentage;
         this.email = email;
         this.password = password;}
 

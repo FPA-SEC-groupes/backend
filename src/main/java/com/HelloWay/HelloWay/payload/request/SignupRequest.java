@@ -18,18 +18,20 @@ public class SignupRequest {
     private LocalDate hiring_date;
     private LocalDate contract_end_date;
     private Long salaire ;
+    private int percentage;
 
     private String password ;
 
     private  String email ;
     private Set<String> role;
 
-    public SignupRequest(String username, String name, String lastname, LocalDate birthday, String phone, LocalDate hiring_date, LocalDate contract_end_date, Long salaire, String password, String email, Set<String> role) {
+    public SignupRequest(String username, String name, String lastname, LocalDate birthday, String phone,int percentage,  LocalDate hiring_date, LocalDate contract_end_date, Long salaire, String password, String email, Set<String> role) {
         this.username = username;
         this.name = name;
         this.lastname = lastname;
         this.birthday = birthday;
         this.phone = phone;
+        this.percentage= percentage;
         this.hiring_date = hiring_date;
         this.contract_end_date = contract_end_date;
         this.salaire = salaire;
@@ -65,11 +67,16 @@ public class SignupRequest {
     public String getPhone() {
         return phone;
     }
-
+    
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
+    public int getPercentage(){
+        return percentage;
+    }
+    public void setPercentage(int percentage){
+        this.percentage= percentage;
+    }
     public LocalDate getHiring_date() {
         return hiring_date;
     }

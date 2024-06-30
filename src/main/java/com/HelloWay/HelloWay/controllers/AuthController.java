@@ -167,8 +167,9 @@ public class AuthController {
         responseBody.put("displayName", "");  // If you have displayName in your userDetails, replace this
         responseBody.put("idToken", jwtCookie.getValue());
         responseBody.put("registered", true); 
-        responseBody.put("numberOfRestrictions", user.getNumberOfRestrictions()); // You might want to determine this based on your business logic
-
+        responseBody.put("numberOfRestrictions", user.getNumberOfRestrictions());
+        responseBody.put("percentage", user.getPercentage()); // You might want to determine this based on your business logic
+        responseBody.put("token", user.getToken());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(responseBody);
@@ -190,6 +191,7 @@ public class AuthController {
                 signUpRequest.getLastname(),
                 signUpRequest.getBirthday(),
                 signUpRequest.getPhone(),
+                signUpRequest.getPercentage(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
@@ -380,6 +382,7 @@ public class AuthController {
                         space.getId_space().toString(),
                         null,
                         null,
+                        0,
                         null,
                         encoder.encode(password));
                 newUser.setActivated(true);

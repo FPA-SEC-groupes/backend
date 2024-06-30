@@ -346,6 +346,7 @@ public class SpaceController {
                 signupRequest.getLastname(),
                 signupRequest.getBirthday(),
                 signupRequest.getPhone(),
+                0,
                 signupRequest.getEmail(),
                 encoder.encode(signupRequest.getPassword()));
 
