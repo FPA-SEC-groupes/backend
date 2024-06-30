@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.QuantitysProduct;
 import com.HelloWay.HelloWay.repos.CommandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,6 +35,9 @@ public class CommandService {
 
     @Autowired
     BasketProductService basketProductService;
+
+    @Autowired
+    SpaceService spaceService;
 
     public List<Command> findAllCommands() {
         return commandRepository.findAll();
@@ -203,6 +207,26 @@ public class CommandService {
             result += getServerSumCommandsPerDay(server, date);
         }
 
+        return result;
+    }
+    public double getManagerSumCommandsPerDay(User server,LocalDate localDate){
+        double result = 0;
+        List<Command> perDayServerCommand = getServerPayedCommandsPerDay(server, localDate);
+        for (Command command : perDayServerCommand){
+            result += CalculateSum(command);
+        }
+        return result;
+    }
+    public double getManagerSumCommandsPerMonth(Space space,User server, YearMonth yearMonth) {
+        List<User> users = space.getServers();
+        double result = 0;
+        for(User user : users){
+            int daysInMonth = yearMonth.lengthOfMonth();
+            for (int day = 1; day <= daysInMonth; day++) {
+                LocalDate date = yearMonth.atDay(day);
+                result += getServerSumCommandsPerDay(user, date);
+            }
+        }
         return result;
     }
 

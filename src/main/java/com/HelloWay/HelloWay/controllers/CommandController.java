@@ -30,18 +30,21 @@ public class CommandController {
 
     private final NotificationService notificationService;
     
+    private final SpaceService spaceService;
     public CommandController(CommandService commandService,
                              BasketProductService basketProductService,
                              UserService userService,
                              BasketService basketService,
                              CustomSessionRegistry customSessionRegistry,
-                             NotificationService notificationService) {
+                             NotificationService notificationService,
+                             SpaceService spaceService) {
         this.commandService = commandService;
         this.userService = userService;
         this.basketService = basketService;
         this.customSessionRegistry = customSessionRegistry;
         this.basketProductService = basketProductService;
         this.notificationService = notificationService;
+        this.spaceService= spaceService;
     }
     
     @PostMapping("/{commandId}/accept")
@@ -253,6 +256,22 @@ public class CommandController {
         return ResponseEntity.ok(sum);
     }
 
+    @GetMapping("/ManagersumPerMonth")
+    @PreAuthorize("hasAnyRole('PROVIDER','ADMIN')")
+    public ResponseEntity<?> getManagerSumCommandsPerMonth(
+            @RequestParam Long managerId,
+            @RequestParam String yearMonth) {
+
+        User manager = userService.findUserById(managerId);
+
+        Space space = manager.getModeratorSpace();
+        if (space == null){
+            return ResponseEntity.badRequest().body("space doesn't exist");
+        }
+        YearMonth month = YearMonth.parse(yearMonth);
+        double sum = commandService.getManagerSumCommandsPerMonth(space,manager, month);
+        return ResponseEntity.ok(sum);
+    }
     @GetMapping("/countPerDay")
     @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<?> getServerCommandsCountPerDay(

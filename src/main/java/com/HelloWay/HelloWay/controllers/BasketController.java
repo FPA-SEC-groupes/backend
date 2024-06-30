@@ -83,15 +83,14 @@ public class BasketController {
             commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
             return ResponseEntity.ok(command);
         }
-        else {
             command1.setStatus(UPDATED);
             commandService.updateCommand(command1);
             String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
             String messageForTheUser = "Your command has been updated successfully";
             notificationService.createNotification("Command Notification", messageForTheServer, command1.getServer());
             notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
+            commandWebSocketHandler.sendMessageToAll(new TextMessage("update  command effect: " + command1.getIdCommand()));
             return ResponseEntity.ok(command1);
-        }
         
     }
 

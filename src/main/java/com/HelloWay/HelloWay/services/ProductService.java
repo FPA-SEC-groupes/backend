@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.entities.BasketProduct;
 import com.HelloWay.HelloWay.entities.Categorie;
 import com.HelloWay.HelloWay.entities.Product;
 import com.HelloWay.HelloWay.entities.Space;
+import com.HelloWay.HelloWay.payload.response.ProductOrderUpdate;
 import com.HelloWay.HelloWay.repos.BasketProductRepository;
 import com.HelloWay.HelloWay.repos.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,11 +90,12 @@ public class ProductService {
 
     // exist exeption
     // generation du code table auto increment
-    public Product addProductByIdCategorie(Product product, Long id_categorie){
+    public Product addProductByIdCategorie(Product product, Long id_categorie, Long percentage ){
         Categorie categorie = categorieService.findCategorieById(id_categorie);
         Product productObject = new Product();
         productObject = product;
         productObject.setCategorie(categorie);
+        productObject.setPrice(product.getPrice()*(1 + percentage / 100));
         List<Product> products = new ArrayList<Product>();
         products = categorie.getProducts();
         products.add(product);
@@ -125,12 +127,21 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
     
-    @Transactional
-    public void updateProductOrder(List<Long> productIds) {
-        for (int i = 0; i < productIds.size(); i++) {
-            Long productId = productIds.get(i);
-            Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
-            product.setOrderIndex(i); // Assume you have an 'orderIndex' field in your Product entity
+    // @Transactional
+    // public void updateProductOrder(List<Long> productIds) {
+    //     for (int i = 0; i < productIds.size(); i++) {
+    //         Long productId = productIds.get(i);
+    //         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+    //         product.setOrderIndex(i); // Assume you have an 'orderIndex' field in your Product entity
+    //         productRepository.save(product);
+    //     }
+    // }
+    
+    public void updateProductOrder(List<ProductOrderUpdate> productOrderUpdates) {
+        for (ProductOrderUpdate update : productOrderUpdates) {
+            Product product = productRepository.findById(update.getIdProduct())
+                                               .orElseThrow(() -> new RuntimeException("Product not found"));
+            product.setOrderIndex(update.getOrderIndex());
             productRepository.save(product);
         }
     }
