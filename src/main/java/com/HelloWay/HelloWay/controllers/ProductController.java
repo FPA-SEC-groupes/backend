@@ -82,7 +82,8 @@ public class ProductController {
     @PutMapping("/update/{productId}/{percentage}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     @ResponseBody
-    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId,@PathVariable Long percentage) {
+    public ResponseEntity<?> updateProduct(@RequestBody Product product, @PathVariable long productId, @PathVariable Long percentage) {
+        // Find the existing product by ID
         Product existingProduct = productService.findProductById(productId);
         if (existingProduct == null) {
             return ResponseEntity.badRequest().body("Product not found");
@@ -99,15 +100,19 @@ public class ProductController {
 
         // Update product properties
         existingProduct.setProductTitle(product.getProductTitle());
-        existingProduct.setPrice(product.getPrice()*(1 + percentage / 100));
+        existingProduct.setPrice((float) (existingProduct.getPrice() * (1 + percentage / 100.0)));
         existingProduct.setDescription(product.getDescription());
         existingProduct.setAvailable(product.getAvailable());
 
         // Save updated product
         productService.updateProduct(existingProduct);
 
+        // Console message to show the updated product
+        System.out.println("Updated Product: " + existingProduct);
+
         return ResponseEntity.ok().body(existingProduct);
     }
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
@@ -123,6 +128,7 @@ public class ProductController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Product title is already taken! in this Categorie"));
         }else
         {
+            
             Product productObject =  productService.addProductByIdCategorie(product, id_categorie,percentage);
             return ResponseEntity.ok().body(productObject);
         }
