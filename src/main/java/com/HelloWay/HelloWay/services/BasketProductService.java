@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
+import static com.HelloWay.HelloWay.entities.Status.CONFIRMED;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +60,10 @@ public class BasketProductService {
             for (BasketProduct basketProduct : basketProducts) {
                 if (basketProduct.getProduct().equals(product)) {
                     // Update the quantity of the existing product
-                    basketProduct.setOldQuantity(basketProduct.getQuantity());
+                    // if(basketProduct.getStatus().equals(ProductStatus.CONFIRMED)){
+                    //     basketProduct.setStatus(ProductStatus.NEW);
+                    // }
+                    // basketProduct.setOldQuantity(basketProduct.getQuantity());
                     basketProduct.setQuantity(basketProduct.getQuantity() + quantity);
                     // basketProduct.setStatus(ProductStatus.NEW); 
                     basketProductRepository.save(basketProduct);

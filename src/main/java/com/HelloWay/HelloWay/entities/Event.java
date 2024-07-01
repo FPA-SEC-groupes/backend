@@ -23,7 +23,6 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEvent;
 
-    @NotBlank
     @Column(length = 20)
     private String eventTitle;
 

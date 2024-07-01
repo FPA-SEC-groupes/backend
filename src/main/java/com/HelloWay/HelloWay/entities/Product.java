@@ -152,4 +152,5 @@ public class Product {
             this.categorie = null;
         }
     }
+    
 }

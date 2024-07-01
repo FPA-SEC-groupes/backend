@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.TextMessage;
 import java.util.Optional;
@@ -68,21 +70,7 @@ public class BasketController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
         Command command1 = commandService.findCommandByBasketId(basketId);
-        if(command1==null){
-            Command command = commandService.createCommand(new Command());
-            basketService.assignCommandToBasket(basketId, command);
-            commandService.setServerForCommand(command.getIdCommand(), server);
-            command.setUser(user);
-            commandService.updateCommand(command);
-
-            String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
-            String messageForTheUser = "Your command has been placed successfully";
-            notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-            notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
-
-            commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
-            return ResponseEntity.ok(command);
-        }
+        if(command1!=null){
             command1.setStatus(UPDATED);
             commandService.updateCommand(command1);
             String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
@@ -91,7 +79,21 @@ public class BasketController {
             notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
             commandWebSocketHandler.sendMessageToAll(new TextMessage("update  command effect: " + command1.getIdCommand()));
             return ResponseEntity.ok(command1);
-        
+        }
+            
+        Command command = commandService.createCommand(new Command());
+        basketService.assignCommandToBasket(basketId, command);
+        commandService.setServerForCommand(command.getIdCommand(), server);
+        command.setUser(user);
+        commandService.updateCommand(command);
+
+        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = "Your command has been placed successfully";
+        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
+        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
+
+        commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
+        return ResponseEntity.ok(command);
     }
 
     @PostMapping("/add")
@@ -171,7 +173,23 @@ public class BasketController {
                 ProductStatus status = determineProductStatus(basket,p);
                 productQuantities.add(new ProductQuantity(p, quantitiesProduct.getOldQuantity(), quantitiesProduct.getQuantity(), status));
             }
-            
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getAuthorities() != null) {
+                boolean isProvider = authentication.getAuthorities().stream()
+                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_PROVIDER"));
+                if (isProvider) {
+                    // Basket basket = basketService.findBasketById(basketId);
+                    Command command = basket.getCommand();
+                    command.setStatus(UPDATED);
+                    User user =command.getUser();
+                    Board board = basket.getBoard();
+                    User server = board.getZone().getServer();
+                    String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
+                    String messageForTheUser = "Your command has been updated by manager successfully";
+                    notificationService.createNotification("Command Notification", messageForTheServer, server);
+                    notificationService.createNotification("Command Notification", messageForTheUser, user);
+                }
+            }
             return ResponseEntity.ok().body(productQuantities);
         }
         
@@ -190,6 +208,23 @@ public class BasketController {
     @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
     public ResponseEntity<?> deleteProductFromBasket(@PathVariable long basketId, @PathVariable long productId) {
         basketProductService.deleteProductFromBasketV2(basketId, productId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            boolean isProvider = authentication.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_PROVIDER"));
+            if (isProvider) {
+                Basket basket = basketService.findBasketById(basketId);
+                Command command = basket.getCommand();
+                command.setStatus(UPDATED);
+                User user =command.getUser();
+                Board board = basket.getBoard();
+                User server = board.getZone().getServer();
+                String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
+                String messageForTheUser = "Your command has been updated by manager successfully";
+                notificationService.createNotification("Command Notification", messageForTheServer, server);
+                notificationService.createNotification("Command Notification", messageForTheUser, user);
+            }
+        }
         return ResponseEntity.ok().body("product deleted with success");
     }
 

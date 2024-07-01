@@ -90,20 +90,18 @@ public class ProductService {
 
     // exist exeption
     // generation du code table auto increment
-    public Product addProductByIdCategorie(Product product, Long id_categorie, Long percentage ){
+    public Product addProductByIdCategorie(Product product, Long id_categorie, Long percentage) {
+        product.setPrice((float) (product.getPrice() * (1 + percentage / 100.0)));
         Categorie categorie = categorieService.findCategorieById(id_categorie);
-        Product productObject = new Product();
-        productObject = product;
-        productObject.setCategorie(categorie);
-        productObject.setPrice(product.getPrice()*(1 + percentage / 100));
-        List<Product> products = new ArrayList<Product>();
-        products = categorie.getProducts();
+        product.setCategorie(categorie);
+        List<Product> products = categorie.getProducts();
         products.add(product);
-
-        productRepository.save(productObject);
+        Product savedProduct = productRepository.save(product);
+        System.out.println("Saved Product: " + savedProduct);
         categorie.setProducts(products);
-        return productObject;
+        return savedProduct;
     }
+    
     public List<Product> getProductsByIdCategorie(Long id_categorie){
         Categorie categorie = categorieService.findCategorieById(id_categorie);
         return categorie.getProducts();
