@@ -302,4 +302,18 @@ public  class User implements Serializable {
     public void setActivated(boolean activated) {
         this.activated = activated;
     }
+    @Override
+    public String toString() {
+        return "User{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", lastname='" + lastname + '\'' +
+               ", birthday=" + birthday +
+               ", phone='" + phone + '\'' +
+               ", email='" + email + '\'' +
+               ", username='" + username + '\'' +
+               ", activated=" + activated +
+               ", percentage=" + percentage +
+               '}';
+    }
 }

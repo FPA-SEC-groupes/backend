@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -62,22 +63,29 @@ public class SpaceService {
     
             // Check validation and handle WiFi information if validation is "wifi"
             if ("wifi".equalsIgnoreCase(spaceDTO.getValidation())) {
-                if (!spaceDTO.getWifis().isEmpty()) {
-                    WifiDTO wifiDTO = new WifiDTO();
-                    wifiDTO.setSpaceId(existingSpace.getId_space());
+                List<Wifi> existingWifis = existingSpace.getWifis();
     
-                    // Map SpaceCreationDTO.WifiInfo to WifiDTO.WifiInfo
-                    List<WifiDTO.WifiInfo> wifiInfos = new ArrayList<>();
-                    for (Wifi wifiInfo : spaceDTO.getWifis()) {
+                // Create a set of existing SSIDs for quick lookup
+                Set<String> existingSSIDs = existingWifis.stream()
+                                                         .map(Wifi::getSsid)
+                                                         .collect(Collectors.toSet());
+    
+                WifiDTO wifiDTO = new WifiDTO();
+                wifiDTO.setSpaceId(existingSpace.getId_space());
+                List<WifiDTO.WifiInfo> wifiInfos = new ArrayList<>();
+    
+                for (Wifi wifiInfo : spaceDTO.getWifis()) {
+                    // Only add new WiFi info if SSID does not exist
+                    if (!existingSSIDs.contains(wifiInfo.getSsid())) {
                         WifiDTO.WifiInfo dtoWifiInfo = new WifiDTO.WifiInfo();
                         dtoWifiInfo.setSsid(wifiInfo.getSsid());
                         dtoWifiInfo.setPassword(wifiInfo.getPassword());
                         wifiInfos.add(dtoWifiInfo);
                     }
+                }
     
+                if (!wifiInfos.isEmpty()) {
                     wifiDTO.setWifis(wifiInfos);
-                    
-                    // Save WiFi information
                     wifiService.saveWifis(wifiDTO);
                 }
             }
@@ -89,7 +97,8 @@ public class SpaceService {
             // You may throw an exception or handle it based on your use case.
             return null;
         }
-    }    
+    }
+    
     public Space addNewSpace(Space space) throws IOException {
 
         return spaceRepository.save(space);

@@ -8,9 +8,12 @@ public class LoginRequest {
 
     private String password;
 
-    public LoginRequest(String username, String password) {
+    private String token;
+
+    public LoginRequest(String username, String password, String token) {
         this.username = username;
         this.password = password;
+        this.token=token;
     }
 
     public String getUsername() {
@@ -19,6 +22,14 @@ public class LoginRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setUToken(String token) {
+        this.token = token;
     }
 
     public String getPassword() {

@@ -25,6 +25,7 @@ public class SignupRequest {
     private  String email ;
     private Set<String> role;
 
+
     public SignupRequest(String username, String name, String lastname, LocalDate birthday, String phone,int percentage,  LocalDate hiring_date, LocalDate contract_end_date, Long salaire, String password, String email, Set<String> role) {
         this.username = username;
         this.name = name;

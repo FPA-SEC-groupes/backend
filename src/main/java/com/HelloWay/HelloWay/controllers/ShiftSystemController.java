@@ -30,30 +30,36 @@ public class ShiftSystemController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public List<ShiftSystem> createShift(@RequestBody ShiftSystemRequestDTO shiftSystemRequest) {
         return shiftSystemService.createShiftSystem(shiftSystemRequest);
     }
 
     @GetMapping("/{shiftId}")
+    @PreAuthorize("hasAnyRole('PROVIDER', 'WAITER')")
     public Optional<ShiftSystem> getShiftById(@PathVariable Long shiftId) {
         return shiftSystemService.getShiftById(shiftId);
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     public List<ShiftSystem> getAllShifts() {
         return shiftSystemService.getAllShifts();
     }
     
     @GetMapping("/waiter/{waiterId}")
+    @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     public List<ShiftSystem> getShiftsByWaiterId(@PathVariable Long waiterId) {
         return shiftSystemService.getShiftsByWaiterId(waiterId);
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public List<ShiftSystem> updateShifts(@RequestBody List<ShiftTimeDTO> shiftUpdateDTOs) {
         return shiftSystemService.updateShiftsByDate(shiftUpdateDTOs);
     }
     @PutMapping("/updateDayOff")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public int updateDayOff(@RequestBody UpdateDayOffRequest request) {
         LocalDate start = LocalDate.parse(request.getStartDate());
         DayOfWeek newDay = DayOfWeek.valueOf(request.getNewDayOff().toUpperCase());
@@ -61,6 +67,7 @@ public class ShiftSystemController {
     }
     
     @DeleteMapping("/{shiftId}")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public void deleteShift(@PathVariable Long shiftId) {
         shiftSystemService.deleteShift(shiftId);
     }

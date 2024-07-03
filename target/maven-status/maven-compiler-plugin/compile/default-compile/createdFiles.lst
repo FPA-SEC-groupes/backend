@@ -1,7 +1,9 @@
+com\HelloWay\HelloWay\services\FCMService.class
 com\HelloWay\HelloWay\repos\SpaceRepository.class
 com\HelloWay\HelloWay\controllers\SessionController.class
 com\HelloWay\HelloWay\entities\DayOfWeek.class
 com\HelloWay\HelloWay\payload\request\WifiDTO.class
+com\HelloWay\HelloWay\services\RestrictionsService.class
 com\HelloWay\HelloWay\entities\EReservation.class
 com\HelloWay\HelloWay\payload\response\SpaceDTO.class
 com\HelloWay\HelloWay\entities\Image.class
@@ -21,6 +23,7 @@ com\HelloWay\HelloWay\entities\Space.class
 com\HelloWay\HelloWay\payload\request\ShiftUpdateDTO.class
 com\HelloWay\HelloWay\services\BoardService.class
 com\HelloWay\HelloWay\controllers\BasketController.class
+com\HelloWay\HelloWay\controllers\RestrictionsController.class
 com\HelloWay\HelloWay\exception\ResourceNotFoundException.class
 com\HelloWay\HelloWay\payload\request\ServerData.class
 com\HelloWay\HelloWay\entities\Promotion.class
@@ -30,10 +33,13 @@ com\HelloWay\HelloWay\controllers\PrimaryMaterialController.class
 com\HelloWay\HelloWay\entities\BasketProductKey.class
 com\HelloWay\HelloWay\controllers\ShiftSystemController.class
 com\HelloWay\HelloWay\controllers\PdfController.class
+com\HelloWay\HelloWay\config\WebSocketConfig.class
+com\HelloWay\HelloWay\repos\RestrictionsRepository.class
 com\HelloWay\HelloWay\entities\Command.class
 com\HelloWay\HelloWay\controllers\NotificationController.class
 com\HelloWay\HelloWay\controllers\QRCodeController.class
 com\HelloWay\HelloWay\services\UserDetailsImpl.class
+com\HelloWay\HelloWay\entities\Restrictions.class
 com\HelloWay\HelloWay\config\MailConfiguration.class
 com\HelloWay\HelloWay\services\CategorieService.class
 com\HelloWay\HelloWay\payload\request\ResetPasswordRequest.class
@@ -53,6 +59,7 @@ com\HelloWay\HelloWay\Security\Jwt\AuthTokenFilter.class
 com\HelloWay\HelloWay\controllers\EmailController.class
 com\HelloWay\HelloWay\controllers\WifiController.class
 com\HelloWay\HelloWay\config\ModelMapperConfig.class
+com\HelloWay\HelloWay\payload\request\ReservationDTO.class
 com\HelloWay\HelloWay\repos\BasketProductRepository.class
 com\HelloWay\HelloWay\controllers\ReservationController.class
 com\HelloWay\HelloWay\repos\ShiftRepository.class
@@ -82,16 +89,20 @@ com\HelloWay\HelloWay\repos\ShiftSystemRepository.class
 com\HelloWay\HelloWay\services\NotificationService.class
 com\HelloWay\HelloWay\Security\Jwt\SessionUtils.class
 com\HelloWay\HelloWay\services\ImageService.class
+com\HelloWay\HelloWay\payload\request\UpdateDayOffRequest.class
+com\HelloWay\HelloWay\config\CommandWebSocketHandler.class
 com\HelloWay\HelloWay\payload\response\QuantitysProduct.class
 com\HelloWay\HelloWay\repos\NotificationRepository.class
 com\HelloWay\HelloWay\entities\EmailDetails.class
 com\HelloWay\HelloWay\services\EventService.class
 com\HelloWay\HelloWay\services\CommandService.class
+com\HelloWay\HelloWay\config\FirebaseConfig.class
 com\HelloWay\HelloWay\Security\Jwt\JwtUtils.class
 com\HelloWay\HelloWay\repos\UserRepository.class
 com\HelloWay\HelloWay\entities\Status.class
 com\HelloWay\HelloWay\repos\WifiRepository.class
 com\HelloWay\HelloWay\services\UserService.class
+com\HelloWay\HelloWay\payload\response\ProductOrderUpdate.class
 com\HelloWay\HelloWay\services\PdfGenerationService.class
 com\HelloWay\HelloWay\services\BasketService.class
 com\HelloWay\HelloWay\DistanceLogic\DistanceCalculator.class
@@ -104,6 +115,7 @@ com\HelloWay\HelloWay\entities\Shift.class
 com\HelloWay\HelloWay\payload\request\WifiDTO$WifiInfo.class
 com\HelloWay\HelloWay\entities\ERole.class
 com\HelloWay\HelloWay\controllers\ZoneController.class
+com\HelloWay\HelloWay\entities\ProductStatus.class
 com\HelloWay\HelloWay\services\ReclamationService.class
 com\HelloWay\HelloWay\entities\Event.class
 com\HelloWay\HelloWay\entities\Role.class
@@ -121,6 +133,7 @@ com\HelloWay\HelloWay\payload\request\LoginRequest.class
 com\HelloWay\HelloWay\payload\request\SpaceCreationDTO.class
 com\HelloWay\HelloWay\controllers\UserController.class
 com\HelloWay\HelloWay\repos\ReclamationRepository.class
+com\HelloWay\HelloWay\payload\request\RestrictionsDTO.class
 com\HelloWay\HelloWay\payload\request\QrCodeAuthenticationRequest.class
 com\HelloWay\HelloWay\services\BasketProductService.class
 com\HelloWay\HelloWay\services\ZoneService.class
