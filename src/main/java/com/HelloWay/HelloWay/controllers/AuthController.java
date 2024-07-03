@@ -146,6 +146,8 @@ public class AuthController {
             throw new RuntimeException("User not found");
         }
         User user = userOptional.get();
+        user.setToken(loginRequest.getToken());
+        userRepository.save(user);
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -170,6 +172,7 @@ public class AuthController {
         responseBody.put("numberOfRestrictions", user.getNumberOfRestrictions());
         responseBody.put("percentage", user.getPercentage()); // You might want to determine this based on your business logic
         responseBody.put("token", user.getToken());
+        responseBody.put("user", user.toString());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(responseBody);
@@ -318,7 +321,7 @@ public class AuthController {
         String password = "Pass"+ idTable +"*"+idZone;
 
 
-        LoginRequest loginRequest = new LoginRequest(userName,password);
+        LoginRequest loginRequest = new LoginRequest(userName,password,"");
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -410,7 +413,7 @@ public class AuthController {
             // Log the generated credentials
             System.out.println("Generated credentials: username=" + userName + ", password=" + password);
     
-            LoginRequest loginRequest = new LoginRequest(userName, password);
+            LoginRequest loginRequest = new LoginRequest(userName, password,"");
             try {
                 Authentication authentication = authenticationManager
                         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));

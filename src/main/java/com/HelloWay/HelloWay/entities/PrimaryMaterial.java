@@ -35,7 +35,6 @@ public class PrimaryMaterial {
     @NotNull
     private double price;
 
-    @NotNull
     private LocalDateTime expirationDate;
 
     @NotNull

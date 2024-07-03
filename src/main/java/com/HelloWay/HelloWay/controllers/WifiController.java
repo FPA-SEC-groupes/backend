@@ -6,6 +6,7 @@ import com.HelloWay.HelloWay.services.WifiService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class WifiController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST')")
     public ResponseEntity<Wifi> getWifiById(@PathVariable Long id) {
         return wifiService.getWifiById(id)
                 .map(ResponseEntity::ok)

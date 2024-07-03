@@ -12,20 +12,34 @@ import java.util.Optional;
 @Service
 public class NotificationService {
     private final NotificationRepository notificationRepository;
-
-    public NotificationService(NotificationRepository notificationRepository) {
+    private final FCMService fcmService;
+    public NotificationService(NotificationRepository notificationRepository, FCMService fcmService) {
         this.notificationRepository = notificationRepository;
+        this.fcmService=fcmService;
     }
 
     public Notification createNotification(String title, String message, User user) {
-        Notification notification = new Notification();
+        try{
+            Notification notification = new Notification();
         notification.setNotificationTitle(title);
         notification.setMessage(message);
         notification.setRecipient(user);
         notification.setSeen(false);
         notification.setCreationDate(LocalDateTime.now());
         notificationRepository.save(notification);
+        fcmService.sendNotification(user.getToken(),title,message);
         return notification;
+        }catch(Exception e){
+            Notification notification = new Notification();
+            notification.setNotificationTitle("error");
+            notification.setMessage(e.getMessage());
+            notification.setRecipient(user);
+            notification.setSeen(false);
+            notification.setCreationDate(LocalDateTime.now());
+            notificationRepository.save(notification);
+            return notification;
+        }
+        
     }
 
     public List<Notification> getNotificationsForRecipient(Long userId) {
