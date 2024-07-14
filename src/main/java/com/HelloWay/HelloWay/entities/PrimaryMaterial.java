@@ -35,7 +35,8 @@ public class PrimaryMaterial {
     @NotNull
     private double price;
 
-    private LocalDateTime expirationDate;
+    // @Column(nullable = true)
+    // private LocalDateTime expirationDate;
 
     @NotNull
     private String supplier;
@@ -54,7 +55,7 @@ public class PrimaryMaterial {
                            String unitOfMeasure,
                            double stockQuantity,
                            double price,
-                           LocalDateTime expirationDate,
+                        //    LocalDateTime expirationDate,
                            String supplier,
                            String supplierNumber,
                            Space space) {
@@ -64,7 +65,7 @@ public class PrimaryMaterial {
         this.unitOfMeasure = unitOfMeasure;
         this.stockQuantity = stockQuantity;
         this.price = price;
-        this.expirationDate = expirationDate;
+        // this.expirationDate = expirationDate;
         this.supplier = supplier;
         this.supplierNumber = supplierNumber;
         this.space = space;
@@ -118,13 +119,13 @@ public class PrimaryMaterial {
         this.price = price;
     }
 
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
+    // public LocalDateTime getExpirationDate() {
+    //     return expirationDate;
+    // }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
-    }
+    // public void setExpirationDate(LocalDateTime expirationDate) {
+    //     this.expirationDate = expirationDate;
+    // }
 
     public String getSupplier() {
         return supplier;
