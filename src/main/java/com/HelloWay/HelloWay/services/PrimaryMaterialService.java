@@ -42,7 +42,7 @@ public class PrimaryMaterialService {
             existingPrimaryMaterial.setUnitOfMeasure(updatedPrimaryMaterial.getUnitOfMeasure());
             existingPrimaryMaterial.setStockQuantity(updatedPrimaryMaterial.getStockQuantity());
             existingPrimaryMaterial.setPrice(updatedPrimaryMaterial.getPrice());
-            existingPrimaryMaterial.setExpirationDate(updatedPrimaryMaterial.getExpirationDate());
+            // existingPrimaryMaterial.setExpirationDate(updatedPrimaryMaterial.getExpirationDate());
             existingPrimaryMaterial.setSupplier(updatedPrimaryMaterial.getSupplier());
             existingPrimaryMaterial.setSupplierNumber(updatedPrimaryMaterial.getSupplierNumber());
             existingPrimaryMaterial.setSpace(updatedPrimaryMaterial.getSpace());
@@ -82,7 +82,7 @@ public class PrimaryMaterialService {
                 existingPrimaryMaterial.setUnitOfMeasure(updatedPrimaryMaterial.getUnitOfMeasure());
                 existingPrimaryMaterial.setStockQuantity(updatedPrimaryMaterial.getStockQuantity());
                 existingPrimaryMaterial.setPrice(updatedPrimaryMaterial.getPrice());
-                existingPrimaryMaterial.setExpirationDate(updatedPrimaryMaterial.getExpirationDate());
+                // existingPrimaryMaterial.setExpirationDate(updatedPrimaryMaterial.getExpirationDate());
                 existingPrimaryMaterial.setSupplier(updatedPrimaryMaterial.getSupplier());
                 existingPrimaryMaterial.setSupplierNumber(updatedPrimaryMaterial.getSupplierNumber());
                 return primaryMaterialRepository.save(existingPrimaryMaterial);
@@ -111,10 +111,10 @@ public class PrimaryMaterialService {
             return primaryMaterialRepository.findExpiredBySpace(space);
         }
 
-    public List<PrimaryMaterial> getExpiredPrimaryMaterialsBySpaceLatestVersion(Space space) {
-        LocalDateTime dateTime = LocalDateTime.now();
-        return primaryMaterialRepository.findExpiredBySpaceAndExpirationDateBefore(space, dateTime);
-    }
+    // public List<PrimaryMaterial> getExpiredPrimaryMaterialsBySpaceLatestVersion(Space space) {
+    //     LocalDateTime dateTime = LocalDateTime.now();
+    //     return primaryMaterialRepository.findExpiredBySpaceAndExpirationDateBefore(space, dateTime);
+    // }
 
     public PrimaryMaterial updatePrimaryMaterialQuantity(Long primaryMaterialId, double quantity) {
         PrimaryMaterial primaryMaterial = getPrimaryMaterialById(primaryMaterialId);

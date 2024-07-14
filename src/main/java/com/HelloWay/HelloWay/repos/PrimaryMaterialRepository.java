@@ -18,6 +18,6 @@ public interface PrimaryMaterialRepository extends JpaRepository<PrimaryMaterial
 
     List<PrimaryMaterial> findExpiredBySpace(Space space);
 
-    List<PrimaryMaterial> findExpiredBySpaceAndExpirationDateBefore(Space space, LocalDateTime expirationDate);
+    // List<PrimaryMaterial> findExpiredBySpaceAndExpirationDateBefore(Space space, LocalDateTime expirationDate);
 
 }

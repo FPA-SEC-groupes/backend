@@ -126,13 +126,13 @@ public class PrimaryMaterialController {
         return ResponseEntity.ok(expiredPrimaryMaterials);
     }
 
-    @GetMapping("/space/{spaceId}/expiration/expired")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
-    public ResponseEntity<List<PrimaryMaterial>> getExpiredPrimaryMaterialsBySpaceIdLatestVersion(@PathVariable("spaceId") Long spaceId) {
-        Space space = spaceService.findSpaceById(spaceId);
-        List<PrimaryMaterial> expiredPrimaryMaterials = primaryMaterialService.getExpiredPrimaryMaterialsBySpaceLatestVersion(space);
-        return ResponseEntity.ok(expiredPrimaryMaterials);
-    }
+    // @GetMapping("/space/{spaceId}/expiration/expired")
+    // @PreAuthorize("hasAnyRole('PROVIDER')")
+    // public ResponseEntity<List<PrimaryMaterial>> getExpiredPrimaryMaterialsBySpaceIdLatestVersion(@PathVariable("spaceId") Long spaceId) {
+    //     Space space = spaceService.findSpaceById(spaceId);
+    //     List<PrimaryMaterial> expiredPrimaryMaterials = primaryMaterialService.getExpiredPrimaryMaterialsBySpaceLatestVersion(space);
+    //     return ResponseEntity.ok(expiredPrimaryMaterials);
+    // }
 
     @PatchMapping("/{primaryMaterialId}/quantity")
     @PreAuthorize("hasAnyRole('PROVIDER')")
