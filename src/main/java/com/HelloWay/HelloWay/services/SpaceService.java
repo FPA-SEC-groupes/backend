@@ -170,7 +170,7 @@ public class SpaceService {
     
         // Save the Space object
         Space space = spaceRepository.save(spaceObject);
-        if(!spaceDTO.getWifis().isEmpty()){
+        if(spaceDTO.getValidation().equals("wifi")){
             WifiDTO wifiDTO = new WifiDTO();
             wifiDTO.setSpaceId(space.getId_space());
         
