@@ -173,6 +173,7 @@ public class AuthController {
         responseBody.put("percentage", user.getPercentage()); // You might want to determine this based on your business logic
         responseBody.put("token", user.getToken());
         responseBody.put("user", user.toString());
+        responseBody.put("space_id", user.getModeratorSpace() != null && user.getModeratorSpace().getId_space() != null ? user.getModeratorSpace().getId_space() : 0);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(responseBody);

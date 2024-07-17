@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.HelloWay.HelloWay.HelloWayTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 50.428 s - in com.HelloWay.HelloWay.HelloWayTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 75.088 s - in com.HelloWay.HelloWay.HelloWayTests
