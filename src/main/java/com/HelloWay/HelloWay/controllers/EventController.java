@@ -8,6 +8,7 @@ import com.HelloWay.HelloWay.services.NotificationService;
 import com.HelloWay.HelloWay.services.ProductService;
 import com.HelloWay.HelloWay.services.SpaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/events")
@@ -42,6 +45,9 @@ public class EventController {
 
     @Autowired
     NotificationService notificationService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -108,18 +114,31 @@ public class EventController {
         List<User> spaceUsers = new ArrayList<>();
         spaceUsers = space.getUsers();
         for (User user : spaceUsers) {
-            String message = String.format("Dear %s,\n\n", user.getName()) +
-                    String.format("We have an exciting promotion at %s!\n\n", space.getTitleSpace()) +
-                    "Promotion Details:\n" +
-                    String.format("- Product: %s\n", product.getProductTitle()) +
-                    String.format("- Discount: %.2f%% off\n\n", promotion.getPercentage()) +
-                    String.format("- Date: %s\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
-                    String.format("- Time: %s - %s\n\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
-                    "We hope to see you there!\n\n" +
-                    "Don't miss out on this amazing deal!\n\n" +
-                    "Best regards,\n" +
-                    space.getTitleSpace() + " Team";
-            notificationService.createNotification("New Promotion Announcement",message, user);
+            Locale userLocale = new Locale(user.getPreferredLanguage());
+            // String message = String.format("Dear %s,\n\n", user.getName()) +
+            //         String.format("We have an exciting promotion at %s!\n\n", space.getTitleSpace()) +
+            //         "Promotion Details:\n" +
+            //         String.format("- Product: %s\n", product.getProductTitle()) +
+            //         String.format("- Discount: %.2f%% off\n\n", promotion.getPercentage()) +
+            //         String.format("- Date: %s\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
+            //         String.format("- Time: %s - %s\n\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
+            //         "We hope to see you there!\n\n" +
+            //         "Don't miss out on this amazing deal!\n\n" +
+            //         "Best regards,\n" +
+            //         space.getTitleSpace() + " Team";
+            String PromotionTitle = messageSource.getMessage("promotionTitle", null, userLocale);
+            String template = messageSource.getMessage("promotion.message", null, userLocale);
+
+            String formattedMessage = MessageFormat.format(template,
+                    user.getName(),
+                    space.getTitleSpace(),
+                    product.getProductTitle(),
+                    promotion.getPercentage(),
+                    promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
+                    promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
+            );
+            notificationService.createNotification(PromotionTitle,formattedMessage, user);
 
         }
 
@@ -162,18 +181,32 @@ public class EventController {
         List<User> spaceUsers = new ArrayList<>();
         spaceUsers = space.getUsers();
         for (User user : spaceUsers) {
-            String message =  String.format("Dear %s,\n\n", user.getName()) +
-                    String.format("You are invited to a party at %s!\n\n", space.getTitleSpace()) +
-                    "Party Details:\n" +
-                    String.format("- Event: %s\n", party.getEventTitle()) +
-                    String.format("- Price: %s\n", party.getPrice()) +
-                    String.format("- Participant Number: %s\n", party.getNbParticipant()) +
-                    String.format("- Date: %s\n", party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
-                    String.format("- Time: %s - %s\n\n", party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
-                    "We hope to see you there!\n\n" +
-                    "Best regards,\n" +
-                    space.getTitleSpace() + " Team";
-            notificationService.createNotification("Party Invitation",message, user);
+            Locale userLocale = new Locale(user.getPreferredLanguage());
+            // String message =  String.format("Dear %s,\n\n", user.getName()) +
+            //         String.format("You are invited to a party at %s!\n\n", space.getTitleSpace()) +
+            //         "Party Details:\n" +
+            //         String.format("- Event: %s\n", party.getEventTitle()) +
+            //         String.format("- Price: %s\n", party.getPrice()) +
+            //         String.format("- Participant Number: %s\n", party.getNbParticipant()) +
+            //         String.format("- Date: %s\n", party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
+            //         String.format("- Time: %s - %s\n\n", party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
+            //         "We hope to see you there!\n\n" +
+            //         "Best regards,\n" +
+            //         space.getTitleSpace() + " Team";
+            String partyTitle = messageSource.getMessage("partyTitle", null, userLocale);
+            String template = messageSource.getMessage("party.invitation", null, userLocale);
+
+            String formattedMessage = MessageFormat.format(template,
+                    user.getName(),
+                    space.getTitleSpace(),
+                    party.getEventTitle(),
+                    party.getPrice(),
+                    party.getNbParticipant(),
+                    party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
+                    party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
+            );
+            notificationService.createNotification(partyTitle,formattedMessage, user);
 
         }
 
@@ -278,12 +311,21 @@ public class EventController {
         promotion.setSpace(existedPromotion.getSpace());
         return eventService.updateEvent(promotion); }
 
-    @PutMapping("/update")
-    @ResponseBody
-    public Event updateEvent(@RequestBody Event event){
-        Event existedEvent = eventService.findEventById(event.getIdEvent());
-        event.setSpace(existedEvent.getSpace());
-        return eventService.updateEvent(event); }
+        @PutMapping("/update")
+        @ResponseBody
+        public ResponseEntity<?> updateEvent(@RequestBody Event event){
+            try {
+                Event existedEvent = eventService.findEventById(event.getIdEvent());
+                if (existedEvent == null) {
+                    return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+                }
+                event.setSpace(existedEvent.getSpace());
+                Event updatedEvent = eventService.updateEvent(event);
+                return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }        
 
     @DeleteMapping("{idImage}/images/{idEvent}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
@@ -301,5 +343,21 @@ public class EventController {
         imageRepository.delete(image);
         return ResponseEntity.ok("image deleted successfully for the event");
     }
-
+    @DeleteMapping("/{idEvent}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
+    public ResponseEntity<?> deleteEvent( @PathVariable Long idEvent){
+        
+        Event event = eventService.findEventById(idEvent);
+        if (event == null){
+            return ResponseEntity.notFound().build();
+        }
+        // Image image = imageRepository.findById(idImage).orElse(null);
+        // if (image == null){
+        //     return ResponseEntity.notFound().build();
+        // }
+        // event.getImages().remove(image);
+        eventService.deleteEvent(idEvent);
+        // imageRepository.delete(image);
+        return ResponseEntity.ok("Event deleted successfully");
+    }
 }

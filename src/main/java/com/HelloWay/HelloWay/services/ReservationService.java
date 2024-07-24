@@ -5,13 +5,16 @@ import com.HelloWay.HelloWay.exception.ResourceNotFoundException;
 import com.HelloWay.HelloWay.payload.request.ReservationDTO;
 import com.HelloWay.HelloWay.repos.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +35,8 @@ public class ReservationService {
     @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    private MessageSource messageSource;
 
 
     public List<Reservation> findAllReservations() {
@@ -90,11 +95,30 @@ public class ReservationService {
         userService.updateUser(user);
 
         // Create in-app notification for users
-        String messageForTheModerator = "A new reservation has been made for your space: " + space.getTitleSpace() + " for  : " + reservation.getStartDate() + "by " + user.getName() + " with email : " +
-                user.getEmail() + " , PhoneNumber : " + user.getPhone();
-        String messageForTheUser = "Hello " + user.getName()+ " your reservation have been submitted successfully , you will be contacted by the Space :   " + space.getTitleSpace()  + " , PhoneNumber : " + space.getPhoneNumber();
-        notificationService.createNotification("Reservation Notification", messageForTheModerator, space.getModerator());
-        notificationService.createNotification("Reservation Notification",messageForTheUser, user);
+        // String messageForTheModerator = "A new reservation has been made for your space: " + space.getTitleSpace() + " for  : " + reservation.getStartDate() + "by " + user.getName() + " with email : " +
+        //         user.getEmail() + " , PhoneNumber : " + user.getPhone();
+        // String messageForTheUser = "Hello " + user.getName()+ " your reservation have been submitted successfully , you will be contacted by the Space :   " + space.getTitleSpace()  + " , PhoneNumber : " + space.getPhoneNumber();
+        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        String moderatorTemplate = messageSource.getMessage("reservation.moderator", null, userLocale);
+        String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
+                space.getTitleSpace(),
+                reservation.getStartDate(),
+                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone()
+        );
+
+        // For the user
+        String userTemplate = messageSource.getMessage("reservation.user", null, userLocale);
+        String formattedUserMessage = MessageFormat.format(userTemplate,
+                user.getName(),
+                space.getTitleSpace(),
+                space.getPhoneNumber()
+        );
+        notificationService.createNotification(reservationTitle, formattedModeratorMessage, space.getModerator());
+        notificationService.createNotification(reservationTitle,formattedUserMessage, user);
 
         return reservationObject;
     }
@@ -159,11 +183,21 @@ public class ReservationService {
         boardService.updateBoard(board);
 
         // Create in-app notification for users
-        String messageForTheModerator = "A new reservation has been made for your space: " + space.getTitleSpace() + " for  : " + reservation.getStartDate() + "by " + user.getName() + " with email : " +
-                user.getEmail() + " , PhoneNumber : " + user.getPhone();
-        String messageForTheUser = "Hello" + user.getName()+ " your reservation have been submitted successfully , you will be contacted by the Space :   " + space.getTitleSpace()  + " , PhoneNumber : " + space.getPhoneNumber();
-        notificationService.createNotification("Reservation Notification", messageForTheModerator, space.getModerator());
-        notificationService.createNotification("Reservation Notification",messageForTheUser, user);
+        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        Locale moderatorLocale = new Locale(space.getModerator().getPreferredLanguage());
+        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        String moderatorTemplate = messageSource.getMessage("reservation.moderator1", null, moderatorLocale);
+        String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
+                space.getTitleSpace(),
+                reservation.getStartDate(),
+                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone()
+        );
+        String userTemplate = messageSource.getMessage("reservation.user1", null, userLocale);
+        notificationService.createNotification(reservationTitle, formattedModeratorMessage, space.getModerator());
+        notificationService.createNotification(reservationTitle,userTemplate, user);
 
 
         return reservationObject;

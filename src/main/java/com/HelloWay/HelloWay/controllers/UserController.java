@@ -76,42 +76,54 @@ public class UserController {
              }
          }
         return ResponseEntity.ok().body( userService.updateUser(user)); }
-
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER')")
     @ResponseBody
     public void supp_user(@PathVariable("id") long id){
         userService.deleteUser(id); }
+    @PutMapping("/disable/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER')")
+    @ResponseBody
+    public void disableUser(@PathVariable("id") long id){
+        userService.disableUser(id); 
+    }
 
-        @PostMapping("/{sid}/add-image")
-        public ResponseEntity<?> addImage(@PathVariable Long sid, @RequestParam("image") MultipartFile multipartFile) {
-            try {
-                User user = userService.findUserById(sid);
-                if (user == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-                }
-        
-                if (!multipartFile.isEmpty()) {
-                    LocalDateTime currentDateTime = LocalDateTime.now();
-                    String orgFileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-                    String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
-                    String uploadDir = "photos/user/";
-                    String fileName = multipartFile.getOriginalFilename() + "_" + currentDateTime.toString().replace(":", "-") + ext;
-        
-                    Image img = new Image(multipartFile, fileName, ext);
-                    Image image = imageService.addImageLa(img);
-                    user.setImage(image);
-                    userService.updateUser(user);
-        
-                    FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
-                    return ResponseEntity.ok("Image uploaded successfully");
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Multipart file is empty");
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
+    @PutMapping("/chnagelang/{id}/{lang}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER', 'USER', 'WAITER')")
+    @ResponseBody
+    public void disableUser(@PathVariable("id") long id,@PathVariable("lang") String lang){
+        userService.ChangeLang(id,lang); 
+    }
+
+    @PostMapping("/{sid}/add-image")
+    public ResponseEntity<?> addImage(@PathVariable Long sid, @RequestParam("image") MultipartFile multipartFile) {
+        try {
+            User user = userService.findUserById(sid);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
+    
+            if (!multipartFile.isEmpty()) {
+                LocalDateTime currentDateTime = LocalDateTime.now();
+                String orgFileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+                String ext = orgFileName.substring(orgFileName.lastIndexOf("."));
+                String uploadDir = "photos/user/";
+                String fileName = multipartFile.getOriginalFilename() + "_" + currentDateTime.toString().replace(":", "-") + ext;
+    
+                Image img = new Image(multipartFile, fileName, ext);
+                Image image = imageService.addImageLa(img);
+                user.setImage(image);
+                userService.updateUser(user);
+    
+                FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+                return ResponseEntity.ok("Image uploaded successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Multipart file is empty");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
         }
+    }
         
 
 

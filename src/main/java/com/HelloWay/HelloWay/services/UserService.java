@@ -65,6 +65,32 @@ public class UserService implements UserDetailsService {
             return null;
         }
     }
+    public User disableUser(Long id) {
+        User existingUser = userRepo.findById(id).orElse(null);
+        if (existingUser != null) {
+            // Copy the properties from the updatedUser to the existingUser
+            existingUser.setActivated(false);
+            userRepo.save(existingUser);
+            return existingUser;
+        } else {
+            // Handle the case where the user doesn't exist in the database
+            // You may throw an exception or handle it based on your use case.
+            return null;
+        }
+    }
+    public User ChangeLang(Long id,String lang) {
+        User existingUser = userRepo.findById(id).orElse(null);
+        if (existingUser != null) {
+            // Copy the properties from the updatedUser to the existingUser
+            existingUser.setPreferredLanguage(lang);
+            userRepo.save(existingUser);
+            return existingUser;
+        } else {
+            // Handle the case where the user doesn't exist in the database
+            // You may throw an exception or handle it based on your use case.
+            return null;
+        }
+    }
     public User findUserById(Long id) {
         return userRepo.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User by id " + id + " was not found"));

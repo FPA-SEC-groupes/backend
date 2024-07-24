@@ -5,6 +5,8 @@ import com.HelloWay.HelloWay.entities.*;
 import com.HelloWay.HelloWay.payload.response.Command_NumTableDTO;
 import com.HelloWay.HelloWay.services.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,13 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/commands")
 public class CommandController {
+     @Autowired
+    private MessageSource messageSource;
     private final CommandService commandService;
     private final UserService userService;
 
@@ -60,11 +65,16 @@ public class CommandController {
                 basketProductService.updateBasketProduct(basketProduct);            
         }
         commandService.acceptCommand(commandId);
-
-        String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
+        Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
+        Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
+        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
+        // String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
+        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
+        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
 
         return ResponseEntity.ok("Command accepted");
 
@@ -78,11 +88,16 @@ public class CommandController {
                 basketProductService.updateBasketProduct(basketProduct);
             }
             commandService.acceptCommand(commandId);
-    
-            String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-            String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
-            notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-            notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
+            Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
+            Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
+            String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+            String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+            String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+            String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
+            // String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
+            // String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
+            notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
+            notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
     
             return ResponseEntity.ok("Command accepted");
      
@@ -98,11 +113,16 @@ public class CommandController {
             return ResponseEntity.badRequest().body("command not found with this id : " + commandId);
         }
         commandService.refuseCommand(commandId);
-
-        String messageForTheServer = "You have refused the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Sorry your command have been refused , if you like you ask for the raison by the server , you are welcome ";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
+        Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
+        Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
+        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        String messageForTheServer = messageSource.getMessage("ntCommandeRefused", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = messageSource.getMessage("ntClientCommandeRefused", null, userLocale);
+        // String messageForTheServer = "You have refused the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = "Sorry your command have been refused , if you like you ask for the raison by the server , you are welcome ";
+        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
+        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
 
         return ResponseEntity.ok("Command refused");
     }
@@ -123,11 +143,16 @@ public class CommandController {
         Basket basket = new Basket();
         basket.setBoard(board);
         basketService.addNewBasket(basket);
-
-        String messageForTheServer = "Payment received for command  passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Thank you for your payment ";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification",messageForTheUser, command.getUser());
+        Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
+        Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
+        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        String messageForTheServer = messageSource.getMessage("ntCommandePayd", null, ServerLocale)  + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = messageSource.getMessage("ntClientCommandePayd", null, userLocale);
+        // String messageForTheServer = "Payment received for command  passed by the table number : " + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = "Thank you for your payment ";
+        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
+        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
 
 
         return ResponseEntity.ok("Command payed");
