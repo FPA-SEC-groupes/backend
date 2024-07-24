@@ -17,7 +17,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.socket.TextMessage;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
 import static com.HelloWay.HelloWay.entities.Status.UPDATED;
 
 import java.util.ArrayList;
@@ -27,7 +35,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/baskets")
 public class BasketController {
-
+    @Autowired
+    private MessageSource messageSource;
     private final BasketService basketService;
     private final ProductService productService;
     private final BasketProductService basketProductService;
@@ -73,10 +82,19 @@ public class BasketController {
         if(command1!=null){
             command1.setStatus(UPDATED);
             commandService.updateCommand(command1);
-            String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
-            String messageForTheUser = "Your command has been updated successfully";
-            notificationService.createNotification("Command Notification", messageForTheServer, command1.getServer());
-            notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
+            Locale userLocale = new Locale(command1.getServer().getPreferredLanguage());
+            Locale ServerLocale = new Locale(command1.getServer().getPreferredLanguage());
+            String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+            String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+            // String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
+            // String messageForTheUser = "Your command has been updated successfully";
+            // notificationService.createNotification("Command Notification", messageForTheServer, command1.getServer());
+            // notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
+            String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + command1.getBasket().getBoard().getNumTable();
+            String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
+
+            notificationService.createNotification(CommandeTitle, messageForTheServer, command1.getServer());
+            notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command1.getUser());
             commandWebSocketHandler.sendMessageToAll(new TextMessage("update  command effect: " + command1.getIdCommand()));
             return ResponseEntity.ok(command1);
         }
@@ -86,11 +104,16 @@ public class BasketController {
         commandService.setServerForCommand(command.getIdCommand(), server);
         command.setUser(user);
         commandService.updateCommand(command);
-
-        String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = "Your command has been placed successfully";
-        notificationService.createNotification("Command Notification", messageForTheServer, command.getServer());
-        notificationService.createNotification("Command Notification", messageForTheUser, command.getUser());
+        Locale userLocale = new Locale(command1.getServer().getPreferredLanguage());
+        Locale ServerLocale = new Locale(command1.getServer().getPreferredLanguage());
+        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        String messageForTheServer = messageSource.getMessage("ntCommandeNew", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+        String messageForTheUser = messageSource.getMessage("ntClientComandeNew", null, userLocale);
+        // String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = "Your command has been placed successfully";
+        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
+        notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command.getUser());
 
         commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
         return ResponseEntity.ok(command);
@@ -184,10 +207,16 @@ public class BasketController {
                     User user =command.getUser();
                     Board board = basket.getBoard();
                     User server = board.getZone().getServer();
-                    String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
-                    String messageForTheUser = "Your command has been updated by manager successfully";
-                    notificationService.createNotification("Command Notification", messageForTheServer, server);
-                    notificationService.createNotification("Command Notification", messageForTheUser, user);
+                    Locale userLocale = new Locale(user.getPreferredLanguage());
+                    Locale ServerLocale = new Locale(server.getPreferredLanguage());
+                    String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+                    String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+                    String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + basket.getBoard().getNumTable();
+                    String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
+                    // String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
+                    // String messageForTheUser = "Your command has been updated by manager successfully";
+                    notificationService.createNotification(CommandeTitle, messageForTheServer, server);
+                    notificationService.createNotification(ClientCommandeTitle, messageForTheUser, user);
                 }
             }
             return ResponseEntity.ok().body(productQuantities);
@@ -219,10 +248,16 @@ public class BasketController {
                 User user =command.getUser();
                 Board board = basket.getBoard();
                 User server = board.getZone().getServer();
-                String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
-                String messageForTheUser = "Your command has been updated by manager successfully";
-                notificationService.createNotification("Command Notification", messageForTheServer, server);
-                notificationService.createNotification("Command Notification", messageForTheUser, user);
+                Locale userLocale = new Locale(user.getPreferredLanguage());
+                Locale ServerLocale = new Locale(server.getPreferredLanguage());
+                String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+                String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+                String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + basket.getBoard().getNumTable();
+                String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
+                // String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
+                // String messageForTheUser = "Your command has been updated by manager successfully";
+                notificationService.createNotification(CommandeTitle, messageForTheServer, server);
+                notificationService.createNotification(ClientCommandeTitle, messageForTheUser, user);
             }
         }
         return ResponseEntity.ok().body("product deleted with success");

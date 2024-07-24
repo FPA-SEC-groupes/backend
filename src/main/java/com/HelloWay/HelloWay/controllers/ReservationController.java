@@ -7,6 +7,7 @@ import com.HelloWay.HelloWay.payload.request.ReservationDTO;
 import com.HelloWay.HelloWay.services.NotificationService;
 import com.HelloWay.HelloWay.services.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -30,7 +33,8 @@ public class ReservationController {
         this.reservationService = reservationService;
         this.notificationService = notificationService;
     }
-
+     @Autowired
+    private MessageSource messageSource;
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<Reservation>> getAllReservations() {
@@ -163,19 +167,40 @@ public class ReservationController {
 
         // Create in-app notification for users, ensuring we have at least one board to reference
         if (!reservation.getBoards().isEmpty()) {
-            String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
-                                    " your reservation has been confirmed, To: " + 
-                                    reservation.getStartDate() + ", for your: " + 
-                                    reservation.getEventTitle() + ", with board number: " + 
-                                    reservation.getBoards().get(0).getNumTable();
-            notificationService.createNotification("Reservation Notification", messageForTheUser, reservation.getUser());
+            // String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
+            //                         " your reservation has been confirmed, To: " + 
+            //                         reservation.getStartDate() + ", for your: " + 
+            //                         reservation.getEventTitle() + ", with board number: " + 
+            //                         reservation.getBoards().get(0).getNumTable();
+            Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+            String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+            String template = messageSource.getMessage("reservation.confirmation", null,userLocale);
+
+            String formattedMessage = MessageFormat.format(template,
+                    reservation.getUser().getName(),
+                    reservation.getStartDate(),
+                    reservation.getEventTitle(),
+                    reservation.getBoards().get(0).getNumTable()
+            );  
+            notificationService.createNotification(reservationTitle, formattedMessage, reservation.getUser());
         } else {
             // Optionally handle the case where no boards are linked to the reservation
-            String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
-                                    " your reservation has been confirmed, To: " + 
-                                    reservation.getStartDate() + ", for your: " + 
-                                    reservation.getEventTitle();
-            notificationService.createNotification("Reservation Notification", messageForTheUser, reservation.getUser());
+            // String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
+            //                         " your reservation has been confirmed, To: " + 
+            //                         reservation.getStartDate() + ", for your: " + 
+            //                         reservation.getEventTitle();
+            Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+            String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+
+            String template = messageSource.getMessage("reservation.confirmation", null, userLocale);
+
+            String formattedMessage = MessageFormat.format(template,
+                    reservation.getUser().getName(),
+                    reservation.getStartDate(),
+                    // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+                    reservation.getEventTitle()
+            );
+            notificationService.createNotification(reservationTitle, formattedMessage, reservation.getUser());
         }
 
         return ResponseEntity.ok(updatedReservation);
@@ -195,11 +220,19 @@ public class ReservationController {
         reservation.setStatus(EReservation.REFUSED);
 
         Reservation updatedReservation = reservationService.updateReservation(reservation);
-
+        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
         // Create in-app notification for users
 
-        String messageForTheUser = "Sorry " + reservation.getUser().getName()+ " your reservation have been Refused  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle();
-        notificationService.createNotification("Reservation Notification",messageForTheUser, reservation.getUser());
+        // String messageForTheUser = "Sorry " + reservation.getUser().getName()+ " your reservation have been Refused  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle();
+        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        String template = messageSource.getMessage("reservation.refused", null, userLocale);
+        String formattedMessage = MessageFormat.format(template,
+                reservation.getUser().getName(),
+                reservation.getStartDate(),
+                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                reservation.getEventTitle()
+        );
+        notificationService.createNotification(reservationTitle,formattedMessage, reservation.getUser());
 
         return ResponseEntity.ok(updatedReservation);
     }
@@ -219,8 +252,18 @@ public class ReservationController {
 
         // Create in-app notification for users
 
-        String messageForTheUser = "HI " + reservation.getUser().getName()+ " your reservation have been Canceled  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle() ;
-        notificationService.createNotification("Reservation Notification",messageForTheUser, reservation.getUser());
+        // String messageForTheUser = "HI " + reservation.getUser().getName()+ " your reservation have been Canceled  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle() ;
+        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        String template = messageSource.getMessage("reservation.canceled", null, userLocale);
+
+        String formattedMessage = MessageFormat.format(template,
+                reservation.getUser().getName(),
+                reservation.getStartDate(),
+                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                reservation.getEventTitle()
+        );
+        notificationService.createNotification(reservationTitle,formattedMessage, reservation.getUser());
 
 
         Reservation updatedReservation = reservationService.updateReservation(reservation);

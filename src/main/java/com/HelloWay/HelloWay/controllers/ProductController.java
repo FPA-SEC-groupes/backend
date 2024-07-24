@@ -100,7 +100,7 @@ public class ProductController {
 
         // Update product properties
         existingProduct.setProductTitle(product.getProductTitle());
-        existingProduct.setPrice((float) (existingProduct.getPrice() * (1 + percentage / 100.0)));
+        existingProduct.setPrice((float) (product.getPrice() * (1 + percentage / 100.0)));
         existingProduct.setDescription(product.getDescription());
         existingProduct.setAvailable(product.getAvailable());
 

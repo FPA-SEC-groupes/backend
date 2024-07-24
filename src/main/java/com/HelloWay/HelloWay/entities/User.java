@@ -84,6 +84,8 @@ public  class User implements Serializable {
     @Column(name = "number_of_restrictions", nullable = false, columnDefinition = "int default 0")
     private int numberOfRestrictions = 0;
     
+    private String preferredLanguage;
+    
     public List<Command> getServer_commands() {
         return server_commands;
     }
