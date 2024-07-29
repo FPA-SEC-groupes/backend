@@ -115,30 +115,27 @@ public class EventController {
         spaceUsers = space.getUsers();
         for (User user : spaceUsers) {
             Locale userLocale = new Locale(user.getPreferredLanguage());
-            // String message = String.format("Dear %s,\n\n", user.getName()) +
-            //         String.format("We have an exciting promotion at %s!\n\n", space.getTitleSpace()) +
-            //         "Promotion Details:\n" +
-            //         String.format("- Product: %s\n", product.getProductTitle()) +
-            //         String.format("- Discount: %.2f%% off\n\n", promotion.getPercentage()) +
-            //         String.format("- Date: %s\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
-            //         String.format("- Time: %s - %s\n\n", promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
-            //         "We hope to see you there!\n\n" +
-            //         "Don't miss out on this amazing deal!\n\n" +
-            //         "Best regards,\n" +
-            //         space.getTitleSpace() + " Team";
-            String PromotionTitle = messageSource.getMessage("promotionTitle", null, userLocale);
-            String template = messageSource.getMessage("promotion.message", null, userLocale);
-
-            String formattedMessage = MessageFormat.format(template,
-                    user.getName(),
-                    space.getTitleSpace(),
-                    product.getProductTitle(),
-                    promotion.getPercentage(),
-                    promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
-                    promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
-            );
-            notificationService.createNotification(PromotionTitle,formattedMessage, user);
+            // String PromotionTitle = messageSource.getMessage("promotionTitle", null, userLocale);
+            // String template = messageSource.getMessage("promotion.message", null, userLocale);
+            List<String>parames= new ArrayList<>();
+            List<String> paramesClient = new ArrayList<>();
+            parames.add(0,String.valueOf(user.getName()));
+            parames.add(1,String.valueOf(space.getTitleSpace()));
+            parames.add(2,String.valueOf(product.getProductTitle()));
+            parames.add(3,String.valueOf(promotion.getPercentage()));
+            parames.add(4,String.valueOf(promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            parames.add(5,String.valueOf(promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+            parames.add(6,String.valueOf(promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+            // String formattedMessage = MessageFormat.format(template,
+            //         user.getName(),
+            //         space.getTitleSpace(),
+            //         product.getProductTitle(),
+            //         promotion.getPercentage(),
+            //         promotion.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            //         promotion.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
+            //         promotion.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
+            // );
+            notificationService.createNotification("promotionTitle","promotion.message",parames, user);
 
         }
 
@@ -195,18 +192,26 @@ public class EventController {
             //         space.getTitleSpace() + " Team";
             String partyTitle = messageSource.getMessage("partyTitle", null, userLocale);
             String template = messageSource.getMessage("party.invitation", null, userLocale);
-
-            String formattedMessage = MessageFormat.format(template,
-                    user.getName(),
-                    space.getTitleSpace(),
-                    party.getEventTitle(),
-                    party.getPrice(),
-                    party.getNbParticipant(),
-                    party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                    party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
-                    party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
-            );
-            notificationService.createNotification(partyTitle,formattedMessage, user);
+            List<String>parames= new ArrayList<>();
+            parames.add(0,String.valueOf(user.getName()));
+            parames.add(1,String.valueOf(space.getTitleSpace()));
+            parames.add(2,String.valueOf(party.getEventTitle()));
+            parames.add(3,String.valueOf(party.getPrice()));
+            parames.add(4,String.valueOf(party.getNbParticipant()));
+            parames.add(5,String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            parames.add(6,String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+            parames.add(7,String.valueOf(party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+            // String formattedMessage = MessageFormat.format(template,
+            //         user.getName(),
+            //         space.getTitleSpace(),
+            //         party.getEventTitle(),
+            //         party.getPrice(),
+            //         party.getNbParticipant(),
+            //         party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+            //         party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
+            //         party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
+            // );
+            notificationService.createNotification("partyTitle","party.invitation",parames, user);
 
         }
 

@@ -98,27 +98,38 @@ public class ReservationService {
         // String messageForTheModerator = "A new reservation has been made for your space: " + space.getTitleSpace() + " for  : " + reservation.getStartDate() + "by " + user.getName() + " with email : " +
         //         user.getEmail() + " , PhoneNumber : " + user.getPhone();
         // String messageForTheUser = "Hello " + user.getName()+ " your reservation have been submitted successfully , you will be contacted by the Space :   " + space.getTitleSpace()  + " , PhoneNumber : " + space.getPhoneNumber();
-        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-        String moderatorTemplate = messageSource.getMessage("reservation.moderator", null, userLocale);
-        String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
-                space.getTitleSpace(),
-                reservation.getStartDate(),
-                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone()
-        );
+        // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        // String moderatorTemplate = messageSource.getMessage("reservation.moderator", null, userLocale);
+        // String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
+        //         space.getTitleSpace(),
+        //         reservation.getStartDate(),
+        //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        //         user.getName(),
+        //         user.getEmail(),
+        //         user.getPhone()
+        // );
 
-        // For the user
-        String userTemplate = messageSource.getMessage("reservation.user", null, userLocale);
-        String formattedUserMessage = MessageFormat.format(userTemplate,
-                user.getName(),
-                space.getTitleSpace(),
-                space.getPhoneNumber()
-        );
-        notificationService.createNotification(reservationTitle, formattedModeratorMessage, space.getModerator());
-        notificationService.createNotification(reservationTitle,formattedUserMessage, user);
+        // // For the user
+        // String userTemplate = messageSource.getMessage("reservation.user", null, userLocale);
+        List<String>parames= new ArrayList<>();
+        parames.add(0,String.valueOf(space.getTitleSpace()));
+        parames.add(1,String.valueOf(reservation.getStartDate() ));
+        parames.add(2,String.valueOf(user.getUsername()));
+        parames.add(3,String.valueOf(user.getEmail()));
+        parames.add(4,String.valueOf(user.getPhone()));
+        List<String>paramesClient= new ArrayList<>();
+        paramesClient.add(0,String.valueOf(user.getUsername()));
+        paramesClient.add(1,String.valueOf(space.getTitleSpace()));
+        paramesClient.add(2,String.valueOf(space.getPhoneNumber()));
+        
+        // String formattedUserMessage = MessageFormat.format(userTemplate,
+        //         user.getName(),
+        //         space.getTitleSpace(),
+        //         space.getPhoneNumber()
+        // );
+        notificationService.createNotification("reservationTitle", "reservation.moderator",parames, space.getModerator());
+        notificationService.createNotification("reservationTitle","reservation.user",paramesClient, user);
 
         return reservationObject;
     }
@@ -183,21 +194,28 @@ public class ReservationService {
         boardService.updateBoard(board);
 
         // Create in-app notification for users
-        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-        Locale moderatorLocale = new Locale(space.getModerator().getPreferredLanguage());
-        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-        String moderatorTemplate = messageSource.getMessage("reservation.moderator1", null, moderatorLocale);
-        String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
-                space.getTitleSpace(),
-                reservation.getStartDate(),
-                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                user.getName(),
-                user.getEmail(),
-                user.getPhone()
-        );
-        String userTemplate = messageSource.getMessage("reservation.user1", null, userLocale);
-        notificationService.createNotification(reservationTitle, formattedModeratorMessage, space.getModerator());
-        notificationService.createNotification(reservationTitle,userTemplate, user);
+        // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        // Locale moderatorLocale = new Locale(space.getModerator().getPreferredLanguage());
+        // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        // String moderatorTemplate = messageSource.getMessage("reservation.moderator1", null, moderatorLocale);
+        List<String>parames= new ArrayList<>();
+        List<String>paramesClient= new ArrayList<>();
+        parames.add(0,String.valueOf(space.getTitleSpace()));
+        parames.add(1,String.valueOf(reservation.getStartDate()));
+        parames.add(2,String.valueOf(user.getName()));
+        parames.add(3,String.valueOf(user.getEmail()));
+        parames.add(3,String.valueOf(user.getPhone()));
+        // String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
+        //         space.getTitleSpace(),
+        //         reservation.getStartDate(),
+        //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        //         user.getName(),
+        //         user.getEmail(),
+        //         user.getPhone()
+        // );
+        // String userTemplate = messageSource.getMessage("reservation.user1", null, userLocale);
+        notificationService.createNotification("reservationTitle", "reservation.moderator1",parames, space.getModerator());
+        notificationService.createNotification("reservationTitle","reservation.user1",paramesClient, user);
 
 
         return reservationObject;

@@ -67,14 +67,15 @@ public class CommandController {
         commandService.acceptCommand(commandId);
         Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
         Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
-        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-        String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
-        // String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        // String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
-        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
-        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
+        // String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        // String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        // String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
+        List<String>parames= new ArrayList<>();
+        List<String> paramesClient = new ArrayList<>();
+        parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
+        notificationService.createNotification("ntCommandeTitle", "ntCommandeConfermed",parames, command.getServer());
+        notificationService.createNotification("ntCommandeTitle","ntClientCommandeConfermed",paramesClient, command.getUser());
 
         return ResponseEntity.ok("Command accepted");
 
@@ -90,14 +91,15 @@ public class CommandController {
             commandService.acceptCommand(commandId);
             Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
             Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
-            String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-            String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-            String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
-            String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
-            // String messageForTheServer = "You have confirmed the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-            // String messageForTheUser = "Hello your command have been confirmed you are welcome if you like you can add new products";
-            notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
-            notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
+            // String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+            // String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+            // String messageForTheServer = messageSource.getMessage("ntCommandeConfermed", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+            // String messageForTheUser = messageSource.getMessage("ntClientCommandeConfermed", null, userLocale);
+            List<String>parames= new ArrayList<>();
+            List<String> paramesClient = new ArrayList<>();
+            parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
+            notificationService.createNotification("ntCommandeTitle", "ntCommandeConfermed",parames, command.getServer());
+            notificationService.createNotification("ntCommandeTitle","ntClientCommandeConfermed",paramesClient, command.getUser());
     
             return ResponseEntity.ok("Command accepted");
      
@@ -119,10 +121,11 @@ public class CommandController {
         String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
         String messageForTheServer = messageSource.getMessage("ntCommandeRefused", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
         String messageForTheUser = messageSource.getMessage("ntClientCommandeRefused", null, userLocale);
-        // String messageForTheServer = "You have refused the command passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        // String messageForTheUser = "Sorry your command have been refused , if you like you ask for the raison by the server , you are welcome ";
-        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
-        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
+        List<String>parames= new ArrayList<>();
+        List<String> paramesClient = new ArrayList<>();
+        parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
+        notificationService.createNotification("ntCommandeTitle", "ntCommandeRefused",parames, command.getServer());
+        notificationService.createNotification("ntCommandeTitle","ntClientCommandeRefused",paramesClient, command.getUser());
 
         return ResponseEntity.ok("Command refused");
     }
@@ -145,14 +148,15 @@ public class CommandController {
         basketService.addNewBasket(basket);
         Locale userLocale = new Locale(command.getUser().getPreferredLanguage());
         Locale ServerLocale = new Locale(command.getServer().getPreferredLanguage());
-        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-        String messageForTheServer = messageSource.getMessage("ntCommandePayd", null, ServerLocale)  + command.getBasket().getBoard().getNumTable();
-        String messageForTheUser = messageSource.getMessage("ntClientCommandePayd", null, userLocale);
-        // String messageForTheServer = "Payment received for command  passed by the table number : " + command.getBasket().getBoard().getNumTable();
-        // String messageForTheUser = "Thank you for your payment ";
-        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
-        notificationService.createNotification(ClientCommandeTitle,messageForTheUser, command.getUser());
+        // String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+        // String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+        // String messageForTheServer = messageSource.getMessage("ntCommandePayd", null, ServerLocale)  + command.getBasket().getBoard().getNumTable();
+        // String messageForTheUser = messageSource.getMessage("ntClientCommandePayd", null, userLocale);
+        List<String>parames= new ArrayList<>();
+        List<String> paramesClient = new ArrayList<>();
+        parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
+        notificationService.createNotification("ntCommandeTitle", "ntCommandePayd",parames, command.getServer());
+        notificationService.createNotification("ntCommandeTitle","ntClientCommandePayd", paramesClient,command.getUser());
 
 
         return ResponseEntity.ok("Command payed");

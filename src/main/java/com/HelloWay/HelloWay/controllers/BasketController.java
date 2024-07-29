@@ -92,9 +92,13 @@ public class BasketController {
             // notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
             String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + command1.getBasket().getBoard().getNumTable();
             String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
-
-            notificationService.createNotification(CommandeTitle, messageForTheServer, command1.getServer());
-            notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command1.getUser());
+            List<String>parames= new ArrayList<>();
+            List<String> paramesClient = new ArrayList<>();
+            parames.add(0,String.valueOf(command1.getBasket().getBoard().getNumTable()));
+            // notificationService.createNotification(CommandeTitle, messageForTheServer, command1.getServer());
+            // notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command1.getUser());
+            notificationService.createNotification("ntCommandeTitle", "ntComandeUpdate", parames, command1.getServer());
+            notificationService.createNotification("ntCommandeTitle", "ntClientCommandeUpdate",paramesClient, command1.getUser());
             commandWebSocketHandler.sendMessageToAll(new TextMessage("update  command effect: " + command1.getIdCommand()));
             return ResponseEntity.ok(command1);
         }
@@ -110,11 +114,11 @@ public class BasketController {
         String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
         String messageForTheServer = messageSource.getMessage("ntCommandeNew", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
         String messageForTheUser = messageSource.getMessage("ntClientComandeNew", null, userLocale);
-        // String messageForTheServer = "New command placed by the table number: " + command.getBasket().getBoard().getNumTable();
-        // String messageForTheUser = "Your command has been placed successfully";
-        notificationService.createNotification(CommandeTitle, messageForTheServer, command.getServer());
-        notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command.getUser());
-
+        List<String>parames= new ArrayList<>();
+        List<String> paramesClient = new ArrayList<>();
+        parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
+        notificationService.createNotification("ntCommandeTitle", "ntCommandeNew",parames, command1.getServer());
+        notificationService.createNotification("ntCommandeTitle", "ntClientComandeNew",paramesClient, command1.getUser());
         commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
         return ResponseEntity.ok(command);
     }
@@ -209,14 +213,15 @@ public class BasketController {
                     User server = board.getZone().getServer();
                     Locale userLocale = new Locale(user.getPreferredLanguage());
                     Locale ServerLocale = new Locale(server.getPreferredLanguage());
-                    String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-                    String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-                    String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + basket.getBoard().getNumTable();
-                    String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
-                    // String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
-                    // String messageForTheUser = "Your command has been updated by manager successfully";
-                    notificationService.createNotification(CommandeTitle, messageForTheServer, server);
-                    notificationService.createNotification(ClientCommandeTitle, messageForTheUser, user);
+                    // String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
+                    // String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+                    // String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + basket.getBoard().getNumTable();
+                    // String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
+                    List<String>parames= new ArrayList<>();
+                    List<String> paramesClient = new ArrayList<>();
+                    parames.add(0,String.valueOf(basket.getBoard().getNumTable()));
+                    notificationService.createNotification("ntCommandeTitle", "ntComandeUpdate",parames, server);
+                    notificationService.createNotification("ntCommandeTitle", "ntClientCommandeUpdate",paramesClient, user);
                 }
             }
             return ResponseEntity.ok().body(productQuantities);
@@ -256,8 +261,11 @@ public class BasketController {
                 String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
                 // String messageForTheServer = "Commande updated: " + basket.getBoard().getNumTable();
                 // String messageForTheUser = "Your command has been updated by manager successfully";
-                notificationService.createNotification(CommandeTitle, messageForTheServer, server);
-                notificationService.createNotification(ClientCommandeTitle, messageForTheUser, user);
+                List<String>parames= new ArrayList<>();
+                List<String> paramesClient = new ArrayList<>();
+                parames.add(0,String.valueOf(basket.getBoard().getNumTable()));
+                notificationService.createNotification("ntCommandeTitle", "ntComandeUpdate",parames, server);
+                notificationService.createNotification("ntCommandeTitle", "ntClientCommandeUpdate",paramesClient, user);
             }
         }
         return ResponseEntity.ok().body("product deleted with success");
