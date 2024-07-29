@@ -5,7 +5,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Data
 @Entity
 @Table(name = "notifications")
 @Setter
@@ -24,6 +26,13 @@ public class Notification {
     private String message;
 
     private boolean seen;
+
+    private String notificationTitleKey;
+
+    private String messageKey;
+
+    @ElementCollection
+    private List<String> messageParameters;
 
     private LocalDateTime creationDate;
 

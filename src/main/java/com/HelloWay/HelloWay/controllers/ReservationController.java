@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -172,35 +173,42 @@ public class ReservationController {
             //                         reservation.getStartDate() + ", for your: " + 
             //                         reservation.getEventTitle() + ", with board number: " + 
             //                         reservation.getBoards().get(0).getNumTable();
-            Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-            String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-            String template = messageSource.getMessage("reservation.confirmation", null,userLocale);
-
-            String formattedMessage = MessageFormat.format(template,
-                    reservation.getUser().getName(),
-                    reservation.getStartDate(),
-                    reservation.getEventTitle(),
-                    reservation.getBoards().get(0).getNumTable()
-            );  
-            notificationService.createNotification(reservationTitle, formattedMessage, reservation.getUser());
+            // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+            // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+            // String template = messageSource.getMessage("reservation.confirmation", null,userLocale);
+            List<String>parames= new ArrayList<>();
+            parames.add(0,String.valueOf(reservation.getUser().getUsername()));
+            parames.add(1,String.valueOf(reservation.getStartDate()));
+            parames.add(2,String.valueOf(reservation.getEventTitle()));
+            parames.add(3,String.valueOf(reservation.getBoards().get(0).getNumTable()));
+            // String formattedMessage = MessageFormat.format(template,
+            //         reservation.getUser().getName(),
+            //         reservation.getStartDate(),
+            //         reservation.getEventTitle(),
+            //         reservation.getBoards().get(0).getNumTable()
+            // );  
+            notificationService.createNotification("reservationTitle", "reservation.confirmation",parames, reservation.getUser());
         } else {
             // Optionally handle the case where no boards are linked to the reservation
             // String messageForTheUser = "Congratulations " + reservation.getUser().getName() + 
             //                         " your reservation has been confirmed, To: " + 
             //                         reservation.getStartDate() + ", for your: " + 
             //                         reservation.getEventTitle();
-            Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-            String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+            // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+            // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
 
-            String template = messageSource.getMessage("reservation.confirmation", null, userLocale);
-
-            String formattedMessage = MessageFormat.format(template,
-                    reservation.getUser().getName(),
-                    reservation.getStartDate(),
-                    // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-                    reservation.getEventTitle()
-            );
-            notificationService.createNotification(reservationTitle, formattedMessage, reservation.getUser());
+            // String template = messageSource.getMessage("reservation.confirmation", null, userLocale);
+            List<String>parames= new ArrayList<>();
+            parames.add(0,String.valueOf(reservation.getUser().getUsername()));
+            parames.add(1,String.valueOf(reservation.getStartDate()));
+            parames.add(2,String.valueOf(reservation.getEventTitle()));
+            // String formattedMessage = MessageFormat.format(template,
+            //         reservation.getUser().getName(),
+            //         reservation.getStartDate(),
+            //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+            //         reservation.getEventTitle()
+            // );
+            notificationService.createNotification("reservationTitle", "reservation.confirmation",parames, reservation.getUser());
         }
 
         return ResponseEntity.ok(updatedReservation);
@@ -224,15 +232,19 @@ public class ReservationController {
         // Create in-app notification for users
 
         // String messageForTheUser = "Sorry " + reservation.getUser().getName()+ " your reservation have been Refused  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle();
-        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-        String template = messageSource.getMessage("reservation.refused", null, userLocale);
-        String formattedMessage = MessageFormat.format(template,
-                reservation.getUser().getName(),
-                reservation.getStartDate(),
-                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                reservation.getEventTitle()
-        );
-        notificationService.createNotification(reservationTitle,formattedMessage, reservation.getUser());
+        // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        // String template = messageSource.getMessage("reservation.refused", null, userLocale);
+        List<String>parames= new ArrayList<>();
+        parames.add(0,String.valueOf(reservation.getUser().getUsername()));
+        parames.add(1,String.valueOf(reservation.getStartDate()));
+        parames.add(2,String.valueOf(reservation.getEventTitle()));
+        // String formattedMessage = MessageFormat.format(template,
+        //         reservation.getUser().getName(),
+        //         reservation.getStartDate(),
+        //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        //         reservation.getEventTitle()
+        // );
+        notificationService.createNotification("reservationTitle","reservation.refused",parames, reservation.getUser());
 
         return ResponseEntity.ok(updatedReservation);
     }
@@ -253,17 +265,20 @@ public class ReservationController {
         // Create in-app notification for users
 
         // String messageForTheUser = "HI " + reservation.getUser().getName()+ " your reservation have been Canceled  , To  :   " + reservation.getStartDate()  + " , for your : " + reservation.getEventTitle() ;
-        Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-        String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-        String template = messageSource.getMessage("reservation.canceled", null, userLocale);
-
-        String formattedMessage = MessageFormat.format(template,
-                reservation.getUser().getName(),
-                reservation.getStartDate(),
-                // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                reservation.getEventTitle()
-        );
-        notificationService.createNotification(reservationTitle,formattedMessage, reservation.getUser());
+        // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
+        // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
+        // String template = messageSource.getMessage("reservation.canceled", null, userLocale);
+        List<String>parames= new ArrayList<>();
+        parames.add(0,String.valueOf(reservation.getUser().getUsername()));
+        parames.add(1,String.valueOf(reservation.getStartDate()));
+        parames.add(2,String.valueOf(reservation.getEventTitle()));
+        // String formattedMessage = MessageFormat.format(template,
+        //         reservation.getUser().getName(),
+        //         reservation.getStartDate(),
+        //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        //         reservation.getEventTitle()
+        // );
+        notificationService.createNotification("reservationTitle","reservation.canceled",parames, reservation.getUser());
 
 
         Reservation updatedReservation = reservationService.updateReservation(reservation);
