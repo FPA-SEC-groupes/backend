@@ -2,6 +2,7 @@ package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
+import com.HelloWay.HelloWay.repos.EventRepository;
 import com.HelloWay.HelloWay.repos.ImageRepository;
 import com.HelloWay.HelloWay.services.EventService;
 import com.HelloWay.HelloWay.services.NotificationService;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/events")
@@ -33,6 +35,9 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    EventRepository eventRepository ;
 
     @Autowired
     private SpaceService spaceService;
@@ -49,6 +54,10 @@ public class EventController {
     @Autowired
     private MessageSource messageSource;
 
+    private boolean isSameDay(LocalDateTime dateTime1, LocalDateTime dateTime2) {
+        return dateTime1.toLocalDate().equals(dateTime2.toLocalDate());
+    }
+    
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
     public List<Event> getAllEvents() {
@@ -150,7 +159,7 @@ public class EventController {
 
     @PostMapping("/party/space/{spaceId}")
     @PreAuthorize("hasAnyRole('PROVIDER')")
-    public ResponseEntity<Party> createParty(@PathVariable Long spaceId, @RequestBody Party party) {
+    public ResponseEntity<?> createParty(@PathVariable Long spaceId, @RequestBody Party party) {
         // Retrieve the space
         Space space = spaceService.findSpaceById(spaceId);
 
@@ -167,7 +176,15 @@ public class EventController {
         // Set the space for the party
         party.setSpace(space);
 
-        
+        List<Party> existingParties = eventRepository.findByEventTitle(party.getEventTitle());
+
+        for (Party party3 : existingParties) {
+            Space space2 = party3.getSpace();
+            if (space2.getId_space().equals(spaceId) && isSameDay(party3.getStartDate(), party.getStartDate())) {
+                return ResponseEntity.ok("event existe");
+            }
+        }
+
         // Save the party
         Party createdParty = eventService.createParty(party);
 
@@ -175,49 +192,31 @@ public class EventController {
         space.getEvents().add(party);
         spaceService.updateSpace(space);
 
-        List<User> spaceUsers = new ArrayList<>();
-        spaceUsers = space.getUsers();
+        // Notify users
+        List<User> spaceUsers = space.getUsers();
         for (User user : spaceUsers) {
             Locale userLocale = new Locale(user.getPreferredLanguage());
-            // String message =  String.format("Dear %s,\n\n", user.getName()) +
-            //         String.format("You are invited to a party at %s!\n\n", space.getTitleSpace()) +
-            //         "Party Details:\n" +
-            //         String.format("- Event: %s\n", party.getEventTitle()) +
-            //         String.format("- Price: %s\n", party.getPrice()) +
-            //         String.format("- Participant Number: %s\n", party.getNbParticipant()) +
-            //         String.format("- Date: %s\n", party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) +
-            //         String.format("- Time: %s - %s\n\n", party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")), party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))) +
-            //         "We hope to see you there!\n\n" +
-            //         "Best regards,\n" +
-            //         space.getTitleSpace() + " Team";
+
             String partyTitle = messageSource.getMessage("partyTitle", null, userLocale);
             String template = messageSource.getMessage("party.invitation", null, userLocale);
-            List<String>parames= new ArrayList<>();
-            parames.add(0,String.valueOf(user.getName()));
-            parames.add(1,String.valueOf(space.getTitleSpace()));
-            parames.add(2,String.valueOf(party.getEventTitle()));
-            parames.add(3,String.valueOf(party.getPrice()));
-            parames.add(4,String.valueOf(party.getNbParticipant()));
-            parames.add(5,String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
-            parames.add(6,String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
-            parames.add(7,String.valueOf(party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
-            // String formattedMessage = MessageFormat.format(template,
-            //         user.getName(),
-            //         space.getTitleSpace(),
-            //         party.getEventTitle(),
-            //         party.getPrice(),
-            //         party.getNbParticipant(),
-            //         party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-            //         party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm")),
-            //         party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))
-            // );
-            notificationService.createNotification("partyTitle","party.invitation",parames, user);
 
+            List<String> parames = new ArrayList<>();
+            parames.add(String.valueOf(user.getName()));
+            parames.add(String.valueOf(space.getTitleSpace()));
+            parames.add(String.valueOf(party.getEventTitle()));
+            parames.add(String.valueOf(party.getPrice()));
+            parames.add(String.valueOf(party.getNbParticipant()));
+            parames.add(String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            parames.add(String.valueOf(party.getStartDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+            parames.add(String.valueOf(party.getEndDate().format(DateTimeFormatter.ofPattern("HH:mm"))));
+
+            notificationService.createNotification("partyTitle", "party.invitation", parames, user);
         }
 
         party.setNbParticipant(party.getNbParticipant() - 1);
         return ResponseEntity.ok(createdParty);
     }
+
 
 
 
