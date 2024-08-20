@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -29,5 +30,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.startDate > :currentDate ORDER BY e.startDate ASC")
     List<Event> findUpcomingEvents(@Param("currentDate") LocalDate currentDate, Pageable pageable);
+
+    @Query("SELECT p FROM Party p WHERE p.eventTitle = :partyEventTitle")
+    List<Party> findByEventTitle(@Param("partyEventTitle") String partyEventTitle);
+
 
 }
