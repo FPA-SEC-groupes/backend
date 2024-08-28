@@ -78,48 +78,60 @@ public class BasketController {
         if (server == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
+
         Command command1 = commandService.findCommandByBasketId(basketId);
-        if(command1!=null){
+        if (command1 != null) {
             command1.setStatus(UPDATED);
             commandService.updateCommand(command1);
-            Locale userLocale = new Locale(command1.getServer().getPreferredLanguage());
-            Locale ServerLocale = new Locale(command1.getServer().getPreferredLanguage());
-            String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-            String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-            // String messageForTheServer = "update command placed by the table number: " + command1.getBasket().getBoard().getNumTable();
-            // String messageForTheUser = "Your command has been updated successfully";
-            // notificationService.createNotification("Command Notification", messageForTheServer, command1.getServer());
-            // notificationService.createNotification("Command Notification", messageForTheUser, command1.getUser());
-            String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, ServerLocale) + command1.getBasket().getBoard().getNumTable();
-            String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
-            List<String>parames= new ArrayList<>();
-            List<String> paramesClient = new ArrayList<>();
-            parames.add(0,String.valueOf(command1.getBasket().getBoard().getNumTable()));
-            // notificationService.createNotification(CommandeTitle, messageForTheServer, command1.getServer());
-            // notificationService.createNotification(ClientCommandeTitle, messageForTheUser, command1.getUser());
-            notificationService.createNotification("ntCommandeTitle", "ntComandeUpdate", parames, command1.getServer());
-            notificationService.createNotification("ntCommandeTitle", "ntClientCommandeUpdate",paramesClient, command1.getUser());
-            commandWebSocketHandler.sendMessageToAll(new TextMessage("update  command effect: " + command1.getIdCommand()));
+
+            if (command1.getServer() != null) {
+                Locale userLocale = new Locale(command1.getServer().getPreferredLanguage());
+                Locale serverLocale = new Locale(command1.getServer().getPreferredLanguage());
+
+                String commandeTitle = messageSource.getMessage("ntCommandeTitle", null, serverLocale);
+                String clientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+
+                String messageForTheServer = messageSource.getMessage("ntComandeUpdate", null, serverLocale) 
+                    + command1.getBasket().getBoard().getNumTable();
+                String messageForTheUser = messageSource.getMessage("ntClientCommandeUpdate", null, userLocale);
+
+                List<String> parames = new ArrayList<>();
+                List<String> paramesClient = new ArrayList<>();
+                parames.add(String.valueOf(command1.getBasket().getBoard().getNumTable()));
+
+                notificationService.createNotification("ntCommandeTitle", "ntCommandeNew", parames, command1.getServer());
+                notificationService.createNotification("ntCommandeTitle", "ntClientComandeNew", paramesClient, command1.getUser());
+                commandWebSocketHandler.sendMessageToAll(new TextMessage("Update command effect: " + command1.getIdCommand()));
+            }
+
             return ResponseEntity.ok(command1);
         }
-            
+
+        // If no existing command is found, create a new one
         Command command = commandService.createCommand(new Command());
         basketService.assignCommandToBasket(basketId, command);
         commandService.setServerForCommand(command.getIdCommand(), server);
         command.setUser(user);
         commandService.updateCommand(command);
-        Locale userLocale = new Locale(command1.getServer().getPreferredLanguage());
-        Locale ServerLocale = new Locale(command1.getServer().getPreferredLanguage());
-        String CommandeTitle = messageSource.getMessage("ntCommandeTitle", null, ServerLocale);
-        String ClientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
-        String messageForTheServer = messageSource.getMessage("ntCommandeNew", null, ServerLocale) + command.getBasket().getBoard().getNumTable();
+
+        Locale userLocale = new Locale(server.getPreferredLanguage());
+        Locale serverLocale = new Locale(server.getPreferredLanguage());
+
+        String commandeTitle = messageSource.getMessage("ntCommandeTitle", null, serverLocale);
+        String clientCommandeTitle = messageSource.getMessage("ntCommandeTitle", null, userLocale);
+
+        String messageForTheServer = messageSource.getMessage("ntCommandeNew", null, serverLocale) 
+            + command.getBasket().getBoard().getNumTable();
         String messageForTheUser = messageSource.getMessage("ntClientComandeNew", null, userLocale);
-        List<String>parames= new ArrayList<>();
+
+        List<String> parames = new ArrayList<>();
         List<String> paramesClient = new ArrayList<>();
-        parames.add(0,String.valueOf(command.getBasket().getBoard().getNumTable()));
-        notificationService.createNotification("ntCommandeTitle", "ntCommandeNew",parames, command1.getServer());
-        notificationService.createNotification("ntCommandeTitle", "ntClientComandeNew",paramesClient, command1.getUser());
+        parames.add(String.valueOf(command.getBasket().getBoard().getNumTable()));
+
+        notificationService.createNotification("ntCommandeTitle", "ntCommandeNew", parames, command.getServer());
+        notificationService.createNotification("ntCommandeTitle", "ntClientComandeNew", paramesClient, command.getUser());
         commandWebSocketHandler.sendMessageToAll(new TextMessage("New command created: " + command.getIdCommand()));
+
         return ResponseEntity.ok(command);
     }
 

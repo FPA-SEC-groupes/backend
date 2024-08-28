@@ -19,12 +19,14 @@ com\HelloWay\HelloWay\entities\Zone.class
 com\HelloWay\HelloWay\payload\response\QrCodeAuthenticationResponse.class
 com\HelloWay\HelloWay\entities\ShiftSystem.class
 com\HelloWay\HelloWay\controllers\ProductController.class
+com\HelloWay\HelloWay\services\DemandeService.class
 com\HelloWay\HelloWay\entities\Reservation.class
 com\HelloWay\HelloWay\entities\Product.class
 com\HelloWay\HelloWay\entities\Space.class
 com\HelloWay\HelloWay\payload\request\ShiftUpdateDTO.class
 com\HelloWay\HelloWay\services\BoardService.class
 com\HelloWay\HelloWay\controllers\BasketController.class
+com\HelloWay\HelloWay\repos\DemandeRepository.class
 com\HelloWay\HelloWay\controllers\RestrictionsController.class
 com\HelloWay\HelloWay\exception\ResourceNotFoundException.class
 com\HelloWay\HelloWay\payload\request\ServerData.class
@@ -43,6 +45,7 @@ com\HelloWay\HelloWay\controllers\QRCodeController.class
 com\HelloWay\HelloWay\services\UserDetailsImpl.class
 com\HelloWay\HelloWay\entities\Restrictions.class
 com\HelloWay\HelloWay\config\MailConfiguration.class
+com\HelloWay\HelloWay\controllers\DemandeController.class
 com\HelloWay\HelloWay\services\CategorieService.class
 com\HelloWay\HelloWay\payload\request\ResetPasswordRequest.class
 com\HelloWay\HelloWay\HelloWay.class
@@ -81,6 +84,7 @@ com\HelloWay\HelloWay\entities\SpaceCategorie.class
 com\HelloWay\HelloWay\Security\Jwt\CustomSessionRegistry.class
 com\HelloWay\HelloWay\config\QRCodeGenerator.class
 com\HelloWay\HelloWay\controllers\CommandController.class
+com\HelloWay\HelloWay\entities\Demande.class
 com\HelloWay\HelloWay\payload\response\ProductQuantity.class
 com\HelloWay\HelloWay\controllers\CategorieController.class
 com\HelloWay\HelloWay\payload\response\Command_NumTableDTO.class
