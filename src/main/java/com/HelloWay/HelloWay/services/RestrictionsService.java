@@ -60,15 +60,26 @@ public class RestrictionsService {
     
         // Save the restriction
         Restrictions savedRestriction = restrictionsRepository.save(restriction);
-        String subject = "Obtenir une nouvelle restriction";
-        String message = "Bonjour de HelloWay,\n\n"
-                + "Vous avez reçu une nouvelle restriction. Détails:\n"
-                + "Description: " + restrictionsDTO.getDescription() + "\n"
-                + "Reservation ID: " + restrictionsDTO.getReservationId() + "\n\n"
-                + "Votre nombre actuel de restrictions : " + user.getNumberOfRestrictions() + "\n\n"
-                + "If you did not request this restriction, please contact us immediately.\n\n"
-                + "Cordialement,\n"
-                + "L'équipe HelloWay";
+        String subject = "Notification de nouvelle restriction sur votre compte Snapwaiter";
+
+        String message = "Bonjour,\n\n"
+                        + "Nous vous informons qu'une nouvelle restriction a été appliquée à votre compte Snapwaiter. Vous trouverez les détails ci-dessous :\n\n"
+                        + "Description : " + restrictionsDTO.getDescription() + "\n"
+                        + "ID de réservation : " + restrictionsDTO.getReservationId() + "\n\n"
+                        + "Nombre actuel de restrictions sur votre compte : " + user.getNumberOfRestrictions() + "\n\n"
+                        + "Si vous n'êtes pas à l'origine de cette restriction ou si vous souhaitez contester cette décision, veuillez nous contacter immédiatement à l'adresse suivante : contact.Helloway@gmail.com.\n\n"
+                        + "Merci de votre compréhension.\n\n"
+                        + "Cordialement,\n"
+                        + "L'équipe HelloWay";
+        // String subject = "Obtenir une nouvelle restriction";
+        // String message = "Bonjour de HelloWay,\n\n"
+        //         + "Vous avez reçu une nouvelle restriction. Détails:\n"
+        //         + "Description: " + restrictionsDTO.getDescription() + "\n"
+        //         + "Reservation ID: " + restrictionsDTO.getReservationId() + "\n\n"
+        //         + "Votre nombre actuel de restrictions : " + user.getNumberOfRestrictions() + "\n\n"
+        //         + "If you did not request this restriction, please contact us immediately.\n\n"
+        //         + "Cordialement,\n"
+        //         + "L'équipe HelloWay";
         EmailDetails details = new EmailDetails(user.getEmail(), message, subject);
         emailService.sendSimpleMail(details);    
         return savedRestriction;

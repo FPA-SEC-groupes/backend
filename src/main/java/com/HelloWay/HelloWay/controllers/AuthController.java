@@ -17,6 +17,7 @@ import com.HelloWay.HelloWay.repos.BoardRepository;
 import com.HelloWay.HelloWay.repos.RoleRepository;
 import com.HelloWay.HelloWay.repos.SpaceRepository;
 import com.HelloWay.HelloWay.repos.UserRepository;
+import com.HelloWay.HelloWay.services.DemandeService;
 import com.HelloWay.HelloWay.services.EmailService;
 import com.HelloWay.HelloWay.services.SpaceService;
 import com.HelloWay.HelloWay.services.UserDetailsImpl;
@@ -92,6 +93,9 @@ public class AuthController {
 
     @Autowired
     private WifiService wifiService;
+
+    @Autowired
+    private DemandeService demandeService;
 
     @Autowired
     private BoardRepository boardRepository;
@@ -516,13 +520,16 @@ public class AuthController {
     }
 
     private void sendNewPasswordEmail(String email, String newPassword) {
-        String subject = "Password Reset";
-        String message = "Hello from HelloWay,\n\n"
-                + "You have requested to reset your password. Please use the following password to connect your account :\n"
-                + newPassword + "\n\n"
-                + "If you didn't request this password reset, you can ignore this email.\n\n"
-                + "Best regards,\n"
-                + "HelloWay Team";
+        String subject = "Réinitialisation de votre mot de passe SnapWaiter";
+        String message = "Bonjour,\n\n" + "Nous avons bien reçu une demande de réinitialisation du mot de passe pour votre compte SnapWaiter. Veuillez utiliser le mot de passe temporaire suivant pour vous connecter :\n\n" + newPassword + "\n\n" + "Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet e-mail ou contacter immédiatement notre service client.\n\n" + "Nous vous remercions de votre vigilance.\n\n" + "Cordialement,\n" + "L'équipe  SnapWaiter  ";  
+
+        // String subject = "Password Reset";
+        // String message = "Hello from HelloWay,\n\n"
+        //         + "You have requested to reset your password. Please use the following password to connect your account :\n"
+        //         + newPassword + "\n\n"
+        //         + "If you didn't request this password reset, you can ignore this email.\n\n"
+        //         + "Best regards,\n"
+        //         + "HelloWay Team";
         EmailDetails details = new EmailDetails(email, message, subject);
         emailService.sendSimpleMail(details);
     }
@@ -564,6 +571,12 @@ public class AuthController {
     @GetMapping("/space/{spaceId}")
     public List<Wifi> getWifisBySpaceId(@PathVariable Long spaceId) {
         return wifiService.getWifisBySpaceId(spaceId);
+    }
+
+    @PostMapping("/demande")
+    public ResponseEntity<Demande> createDemande(@RequestBody Demande demande) {
+        Demande savedDemande = demandeService.save(demande);
+        return ResponseEntity.ok(savedDemande);
     }
 }
 
