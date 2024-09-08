@@ -4,6 +4,7 @@ import com.HelloWay.HelloWay.entities.Demande;
 import com.HelloWay.HelloWay.services.DemandeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class DemandeController {
     private DemandeService demandeService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<Demande>> getAllDemandes() {
         List<Demande> demandes = demandeService.findAll();
         return ResponseEntity.ok(demandes);
