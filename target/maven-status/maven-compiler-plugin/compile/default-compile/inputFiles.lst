@@ -62,6 +62,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\EReservation.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\BoardController.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\controllers\EventController.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\exception\RestrictionNotFoundException.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\response\SpaceDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\Security\Jwt\CustomSessionRegistry.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\ReclamationStatus.java

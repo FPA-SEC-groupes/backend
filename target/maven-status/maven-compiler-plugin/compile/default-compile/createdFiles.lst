@@ -126,6 +126,7 @@ com\HelloWay\HelloWay\payload\request\WifiDTO$WifiInfo.class
 com\HelloWay\HelloWay\entities\ERole.class
 com\HelloWay\HelloWay\controllers\ZoneController.class
 com\HelloWay\HelloWay\entities\ProductStatus.class
+com\HelloWay\HelloWay\exception\RestrictionNotFoundException.class
 com\HelloWay\HelloWay\services\ReclamationService.class
 com\HelloWay\HelloWay\config\AppConfig.class
 com\HelloWay\HelloWay\entities\Event.class
