@@ -37,30 +37,34 @@ public class DistanceCalculator {
      * @param space : Space
      * @return Boolean to say if the user in the space or not
      */
-    public static  Boolean isTheUserInTheSpaCe(String userLatitude,
-                                               String userLongitude,
-                                               double accuracy,
-                                               Space space
-                                               ){
+        public static Boolean isTheUserInTheSpaCe(String userLatitude,
+                                            String userLongitude,
+                                            double accuracy,
+                                            Space space) {
+        // Retrieve space's latitude and longitude
         String spaceLatitude = space.getLatitude();
         String spaceLongitude = space.getLongitude();
-        // By calculating the threshold based on the space's surface area,
-        // the proximity criteria will be adjusted dynamically according to the size of the space.
-        // Larger spaces will have larger thresholds,
-        // allowing users to be considered near the space even if they are farther away.
-        // Smaller spaces will have smaller thresholds,
-        // requiring users to be closer to be considered near the space.
-         double cast = space.getSurfaceEnM2()/Math.pow(10,6); //from m2 to km2 for the Rayon
-        double threshold = sqrt(cast/Math.PI) + accuracy;
-        // double threshold = 5.0; // Threshold distance in kilometers
-        double distance = 1000 * calculateDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude), Double.parseDouble(spaceLatitude), Double.parseDouble(spaceLongitude));
-        if (distance <= threshold) {
+
+        // Calculate the threshold based on the space's surface area in m²
+        double radiusInKm = Math.sqrt(space.getSurfaceEnM2() / Math.PI) / 1000.0; // Convert to kilometers
+        double threshold = radiusInKm + accuracy; // Add accuracy (in kilometers) to the threshold
+
+        // Calculate the distance between the user's location and the space's center
+        double distanceInKm = calculateDistance(
+            Double.parseDouble(userLatitude),
+            Double.parseDouble(userLongitude),
+            Double.parseDouble(spaceLatitude),
+            Double.parseDouble(spaceLongitude)
+        );
+
+        // Check if the user is within the threshold
+        if (distanceInKm <= threshold) {
             System.out.println("User is near the space.");
             return true;
-        }
-        else {
+        } else {
             System.out.println("User is not near the space.");
-            return false ;
+            return false;
         }
     }
+
 }
