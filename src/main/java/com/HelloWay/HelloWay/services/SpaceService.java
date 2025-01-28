@@ -89,7 +89,7 @@ public class SpaceService {
                     wifiService.saveWifis(wifiDTO);
                 }
             }
-    
+            existingSpace.setValidation(spaceDTO.getValidation());
             spaceRepository.save(existingSpace);
             return existingSpace;
         } else {

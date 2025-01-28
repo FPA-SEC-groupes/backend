@@ -1,6 +1,7 @@
 package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.entities.Restrictions;
+import com.HelloWay.HelloWay.exception.RestrictionNotFoundException;
 import com.HelloWay.HelloWay.payload.request.RestrictionsDTO;
 import com.HelloWay.HelloWay.services.RestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,23 @@ public class RestrictionsController {
         int numberOfRestrictions = restrictionsService.getNumberOfRestrictionsByUserId(userId);
         return new ResponseEntity<>(numberOfRestrictions, HttpStatus.OK);
     }
+
     @GetMapping("/restrictions/{reservationId}")
-    public Restrictions findByReservationId(@PathVariable Long reservationId) {
-        return restrictionsService.findByReservationId(reservationId);
+    public ResponseEntity<?> findByReservationId(@PathVariable Long reservationId) {
+        
+        ResponseEntity<?> restriction = restrictionsService.findByReservationId(reservationId);
+
+        // If restriction exists, return it with 200 OK status
+        if (restriction != null) {
+            return ResponseEntity.ok(restriction);  // Return the restriction with 200 OK status
+        } else {
+            // If no restriction is found, return a custom message with 200 OK status
+            return ResponseEntity.ok("No restriction found for reservation ID: " + reservationId);
+        }
     }
+
+
+
+
+
 }

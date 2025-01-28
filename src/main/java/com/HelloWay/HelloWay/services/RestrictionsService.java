@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.HelloWay.HelloWay.entities.Restrictions;
 import com.HelloWay.HelloWay.entities.EmailDetails;
 import com.HelloWay.HelloWay.entities.Reservation;
 import com.HelloWay.HelloWay.entities.User;
+import com.HelloWay.HelloWay.exception.RestrictionNotFoundException;
 import com.HelloWay.HelloWay.payload.request.RestrictionsDTO;
 import com.HelloWay.HelloWay.repos.RestrictionsRepository;
 import com.HelloWay.HelloWay.repos.ReservationRepository;
@@ -85,9 +88,21 @@ public class RestrictionsService {
         return savedRestriction;
     }
         
-    public Restrictions findByReservationId(Long reservationId) {
-        return restrictionsRepository.findByReservationId(reservationId);
+    public ResponseEntity<?> findByReservationId(Long reservationId) {
+    Restrictions restriction = restrictionsRepository.findByReservationId(reservationId);
+
+    // If restriction exists, return it; otherwise, return a custom message.
+    if (restriction != null) {
+        return new ResponseEntity<>(restriction, HttpStatus.OK); // Return the restriction with 200 OK
+    } else {
+        // Return a default message or object if no restriction is found
+        return new ResponseEntity<>("No restriction found for reservation ID: " + reservationId, HttpStatus.OK);
     }
+}
+
+    
+    
+    
 
     public Restrictions updateRestrictions(Long id, RestrictionsDTO restrictionsDTO) {
         Optional<Restrictions> existingRestrictions = restrictionsRepository.findById(id);

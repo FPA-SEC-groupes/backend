@@ -375,90 +375,176 @@ public class AuthController {
         String idZone = splitArray[splitArray.length - 1];
     
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
-    
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
-            String userName = "Board" + idTable;
-            String password = "Pass" + idTable + "*" + idZone;
-    
-            // Check if user exists, if not create one
-            Optional<User> existingUser = userRepository.findByUsername(userName);
-            if (existingUser.isEmpty()) {
-                // Create new user
-                User newUser = new User(
-                        userName,
-                        null, // Assuming other fields are not required for this user
-                        space.getId_space().toString(),
-                        null,
-                        null,
-                        0,
-                        null,
-                        encoder.encode(password));
-                newUser.setActivated(true);
-    
-                // Log the role retrieval attempt
-                System.out.println("Retrieving ROLE_GUEST from the database");
-
-
-                Set<Role> roles = new HashSet<>();
-
-                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
-                roles.add(userRole);
+                if(space.getValidation().equals("gps")){
+                    if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
+                        String userName = "Board" + idTable;
+                        String password = "Pass" + idTable + "*" + idZone;
                 
-                // Assign ROLE_GUEST to the new user
-                Role guestRole = roleRepository.findByName(ROLE_GUEST)
-                                .orElseThrow(() -> new RuntimeException("Error: Role GUEST is not found."));
-                roles.add(guestRole);
+                        // Check if user exists, if not create one
+                        Optional<User> existingUser = userRepository.findByUsername(userName);
+                        if (existingUser.isEmpty()) {
+                            // Create new user
+                            User newUser = new User(
+                                    userName,
+                                    null, // Assuming other fields are not required for this user
+                                    space.getId_space().toString(),
+                                    null,
+                                    null,
+                                    0,
+                                    null,
+                                    encoder.encode(password));
+                            newUser.setActivated(true);
                 
-                newUser.setRoles(roles);
+                            // Log the role retrieval attempt
+                            System.out.println("Retrieving ROLE_GUEST from the database");
+            
+            
+                            Set<Role> roles = new HashSet<>();
+            
+                            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                        .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+                            roles.add(userRole);
+                            
+                            // Assign ROLE_GUEST to the new user
+                            Role guestRole = roleRepository.findByName(ROLE_GUEST)
+                                            .orElseThrow(() -> new RuntimeException("Error: Role GUEST is not found."));
+                            roles.add(guestRole);
+                            
+                            newUser.setRoles(roles);
+                            
+                            userRepository.save(newUser);
+                        }
                 
-                userRepository.save(newUser);
+                        // Log the generated credentials
+                        System.out.println("Generated credentials: username=" + userName + ", password=" + password);
+                
+                        LoginRequest loginRequest = new LoginRequest(userName, password,"");
+                        try {
+                            Authentication authentication = authenticationManager
+                                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                
+                            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+                
+                            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+                
+                            List<String> roles = userDetails.getAuthorities().stream()
+                                    .map(item -> item.getAuthority())
+                                    .collect(Collectors.toList());
+                
+                            Value value = new Value(idTable, roles.get(0));
+                            customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+                            HttpSession session = request.getSession();
+                            sessionUtils.addSession(session);
+                            customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+                            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+                            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                            .body(new UserInfoResponse(userDetails.getId(),
+                                    userDetails.getName(),
+                                    userDetails.getLastname(),
+                                    userDetails.getBirthday(),
+                                    userDetails.getPhone(),
+                                    userDetails.getUsername(),
+                                    userDetails.getEmail(),
+                                    roles,
+                                    sessionId));
+                        } catch (Exception e) {
+                            // Log the exception for debugging
+                            System.err.println("Authentication failed: " + e.getMessage());
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
+                        }
+                    } else {
+                        return ResponseEntity.ok().body(false);
+                    }
+                }
+                else if(space.getValidation().equals("wifi")){
+                        String userName = "Board" + idTable;
+                        String password = "Pass" + idTable + "*" + idZone;
+                
+                        // Check if user exists, if not create one
+                        Optional<User> existingUser = userRepository.findByUsername(userName);
+                        if (existingUser.isEmpty()) {
+                            // Create new user
+                            User newUser = new User(
+                                    userName,
+                                    null, // Assuming other fields are not required for this user
+                                    space.getId_space().toString(),
+                                    null,
+                                    null,
+                                    0,
+                                    null,
+                                    encoder.encode(password));
+                            newUser.setActivated(true);
+                
+                            // Log the role retrieval attempt
+                            System.out.println("Retrieving ROLE_GUEST from the database");
+            
+            
+                            Set<Role> roles = new HashSet<>();
+            
+                            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                        .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+                            roles.add(userRole);
+                            
+                            // Assign ROLE_GUEST to the new user
+                            Role guestRole = roleRepository.findByName(ROLE_GUEST)
+                                            .orElseThrow(() -> new RuntimeException("Error: Role GUEST is not found."));
+                            roles.add(guestRole);
+                            
+                            newUser.setRoles(roles);
+                            
+                            userRepository.save(newUser);
+                        }
+                
+                        // Log the generated credentials
+                        System.out.println("Generated credentials: username=" + userName + ", password=" + password);
+                
+                        LoginRequest loginRequest = new LoginRequest(userName, password,"");
+                        try {
+                            Authentication authentication = authenticationManager
+                                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                
+                            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+                
+                            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+                
+                            List<String> roles = userDetails.getAuthorities().stream()
+                                    .map(item -> item.getAuthority())
+                                    .collect(Collectors.toList());
+                
+                            Value value = new Value(idTable, roles.get(0));
+                            customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+                            HttpSession session = request.getSession();
+                            sessionUtils.addSession(session);
+                            customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+                            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+                            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                            .body(new UserInfoResponse(userDetails.getId(),
+                                    userDetails.getName(),
+                                    userDetails.getLastname(),
+                                    userDetails.getBirthday(),
+                                    userDetails.getPhone(),
+                                    userDetails.getUsername(),
+                                    userDetails.getEmail(),
+                                    roles,
+                                    sessionId));
+                        } catch (Exception e) {
+                            // Log the exception for debugging
+                            System.err.println("Authentication failed: " + e.getMessage());
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
+                        }
+                }
+                else{
+                    System.err.println("Authentication failed:");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
+                }
             }
-    
-            // Log the generated credentials
-            System.out.println("Generated credentials: username=" + userName + ", password=" + password);
-    
-            LoginRequest loginRequest = new LoginRequest(userName, password,"");
-            try {
-                Authentication authentication = authenticationManager
-                        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-    
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-    
-                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-                String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-    
-                ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-    
-                List<String> roles = userDetails.getAuthorities().stream()
-                        .map(item -> item.getAuthority())
-                        .collect(Collectors.toList());
-    
-                Value value = new Value(idTable, roles.get(0));
-                customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
-                HttpSession session = request.getSession();
-                sessionUtils.addSession(session);
-                customSessionRegistry.setNewUserOnTable(sessionId, idTable);
-                InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
-                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new UserInfoResponse(userDetails.getId(),
-                        userDetails.getName(),
-                        userDetails.getLastname(),
-                        userDetails.getBirthday(),
-                        userDetails.getPhone(),
-                        userDetails.getUsername(),
-                        userDetails.getEmail(),
-                        roles,
-                        sessionId));
-            } catch (Exception e) {
-                // Log the exception for debugging
-                System.err.println("Authentication failed: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
-            }
-        } else {
-            return ResponseEntity.ok().body("The user is not in the space, so we are sorry you can't be connected.");
-        }
-    }
+   
     
 
     @PostMapping("/qr_Code_for_app_user/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")

@@ -74,7 +74,7 @@ public class BasketController {
         Board board = basket.getBoard();
         User user = userService.findUserById(userId);
         User server = board.getZone().getServer();
-
+        Space space = server.getSpace();
         if (server == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
@@ -112,6 +112,7 @@ public class BasketController {
         basketService.assignCommandToBasket(basketId, command);
         commandService.setServerForCommand(command.getIdCommand(), server);
         command.setUser(user);
+        command.setSpace(space);
         commandService.updateCommand(command);
 
         Locale userLocale = new Locale(server.getPreferredLanguage());

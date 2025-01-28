@@ -241,7 +241,7 @@ public class SpaceController {
         }
     }
 
-        @DeleteMapping("{idImage}/images/{idSpace}")
+    @DeleteMapping("{idImage}/images/{idSpace}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<?> deleteImage(@PathVariable String idImage, @PathVariable Long idSpace){
         Image image = imageService.getImage(idImage);

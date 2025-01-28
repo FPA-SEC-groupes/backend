@@ -106,6 +106,9 @@ public class CommandService {
         command.setBasket(basket);
         return commandRepository.save(command);
     }
+    public List<Command> getCommandBySpaceId(Long spaceId) {
+        return commandRepository.findCommandBySpaceId(spaceId);
+    }
 
     public void setServerForCommand(Long commandId, User server) {
         Command command = findCommandById(commandId);
