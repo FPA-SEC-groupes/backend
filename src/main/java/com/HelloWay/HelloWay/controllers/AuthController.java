@@ -456,7 +456,7 @@ public class AuthController {
                             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
                         }
                     } else {
-                        return ResponseEntity.ok().body(false);
+                        return ResponseEntity.ok().body("the user not in the space so we are sorry you cant be connected");
                     }
                 }
                 else if(space.getValidation().equals("wifi")){
