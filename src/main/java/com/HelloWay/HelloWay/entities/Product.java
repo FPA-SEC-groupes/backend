@@ -48,7 +48,7 @@ public class Product {
     List<BasketProduct> basketProducts;
 
     @ToString.Exclude
-    @JsonIgnore
+    // @JsonIgnore
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_categorie")
     private Categorie categorie;

@@ -16,8 +16,10 @@ import static com.HelloWay.HelloWay.entities.Status.UPDATED;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/commands")
@@ -53,7 +55,7 @@ public class CommandController {
     }
     
     @PostMapping("/{commandId}/accept")
-    @PreAuthorize("hasAnyRole('WAITER')")
+    @PreAuthorize("hasAnyRole('WAITER','PROVIDER')")
     public ResponseEntity<String> acceptCommand(@PathVariable Long commandId) {
         Command command = commandService.findCommandById(commandId);
         if(command.getStatus().equals(UPDATED)){
@@ -108,7 +110,7 @@ public class CommandController {
 
 
     @PostMapping("/{commandId}/refuse")
-    @PreAuthorize("hasAnyRole('WAITER')")
+    @PreAuthorize("hasAnyRole('WAITER','PROVIDER')")
     public ResponseEntity<String> refuseCommand(@PathVariable Long commandId) {
         Command command = commandService.findCommandById(commandId);
         if (command == null){
@@ -134,7 +136,7 @@ public class CommandController {
     // we must remove they from the list of connected users in this table :: done
     // then we must implement the creation of a new basket with this fucking table :: done
     @PostMapping("/{commandId}/pay")
-    @PreAuthorize("hasAnyRole('WAITER')")
+    @PreAuthorize("hasAnyRole('WAITER','PROVIDER')")
     public ResponseEntity<String> payCommand(@PathVariable Long commandId) {
         Command command = commandService.findCommandById(commandId);
         if (command == null){
@@ -179,7 +181,9 @@ public class CommandController {
             return ResponseEntity.badRequest().body("command doesn't exist with this id");
         }
         double sum = commandService.CalculateSum(command);
-        return ResponseEntity.ok(sum);
+        Map<String, Object> response = new HashMap<>();
+        response.put("sum", sum);
+        return ResponseEntity.ok(response);
     }
 
     // output : command : num table  : list<Command,numTable> :: Done
@@ -200,7 +204,9 @@ public class CommandController {
             if (command.getBasket() != null && command.getBasket().getBoard() != null) {
                 numTable = command.getBasket().getBoard().getNumTable();
             }
-            commandNumTableDTOS.add(new Command_NumTableDTO(command, numTable));
+            
+            List<BasketProduct> basketProducts = basketProductService.getBasketProductsByBasketId(command.getBasket().getId_basket());
+            commandNumTableDTOS.add(new Command_NumTableDTO(command, numTable,basketProducts));
         }
         
         return ResponseEntity.ok(commandNumTableDTOS);
@@ -234,7 +240,31 @@ public class CommandController {
         Command command = basket.getCommand();
         return ResponseEntity.ok(command);
     }
-
+    @GetMapping("/by/spaceId/{spaceId}")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
+    public ResponseEntity<?> getCommandBySpaceId(@PathVariable long spaceId){
+        Space space = spaceService.findSpaceById(spaceId);
+        if (space == null){
+            return ResponseEntity.badRequest().body("basket doesn't exist with this id " + spaceId);
+        }
+        List<Command> commands = commandService.getCommandBySpaceId(spaceId);
+        if (commands.isEmpty()){
+            return ResponseEntity.badRequest().body("our user does not have any command");
+        }
+        List<Command_NumTableDTO> commandNumTableDTOS = new ArrayList<>();
+        for (Command command : commands) {
+            Integer numTable = null;
+            if (command.getBasket() != null && command.getBasket().getBoard() != null) {
+                numTable = command.getBasket().getBoard().getNumTable();
+            }
+            
+            List<BasketProduct> basketProducts = basketProductService.getBasketProductsByBasketId(command.getBasket().getId_basket());
+            commandNumTableDTOS.add(new Command_NumTableDTO(command, numTable,basketProducts));
+        }
+        
+        return ResponseEntity.ok(commandNumTableDTOS);
+        // return ResponseEntity.ok(commands);
+    }
     @GetMapping("/by/user/{userId}")
     @PreAuthorize("hasAnyRole('PROVIDER', 'USER','PROVIDER')")
     public ResponseEntity<?> getCommandsByUserId(@PathVariable long userId){

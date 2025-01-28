@@ -41,7 +41,10 @@ public class Command {
     @JoinColumn(name="id_server", insertable = true, updatable = true)
     private User server;
 
-
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name="id_space", insertable = true, updatable = true)
+    private Space space;
 
     @OneToOne(mappedBy = "command")
     private Basket basket;

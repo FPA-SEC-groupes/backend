@@ -1,16 +1,23 @@
 package com.HelloWay.HelloWay.payload.response;
 
+import com.HelloWay.HelloWay.entities.BasketProduct;
 import com.HelloWay.HelloWay.entities.Command;
+
+import java.util.List;
 
 public class Command_NumTableDTO {
     private Command command;
-    private Integer numTable; // Use Integer instead of int
+    private Integer numTable; 
+    private List<BasketProduct> basketProducts;
 
-    public Command_NumTableDTO(Command command, Integer numTable) {
+    // Constructor
+    public Command_NumTableDTO(Command command, Integer numTable, List<BasketProduct> basketProducts) {
         this.command = command;
         this.numTable = numTable;
+        this.basketProducts = basketProducts;
     }
 
+    // Getters and Setters
     public Command getCommand() {
         return command;
     }
@@ -25,5 +32,13 @@ public class Command_NumTableDTO {
 
     public void setNumTable(Integer numTable) {
         this.numTable = numTable;
+    }
+
+    public List<BasketProduct> getBasketProducts() {
+        return basketProducts;
+    }
+
+    public void setBasketProducts(List<BasketProduct> basketProducts) {
+        this.basketProducts = basketProducts;
     }
 }
