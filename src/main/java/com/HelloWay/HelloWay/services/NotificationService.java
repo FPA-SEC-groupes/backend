@@ -36,22 +36,22 @@ public class NotificationService {
         String translatedMessageTemplate;
         String formattedMessage;
 
-        // try {
+        try {
             // Try to get translations from message properties
             translatedTitle = messageSource.getMessage(titleKey, null, userLocale);
             translatedMessageTemplate = messageSource.getMessage(messageKey, null, userLocale);
-        // } catch (Exception e) {
+        } catch (Exception e) {
             // If translation fails, use the message key itself
             translatedTitle = titleKey;
             translatedMessageTemplate = messageKey;
-        // }
+        }
 
         // Format message if parameters exist
-        // try {
+        try {
             formattedMessage = MessageFormat.format(translatedMessageTemplate, (Object[]) paramsArray);
-        // } catch (Exception e) {
-        //     formattedMessage = translatedMessageTemplate; // Use unformatted if error occurs
-        // }
+        } catch (Exception e) {
+            formattedMessage = translatedMessageTemplate; // Use unformatted if error occurs
+        }
 
         // Set notification data
         notification.setNotificationTitleKey(titleKey);
