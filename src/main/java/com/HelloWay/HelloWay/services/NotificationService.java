@@ -27,38 +27,48 @@ public class NotificationService {
         this.fcmService=fcmService;
     }
 
-    public Notification createNotification(String title, String message,List<String> parames, User user) {
-        // try{
+    public Notification createNotification(String titleKey, String messageKey, List<String> params, User user) {
         Notification notification = new Notification();
         Locale userLocale = new Locale(user.getPreferredLanguage());
-        String[] paramsArray = parames.toArray(new String[0]);
-        String title1 = messageSource.getMessage("ntComandeUpdate", null, userLocale);
-        String message1 = messageSource.getMessage("ntComandeUpdate", null, userLocale);
-        String formattedMessage = MessageFormat.format(message1, (Object[]) paramsArray);
-        notification.setNotificationTitleKey(title);
-        notification.setMessageKey(message);
-        notification.setMessageParameters(parames);
-        notification.setNotificationTitle(title1);
-        notification.setMessage(message1);
+        String[] paramsArray = params.toArray(new String[0]);
+
+        String translatedTitle;
+        String translatedMessageTemplate;
+        String formattedMessage;
+
+        try {
+            // Try to get translations from message properties
+            translatedTitle = messageSource.getMessage(titleKey, null, userLocale);
+            translatedMessageTemplate = messageSource.getMessage(messageKey, null, userLocale);
+        } catch (Exception e) {
+            // If translation fails, use the message key itself
+            translatedTitle = titleKey;
+            translatedMessageTemplate = messageKey;
+        }
+
+        // Format message if parameters exist
+        try {
+            formattedMessage = MessageFormat.format(translatedMessageTemplate, (Object[]) paramsArray);
+        } catch (Exception e) {
+            formattedMessage = translatedMessageTemplate; // Use unformatted if error occurs
+        }
+
+        // Set notification data
+        notification.setNotificationTitleKey(titleKey);
+        notification.setMessageKey(messageKey);
+        notification.setMessageParameters(params);
+        notification.setNotificationTitle(translatedTitle);
+        notification.setMessage(formattedMessage);
         notification.setRecipient(user);
         notification.setSeen(false);
         notification.setCreationDate(LocalDateTime.now());
         notificationRepository.save(notification);
-        fcmService.sendNotification(user.getToken(),title1,formattedMessage);
-        return notification;
-        // }catch(Exception e){
-        //     Notification notification = new Notification();
-        //     notification.setNotificationTitle("error");
-        //     notification.setMessage(e.getMessage());
-        //     notification.setRecipient(user);
-        //     notification.setSeen(false);
-        //     notification.setCreationDate(LocalDateTime.now());
-        //     notificationRepository.save(notification);
-        //     return notification;
-        // }
-        
-    }
 
+        // Send notification via FCM
+        fcmService.sendNotification(user.getToken(), translatedTitle, formattedMessage);
+
+        return notification;
+    }
     // public List<Notification> getNotificationsForRecipient(Long userId) {
     //     return notificationRepository.findByRecipientId(userId);
     // }
