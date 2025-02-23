@@ -1,6 +1,8 @@
 package com.HelloWay.HelloWay.controllers;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import com.HelloWay.HelloWay.entities.Notification;
 import com.HelloWay.HelloWay.entities.User;
 import com.HelloWay.HelloWay.payload.request.NotificationDTO;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(NotificationController.class);
 
     @Autowired
     NotificationService notificationService;
@@ -28,13 +31,32 @@ public class NotificationController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST')")
-    public ResponseEntity<Notification> createNotification(@RequestParam String title,
-                                                           @RequestParam String message,
-                                                           @RequestParam Long userId) {
-        List<String>parames= new ArrayList<>();
-        User user = userService.findUserById(userId);
-        Notification notification = notificationService.createNotification(title, message,parames, user);
-        return ResponseEntity.ok(notification);
+    public ResponseEntity<?> createNotification(@RequestParam String title,
+                                                @RequestParam String message,
+                                                @RequestParam Long userId) {
+        try {
+            logger.info("Received request to create notification: title={}, message={}, userId={}", title, message, userId);
+
+            // Check if user exists
+            User user = userService.findUserById(userId);
+            if (user == null) {
+                logger.warn("User not found: {}", userId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found: " + userId);
+            }
+
+            // Prepare parameters
+            List<String> parames = new ArrayList<>();
+
+            // Create notification
+            Notification notification = notificationService.createNotification(title, message, parames, user);
+
+            logger.info("Notification created successfully for user {}", userId);
+            return ResponseEntity.ok(notification);
+
+        } catch (Exception e) {
+            logger.error("Error creating notification", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST')")
