@@ -28,7 +28,7 @@ public class NotificationService {
     }
 
     public Notification createNotification(String title, String message,List<String> parames, User user) {
-        try{
+        // try{
         Notification notification = new Notification();
         Locale userLocale = new Locale(user.getPreferredLanguage());
         String[] paramsArray = parames.toArray(new String[0]);
@@ -46,16 +46,16 @@ public class NotificationService {
         notificationRepository.save(notification);
         fcmService.sendNotification(user.getToken(),title1,formattedMessage);
         return notification;
-        }catch(Exception e){
-            Notification notification = new Notification();
-            notification.setNotificationTitle("error");
-            notification.setMessage(e.getMessage());
-            notification.setRecipient(user);
-            notification.setSeen(false);
-            notification.setCreationDate(LocalDateTime.now());
-            notificationRepository.save(notification);
-            return notification;
-        }
+        // }catch(Exception e){
+        //     Notification notification = new Notification();
+        //     notification.setNotificationTitle("error");
+        //     notification.setMessage(e.getMessage());
+        //     notification.setRecipient(user);
+        //     notification.setSeen(false);
+        //     notification.setCreationDate(LocalDateTime.now());
+        //     notificationRepository.save(notification);
+        //     return notification;
+        // }
         
     }
 
@@ -81,7 +81,14 @@ public class NotificationService {
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
-
+    public void markAllNotificationsAsSeen(Long userId) {
+        List<Notification> notifications = notificationRepository.findByRecipientId(userId);
+        for (Notification notification : notifications) {
+            notification.setSeen(true);
+        }
+        notificationRepository.saveAll(notifications);
+    }
+    
     public void deleteNotification(Long notificationId) {
         notificationRepository.deleteById(notificationId);
     }

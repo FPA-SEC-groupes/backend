@@ -5,6 +5,8 @@ import com.HelloWay.HelloWay.entities.Notification;
 import com.HelloWay.HelloWay.entities.User;
 import com.HelloWay.HelloWay.payload.request.NotificationDTO;
 import com.HelloWay.HelloWay.services.NotificationService;
+import com.HelloWay.HelloWay.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +23,16 @@ public class NotificationController {
     @Autowired
     NotificationService notificationService;
 
+    @Autowired
+    private  UserService userService;
+
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST')")
     public ResponseEntity<Notification> createNotification(@RequestParam String title,
                                                            @RequestParam String message,
-                                                           @RequestBody User user) {
+                                                           @RequestParam Long userId) {
         List<String>parames= new ArrayList<>();
+        User user = userService.findUserById(userId);
         Notification notification = notificationService.createNotification(title, message,parames, user);
         return ResponseEntity.ok(notification);
     }
@@ -63,4 +69,15 @@ public class NotificationController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PutMapping("/providers/{userId}/mark-seen")
+@PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST', 'WAITER')")
+public ResponseEntity<?> markAllNotificationsAsSeen(@PathVariable Long userId) {
+    try {
+        notificationService.markAllNotificationsAsSeen(userId);
+        return ResponseEntity.ok("All notifications marked as seen");
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError().body("Error marking notifications as seen: " + e.getMessage());
+    }
+}
+
 }
