@@ -1,3 +1,2 @@
 echo "target/*.jar" >> .gitignore
 echo "target/classes/*.json" >> .gitignore
-"src/main/resources/*.json" 
