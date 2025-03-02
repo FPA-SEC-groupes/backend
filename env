@@ -1,4 +1,31 @@
-MYSQL_HOST=bd
-MYSQL_USER=root
-MYSQL_PASSWORD=1234
-MYSQL_PORT=3306
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=contact.helloway@gmail.com
+MAIL_PASSWORD=ojgq eghp lhbf wbrm
+MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
+MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
+
+# ==============================
+# JWT & Spring Security Configuration
+# ==============================
+EMPLOYEEMANAGER_APP_JWT_SECRET=helloWaySecretKey
+EMPLOYEEMANAGER_APP_JWT_EXPIRATION_MS=86400000
+EMPLOYEEMANAGER_APP_JWT_COOKIE_NAME=helloWay
+
+# Allow Circular References (Temporary Fix)
+SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING=true
+SPRING_MAIN_ALLOW_CIRCULAR_REFERENCES=true
+
+# Fix for Jackson Empty Beans Serialization
+SPRING_JACKSON_SERIALIZATION_FAIL_ON_EMPTY_BEANS=false
+
+# ==============================
+# Server Configuration
+# ==============================
+SERVER_PORT=8082
+
+# ==============================
+# Application Metadata
+# ==============================
+APPLICATION_TITLE=HelloWay
+APPLICATION_VERSION=1

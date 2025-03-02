@@ -59,6 +59,9 @@ public class Reservation {
     @Column
     private String description;
 
+    private Long nbReserveOfUser;
+
+    private Long nbReserveOfSpace;
 
 
     @JsonIgnore
@@ -178,6 +181,18 @@ public class Reservation {
 
     public void setConfirmedDate(LocalDateTime confirmedDate) {
         this.confirmedDate = confirmedDate;
+    }
+    public Long getNbReserveOfUser() {
+        return nbReserveOfUser;
+    }
+    public void setNbReserveOfUser(Long nbReserveOfUser) {
+        this.nbReserveOfUser = nbReserveOfUser;
+    }
+    public Long getNbReserveOfSpace() {
+        return nbReserveOfSpace;
+    }
+    public void setNbReserveOfSpace(Long nbReserveOfSpace) {
+        this.nbReserveOfSpace = nbReserveOfSpace;
     }
 
     public String getDescription() {

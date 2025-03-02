@@ -139,6 +139,7 @@ com\HelloWay\HelloWay\payload\request\ShiftTimeDTO.class
 com\HelloWay\HelloWay\entities\BasketProduct.class
 com\HelloWay\HelloWay\entities\User.class
 com\HelloWay\HelloWay\controllers\TestController.class
+com\HelloWay\HelloWay\payload\request\CountResultDTO.class
 com\HelloWay\HelloWay\repos\PrimaryMaterialRepository.class
 com\HelloWay\HelloWay\config\MvcConfig.class
 com\HelloWay\HelloWay\payload\request\LoginRequest.class

@@ -48,6 +48,7 @@ C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\H
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\ProductStatus.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\QrCodeAuthenticationRequest.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\services\ShiftSystemService.java
+C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\payload\request\CountResultDTO.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\entities\Restrictions.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\repos\BasketProductRepository.java
 C:\Users\Moutia Saad\Documents\Projects\FPA_SEC-main\backend\src\main\java\com\HelloWay\HelloWay\DistanceLogic\DistanceCalculator.java

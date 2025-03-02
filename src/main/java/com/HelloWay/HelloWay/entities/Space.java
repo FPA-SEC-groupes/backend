@@ -45,6 +45,8 @@ public class Space {
     @NotNull
     private Long numberOfRate;
 
+    @NotNull
+    private Long nbReserveOfSpace;    ;
 
     @Column(length = 40)
     private String description;
@@ -67,7 +69,12 @@ public class Space {
     public double getSurfaceEnM2() {
         return surfaceEnM2;
     }
-
+    public Long getNbReserveOfSpace() {
+        return nbReserveOfSpace;
+    }
+    public void setNbReserveOfSpace(Long nbReserveOfSpace) {
+        this.nbReserveOfSpace = nbReserveOfSpace;
+    }
     public void setSurfaceEnM2(double surfaceEnM2) {
         this.surfaceEnM2 = surfaceEnM2;
     }

@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -284,7 +285,8 @@ public class ReservationController {
         Reservation updatedReservation = reservationService.updateReservation(reservation);
         return ResponseEntity.ok(updatedReservation);
     }
-
+   
+    
     @GetMapping("/date-range")
     @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<List<Reservation>> getReservationsByDateRange(

@@ -29,7 +29,7 @@ public class NotificationService {
 
     public Notification createNotification(String titleKey, String messageKey, List<String> params, User user) {
         Notification notification = new Notification();
-        Locale userLocale = new Locale(user.getPreferredLanguage());
+        Locale userLocale = new Locale(user.getPreferredLanguage() != null ? user.getPreferredLanguage() : "fr");
         String[] paramsArray = params.toArray(new String[0]);
 
         String translatedTitle;

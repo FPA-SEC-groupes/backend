@@ -33,6 +33,7 @@ public  class User implements Serializable {
     private String phone ;
     private String email ;
 
+    private Long nbReserveOfUser;
     //  @Column(nullable = false)
     private String username ;
 
@@ -104,7 +105,12 @@ public  class User implements Serializable {
     // public void setZone(Zone zone) {
     //     this.zone = zone;
     // }
-
+    public Long getNbReserveOfUser() {
+        return nbReserveOfUser;
+    }
+    public void setNbReserveOfUser(Long nbReserveOfUser) {
+        this.nbReserveOfUser = nbReserveOfUser;
+    }
     public List<Reservation> getReservations() {
         return reservations;
     }

@@ -7,14 +7,17 @@ import com.HelloWay.HelloWay.repos.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,66 +78,60 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public Reservation createReservationForSpaceAndUser(Reservation reservation,
-                                                        Long spaceId,
-                                                        Long userId){
+    public Reservation createReservationForSpaceAndUser(Reservation reservation, Long spaceId, Long userId) {
         Space space = spaceService.findSpaceById(spaceId);
         User user = userService.findUserById(userId);
+    
+        // Fetch the last reservation count for the user and space
+        Long lastUserReservationCount = user.getNbReserveOfUser();
+        Long lastSpaceReservationCount = space.getNbReserveOfSpace();
+    
+        // Ensure null values are handled
+        if (lastUserReservationCount == null) {
+            lastUserReservationCount = 0L;
+        }
+        if (lastSpaceReservationCount == null) {
+            lastSpaceReservationCount = 0L;
+        }
+    
+        // Increment reservation counts
+        Long newUserReservationCount = lastUserReservationCount + 1;
+        Long newSpaceReservationCount = lastSpaceReservationCount + 1;
+    
+        user.setNbReserveOfUser(newUserReservationCount);
+        space.setNbReserveOfSpace(newSpaceReservationCount);
+        
         reservation.setSpace(space);
         reservation.setUser(user);
+        reservation.setNbReserveOfUser(newUserReservationCount);
+        reservation.setNbReserveOfSpace(newSpaceReservationCount);
         Reservation reservationObject = reservationRepository.save(reservation);
-
-        List<Reservation> reservations = new ArrayList<>();
-        reservations = space.getReservations();
+        List<Reservation> reservations = space.getReservations();
         reservations.add(reservationObject);
         spaceService.updateSpace(space);
-
-        List<Reservation> userReservations = new ArrayList<>();
-        userReservations = user.getReservations();
+    
+        List<Reservation> userReservations = user.getReservations();
         userReservations.add(reservationObject);
         userService.updateUser(user);
-
-        // Create in-app notification for users
-        // String messageForTheModerator = "A new reservation has been made for your space: " + space.getTitleSpace() + " for  : " + reservation.getStartDate() + "by " + user.getName() + " with email : " +
-        //         user.getEmail() + " , PhoneNumber : " + user.getPhone();
-        // String messageForTheUser = "Hello " + user.getName()+ " your reservation have been submitted successfully , you will be contacted by the Space :   " + space.getTitleSpace()  + " , PhoneNumber : " + space.getPhoneNumber();
-        // Locale userLocale = new Locale(reservation.getUser().getPreferredLanguage());
-        // String reservationTitle = messageSource.getMessage("reservationTitle", null, userLocale);
-        // String moderatorTemplate = messageSource.getMessage("reservation.moderator", null, userLocale);
-        // String formattedModeratorMessage = MessageFormat.format(moderatorTemplate,
-        //         space.getTitleSpace(),
-        //         reservation.getStartDate(),
-        //         // format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-        //         user.getName(),
-        //         user.getEmail(),
-        //         user.getPhone()
-        // );
-
-        // // For the user
-        // String userTemplate = messageSource.getMessage("reservation.user", null, userLocale);
-        List<String>parames= new ArrayList<>();
-        parames.add(0,String.valueOf(space.getTitleSpace()));
-        parames.add(1,String.valueOf(reservation.getStartDate() ));
-        parames.add(2,String.valueOf(user.getUsername()));
-        parames.add(3,String.valueOf(user.getEmail()));
-        parames.add(4,String.valueOf(user.getPhone()));
-        List<String>paramesClient= new ArrayList<>();
-        paramesClient.add(0,String.valueOf(user.getUsername()));
-        paramesClient.add(1,String.valueOf(space.getTitleSpace()));
-        paramesClient.add(2,String.valueOf(space.getPhoneNumber()));
-        
-        // String formattedUserMessage = MessageFormat.format(userTemplate,
-        //         user.getName(),
-        //         space.getTitleSpace(),
-        //         space.getPhoneNumber()
-        // );
-        notificationService.createNotification("reservationTitle", "reservation.moderator",parames, space.getModerator());
-        notificationService.createNotification("reservationTitle","reservation.user",paramesClient, user);
-
+    
+        List<String> parames = new ArrayList<>();
+        parames.add(0, String.valueOf(space.getTitleSpace()));
+        parames.add(1, String.valueOf(reservation.getStartDate()));
+        parames.add(2, String.valueOf(user.getUsername()));
+        parames.add(3, String.valueOf(user.getEmail()));
+        parames.add(4, String.valueOf(user.getPhone()));
+    
+        List<String> paramesClient = new ArrayList<>();
+        paramesClient.add(0, String.valueOf(user.getUsername()));
+        paramesClient.add(1, String.valueOf(space.getTitleSpace()));
+        paramesClient.add(2, String.valueOf(space.getPhoneNumber()));
+    
+        notificationService.createNotification("reservationTitle", "reservation.moderator", parames, space.getModerator());
+        notificationService.createNotification("reservationTitle", "reservation.user", paramesClient, user);
+    
         return reservationObject;
     }
-
-    public List<ReservationDTO> findReservationsBySpaceId(Long spaceId) {
+        public List<ReservationDTO> findReservationsBySpaceId(Long spaceId) {
         Space space = spaceService.findSpaceById(spaceId);
         List<Reservation> reservations = space.getReservations();
         return reservations.stream().map(ReservationDTO::new).collect(Collectors.toList());

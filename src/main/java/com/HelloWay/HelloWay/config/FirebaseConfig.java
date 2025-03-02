@@ -17,7 +17,7 @@ public class FirebaseConfig {
     @Bean
 public FirebaseApp initializeFirebase() throws IOException {
     // Load the Firebase config file from the classpath
-    ClassPathResource resource = new ClassPathResource("helloway-fd5cd-firebase-adminsdk-fq74d-43115dee36.json");
+    ClassPathResource resource = new ClassPathResource("helloway-fd5cd-firebase-adminsdk-fq74d-38006bbdaa.json");
     InputStream serviceAccount = resource.getInputStream();
 
     // Initialize Firebase

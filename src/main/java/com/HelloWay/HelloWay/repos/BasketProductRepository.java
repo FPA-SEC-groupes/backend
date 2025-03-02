@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.List;
 
 @Repository
-public interface BasketProductRepository extends JpaRepository<BasketProduct, Long> {
+public interface BasketProductRepository extends JpaRepository<BasketProduct,Long> {
 
 
     List<BasketProduct> findAllByProduct(Product product);

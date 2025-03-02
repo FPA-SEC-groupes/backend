@@ -26,7 +26,10 @@ public class ReservationDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime confirmedDate;
+    private Long nbReserveOfUser;
+    private Long nbReserveOfSpace;
     private String description;
+
     private User user;
     private List<Board> boards;
 
@@ -40,6 +43,8 @@ public class ReservationDTO {
         this.startDate = reservation.getStartDate();
         this.endDate = reservation.getEndDate();
         this.confirmedDate = reservation.getConfirmedDate();
+        this.nbReserveOfUser = reservation.getNbReserveOfUser();
+        this.nbReserveOfSpace = reservation.getNbReserveOfSpace();
         this.description = reservation.getDescription();
         this.user = reservation.getUser();
         this.boards = reservation.getBoards();
