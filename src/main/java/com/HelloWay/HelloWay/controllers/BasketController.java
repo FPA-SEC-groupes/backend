@@ -114,7 +114,7 @@ public class BasketController {
         command.setUser(user);
         command.setSpace(space);
         commandService.updateCommand(command);
-
+        
         Locale userLocale = new Locale(server.getPreferredLanguage());
         Locale serverLocale = new Locale(server.getPreferredLanguage());
 

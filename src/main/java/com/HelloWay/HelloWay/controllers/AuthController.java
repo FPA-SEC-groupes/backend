@@ -324,8 +324,10 @@ public class AuthController {
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
         String userName = "Board"+ idTable;
         String password = "Pass"+ idTable +"*"+idZone;
-
-
+        Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
+        // if (tableOptional.isEmpty() || !tableOptional.get().isActivated()) {
+        //     return ResponseEntity.ok().body("The table is not active.");
+        // }
         LoginRequest loginRequest = new LoginRequest(userName,password,"");
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -373,7 +375,10 @@ public class AuthController {
         String[] splitArray = qr_Code.split("-");
         String idTable = splitArray[0];
         String idZone = splitArray[splitArray.length - 1];
-    
+        Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
+        // if (tableOptional.isEmpty() || !tableOptional.get().isActivated()) {
+        //     return ResponseEntity.ok().body("The table is not active.");
+        // }
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
                 if(space.getValidation().equals("gps")){
                     if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {

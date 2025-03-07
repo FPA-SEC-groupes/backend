@@ -2,6 +2,7 @@ package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.config.FileUploadUtil;
 import com.HelloWay.HelloWay.entities.*;
+import com.HelloWay.HelloWay.payload.request.EventDTO;
 import com.HelloWay.HelloWay.repos.EventRepository;
 import com.HelloWay.HelloWay.repos.ImageRepository;
 import com.HelloWay.HelloWay.services.EventService;
@@ -317,19 +318,25 @@ public class EventController {
 
         @PutMapping("/update")
         @ResponseBody
-        public ResponseEntity<?> updateEvent(@RequestBody Event event){
+        public ResponseEntity<?> updateEvent(@RequestBody EventDTO event) {
             try {
                 Event existedEvent = eventService.findEventById(event.getIdEvent());
                 if (existedEvent == null) {
                     return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
                 }
-                event.setSpace(existedEvent.getSpace());
-                Event updatedEvent = eventService.updateEvent(event);
+                // Ensure the space exists
+                Space existingSpace = existedEvent.getSpace();
+                if (existingSpace != null) {
+                    existedEvent.setSpace(spaceService.findSpaceById(existingSpace.getId_space()));
+                }
+        
+                Event updatedEvent = eventService.updateDetailsEvent(event);
                 return new ResponseEntity<>(updatedEvent, HttpStatus.OK);
             } catch (Exception e) {
                 return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }        
+        }
+            
 
     @DeleteMapping("{idImage}/images/{idEvent}")
     @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
