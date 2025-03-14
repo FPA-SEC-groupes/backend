@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpServletRequest; // ✅ Ensure this is imported
 
 import java.util.Locale;
 import static com.HelloWay.HelloWay.entities.Status.UPDATED;
@@ -69,16 +70,16 @@ public class BasketController {
 
     @PostMapping("/{basketId}/commands/add/user/{userId}")
     @PreAuthorize("hasAnyRole('GUEST','USER','PROVIDER')")
-    public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId) {
+    public ResponseEntity<Command> createCommandWithServer(@PathVariable Long basketId, @PathVariable long userId,HttpServletRequest request) {
         Basket basket = basketService.findBasketById(basketId);
         Board board = basket.getBoard();
         User user = userService.findUserById(userId);
         User server = board.getZone().getServer();
         Space space = server.getSpace();
+        String sessionId = request.getSession().getId();
         if (server == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or handle this case as per your requirements
         }
-
         Command command1 = commandService.findCommandByBasketId(basketId);
         if (command1 != null) {
             command1.setStatus(UPDATED);
@@ -108,11 +109,13 @@ public class BasketController {
         }
 
         // If no existing command is found, create a new one
+        
         Command command = commandService.createCommand(new Command());
         basketService.assignCommandToBasket(basketId, command);
         commandService.setServerForCommand(command.getIdCommand(), server);
         command.setUser(user);
         command.setSpace(space);
+        command.setSessionId(sessionId);
         commandService.updateCommand(command);
         
         Locale userLocale = new Locale(server.getPreferredLanguage());

@@ -30,10 +30,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -346,6 +348,7 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
         Value value = new Value(idTable, ROLE_USER.toString());
+        customSessionRegistry.registerNewSession(sessionId, userDetails);
         customSessionRegistry.setNewUserOnTable(sessionId, idTable);
         customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
         InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
@@ -376,9 +379,13 @@ public class AuthController {
         String idTable = splitArray[0];
         String idZone = splitArray[splitArray.length - 1];
         Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
-        // if (tableOptional.isEmpty() || !tableOptional.get().isActivated()) {
-        //     return ResponseEntity.ok().body("The table is not active.");
-        // }
+        if (!tableOptional.isPresent() || !tableOptional.get().isActivated()) {
+                    return ResponseEntity.ok().body("The table is not active or does not exist.");
+        }
+        List<String> sessionsAtTable = customSessionRegistry.getAllUsersSessionsIdSatedInThisTable(idTable);
+        if (!sessionsAtTable.isEmpty()) {
+                    return ResponseEntity.ok().body("A user is already seated at this table.");
+        }
         Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
                 if(space.getValidation().equals("gps")){
                     if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
@@ -391,7 +398,7 @@ public class AuthController {
                             // Create new user
                             User newUser = new User(
                                     userName,
-                                    null, // Assuming other fields are not required for this user
+                                    null, 
                                     space.getId_space().toString(),
                                     null,
                                     null,
@@ -399,47 +406,30 @@ public class AuthController {
                                     null,
                                     encoder.encode(password));
                             newUser.setActivated(true);
-                
-                            // Log the role retrieval attempt
-                            System.out.println("Retrieving ROLE_GUEST from the database");
-            
-            
                             Set<Role> roles = new HashSet<>();
-            
-                            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                        .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
-                            roles.add(userRole);
-                            
-                            // Assign ROLE_GUEST to the new user
+                            // Role userRole = roleRepository.findByName(ERole.ROLE_GUEST)
+                            //             .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+                            // roles.add(userRole);
                             Role guestRole = roleRepository.findByName(ROLE_GUEST)
                                             .orElseThrow(() -> new RuntimeException("Error: Role GUEST is not found."));
                             roles.add(guestRole);
-                            
                             newUser.setRoles(roles);
-                            
                             userRepository.save(newUser);
-                        }
-                
-                        // Log the generated credentials
-                        System.out.println("Generated credentials: username=" + userName + ", password=" + password);
-                
+                        }                
                         LoginRequest loginRequest = new LoginRequest(userName, password,"");
                         try {
                             Authentication authentication = authenticationManager
                                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-                
                             SecurityContextHolder.getContext().setAuthentication(authentication);
                 
                             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
                             String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-                
                             ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-                
                             List<String> roles = userDetails.getAuthorities().stream()
                                     .map(item -> item.getAuthority())
-                                    .collect(Collectors.toList());
-                
+                                    .collect(Collectors.toList());         
                             Value value = new Value(idTable, roles.get(0));
+                            customSessionRegistry.registerNewSession(sessionId, userDetails);
                             customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
                             HttpSession session = request.getSession();
                             sessionUtils.addSession(session);
@@ -467,8 +457,6 @@ public class AuthController {
                 else if(space.getValidation().equals("wifi")){
                         String userName = "Board" + idTable;
                         String password = "Pass" + idTable + "*" + idZone;
-                
-                        // Check if user exists, if not create one
                         Optional<User> existingUser = userRepository.findByUsername(userName);
                         if (existingUser.isEmpty()) {
                             // Create new user
@@ -523,11 +511,12 @@ public class AuthController {
                                     .collect(Collectors.toList());
                 
                             Value value = new Value(idTable, roles.get(0));
+                            customSessionRegistry.registerNewSession(sessionId, userDetails);
                             customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
                             HttpSession session = request.getSession();
                             sessionUtils.addSession(session);
                             customSessionRegistry.setNewUserOnTable(sessionId, idTable);
-                            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+                            // InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
                             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                             .body(new UserInfoResponse(userDetails.getId(),
                                     userDetails.getName(),
@@ -539,8 +528,6 @@ public class AuthController {
                                     roles,
                                     sessionId));
                         } catch (Exception e) {
-                            // Log the exception for debugging
-                            System.err.println("Authentication failed: " + e.getMessage());
                             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
                         }
                 }
@@ -549,38 +536,53 @@ public class AuthController {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bad credentials");
                 }
             }
-   
+            @PostMapping("/qr_Code_for_app_user/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
+            public ResponseEntity<?> setUserInTable(@PathVariable String qr_Code, 
+                                                    @PathVariable String userLatitude, 
+                                                    @PathVariable String userLongitude, 
+                                                    @PathVariable String accuracy) {
+                String[] splitArray = qr_Code.split("-"); 
+                String idTable = splitArray[0];
+                String idZone = splitArray[splitArray.length - 1];
+            
+                logger.info("ID Zone: {}", idZone);
+                Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
+            
+                // ✅ Fetch table details to check if it's activated
+                Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
+                if (!tableOptional.isPresent() || !tableOptional.get().isActivated()) {
+                    return ResponseEntity.ok().body("The table is not active or does not exist.");
+                }
+                List<String> sessionsAtTable = customSessionRegistry.getAllUsersSessionsIdSatedInThisTable(idTable);
+                if (!sessionsAtTable.isEmpty()) {
+                    return ResponseEntity.ok().body("A user is already seated at this table.");
+                }
+                // ✅ Retrieve authenticated user from SecurityContext
+                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (!(principal instanceof UserDetailsImpl)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+                }
+                UserDetailsImpl userDetails = (UserDetailsImpl) principal;
+            
+                // ✅ Check if the user is in the space
+                if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
+                    String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+                    Value value = new Value(idTable, ROLE_USER.toString());
+            
+                    // ✅ Register the session in `customSessionRegistry`
+                    customSessionRegistry.registerNewSession(sessionId, userDetails);
+                    customSessionRegistry.setNewUserOnTable(sessionId, idTable);
+                    customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
+            
+                    InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
+                    return ResponseEntity.ok().body(informationAfterScan);
+                } else {
+                    return ResponseEntity.ok().body("The user is not in the space, so we are sorry you can't be seated at this table.");
+                }
+            }
+            
     
-
-    @PostMapping("/qr_Code_for_app_user/{qr_Code}/userLatitude/{userLatitude}/userLongitude/{userLongitude}/{accuracy}")
-    public ResponseEntity<?> setUserInTable(@PathVariable String qr_Code, @PathVariable String userLatitude, @PathVariable String userLongitude, @PathVariable String accuracy) {
-        String[] splitArray = qr_Code.split("-"); // Splitting using the hyphen character "-"
-        
-        String idTable = splitArray[0];
-        String idZone = splitArray[splitArray.length - 1];
-        logger.info("ID Zone: {}", idZone);
-        Space space = zoneService.findZoneById(Long.parseLong(idZone)).getSpace();
-
-        // Fetch table details to check if it's activated
-        Optional<Board> tableOptional = boardRepository.findById(Long.parseLong(idTable));
-        if (tableOptional.isEmpty() || !tableOptional.get().isActivated()) {
-            return ResponseEntity.ok().body("The table is not active.");
-        }
-        
-        if (DistanceCalculator.isTheUserInTheSpaCe(userLatitude, userLongitude, Double.parseDouble(accuracy), space)) {
-            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-            Value value = new Value(idTable, ROLE_USER.toString());
-            customSessionRegistry.setNewUserOnTable(sessionId, idTable);
-            customSessionRegistry.setNewUserOnTableWithRole(sessionId, value);
-
-            InformationAfterScan informationAfterScan = new InformationAfterScan(space.getId_space().toString(), idTable, sessionId);
-            return ResponseEntity.ok().body(informationAfterScan);
-        } else {
-            return ResponseEntity.ok().body("The user is not in the space, so we are sorry you can't be seated at this table.");
-        }
-    }
-
-
+   
     @PostMapping("/reset-password/email")
     public MessageResponse resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         String email = resetPasswordRequest.getEmail();

@@ -48,4 +48,8 @@ public class Command {
 
     @OneToOne(mappedBy = "command")
     private Basket basket;
+    
+    @Column(nullable = false, unique = true)
+    private String sessionId;  // Ensure this field exists
+
 }

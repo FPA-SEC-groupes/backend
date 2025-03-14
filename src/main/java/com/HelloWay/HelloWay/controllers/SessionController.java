@@ -1,7 +1,11 @@
 package com.HelloWay.HelloWay.controllers;
 
 import com.HelloWay.HelloWay.Security.Jwt.CustomSessionRegistry;
+import com.HelloWay.HelloWay.Security.Jwt.JwtUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
@@ -14,11 +18,15 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/sessions")
 public class SessionController {
     @Autowired
     private CustomSessionRegistry sessionRegistry;
+    @Autowired
+    JwtUtils jwtUtils;
 
     @GetMapping("/validate-session")
     @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST')")
@@ -62,6 +70,28 @@ public class SessionController {
             return "Not the first session";
         }
     }
+
+    @GetMapping("/validate-session-id")
+    @PreAuthorize("hasAnyRole('WAITER', 'USER', 'GUEST', 'PROVIDER')")
+    public ResponseEntity<?> validateSession(HttpServletRequest request) {
+        String sessionId = getSessionId(); // Get the session ID directly
+        String jwt = jwtUtils.getJwtFromCookies(request);
+
+        if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing JWT token.");
+        }
+        SessionInformation sessionInfo = sessionRegistry.getSessionInformation(sessionId);
+        if (sessionInfo == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired or not found.");
+        }
+
+        if (sessionInfo.isExpired()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Session expired.");
+        }
+
+        return ResponseEntity.ok("Session is valid and active.");
+    }
+
 
     private String getUsername() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
