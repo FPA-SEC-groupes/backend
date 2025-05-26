@@ -131,6 +131,8 @@ com\HelloWay\HelloWay\services\ReclamationService.class
 com\HelloWay\HelloWay\config\AppConfig.class
 com\HelloWay\HelloWay\entities\Event.class
 com\HelloWay\HelloWay\entities\Role.class
+com\HelloWay\HelloWay\services\SessionCleanupService.class
+com\HelloWay\HelloWay\payload\request\EventDTO.class
 com\HelloWay\HelloWay\repos\ReservationRepository.class
 com\HelloWay\HelloWay\services\ShiftSystemService.class
 com\HelloWay\HelloWay\controllers\SpaceController.class
