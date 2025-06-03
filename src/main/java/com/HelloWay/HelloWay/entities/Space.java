@@ -46,7 +46,8 @@ public class Space {
     private Long numberOfRate;
 
     @NotNull
-    private Long nbReserveOfSpace;    ;
+    @Column(name = "nb_reserve_of_space", nullable = false)
+    private Long nbReserveOfSpace = 0L;  
 
     @Column(length = 40)
     private String description;
