@@ -76,7 +76,8 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findByRecipientId(userId);
         return notifications.stream().map(notification -> {
             User recipient = notification.getRecipient();
-            Locale userLocale = new Locale(recipient.getPreferredLanguage());
+            String lang = recipient.getPreferredLanguage() != null ? recipient.getPreferredLanguage() : "fr";
+            Locale userLocale = new Locale(lang);
             String title = messageSource.getMessage(notification.getNotificationTitleKey(), null, userLocale);
             String message = messageSource.getMessage(notification.getMessageKey(), notification.getMessageParameters().toArray(), userLocale);
             NotificationDTO dto = new NotificationDTO();

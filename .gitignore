@@ -1,1 +1,3 @@
 echo "target/*.jar" >> .gitignore
+# Added by code-review-graph
+.code-review-graph/
