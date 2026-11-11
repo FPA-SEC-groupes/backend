@@ -1,5 +1,7 @@
 package com.HelloWay.HelloWay.config;
 
+import com.HelloWay.HelloWay.Security.OwnershipInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -32,8 +34,12 @@ public class MvcConfig implements WebMvcConfigurer {
         return localeChangeInterceptor;
     }
 
+    @Autowired
+    private OwnershipInterceptor ownershipInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(ownershipInterceptor).addPathPatterns("/api/**");
     }
 }

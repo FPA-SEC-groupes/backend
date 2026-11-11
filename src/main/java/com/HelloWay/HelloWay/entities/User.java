@@ -1,6 +1,7 @@
 package com.HelloWay.HelloWay.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.persistence.*;
@@ -38,7 +39,18 @@ public  class User implements Serializable {
     private String username ;
 
     //  @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ToString.Exclude
     private String password ;
+
+    // Réinitialisation du mot de passe par code envoyé par e-mail
+    @JsonIgnore
+    @ToString.Exclude
+    private String resetCodeHash;
+    @JsonIgnore
+    private java.time.LocalDateTime resetCodeExpiry;
+    @JsonIgnore
+    private int resetAttempts;
 
     private boolean activated;
     private int percentage;

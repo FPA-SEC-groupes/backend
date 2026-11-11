@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -30,5 +31,7 @@ public class Basket {
     @ManyToOne
     @JoinColumn(name = "id_table")
     private Board board;
+
+    private LocalDateTime createdAt;
 
 }

@@ -23,8 +23,18 @@ public class FileUploadUtil {
             }
         }
          
+        // Refuse les noms de fichiers qui sortent du dossier (../, chemins absolus...)
+        Path base = uploadPath.toAbsolutePath().normalize();
+        Path filePath = base.resolve(fileName).normalize();
+        if (!base.equals(filePath.getParent())) {
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+        }
+        String type = multipartFile.getContentType();
+        if (type == null || !type.startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ioe) {        
             throw new RuntimeException("Could not save image file: " + fileName, ioe);

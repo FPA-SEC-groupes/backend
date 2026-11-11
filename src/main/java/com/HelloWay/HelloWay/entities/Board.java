@@ -52,6 +52,11 @@ public class Board {
     
     private boolean activated=true;
 
+    // Jeton secret imprimé dans le QR code de la table (empêche de deviner le QR)
+    @JsonIgnore
+    @ToString.Exclude
+    private String qrToken;
+
     public void removeBaskets() {
         if (baskets != null) {
             baskets.clear();

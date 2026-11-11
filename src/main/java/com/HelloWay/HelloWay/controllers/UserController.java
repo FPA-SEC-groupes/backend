@@ -32,6 +32,9 @@ public class UserController {
 
     private ImageService imageService;
     @Autowired
+    private com.HelloWay.HelloWay.Security.AccessGuard guard;
+
+    @Autowired
     public UserController(UserService userService, ImageService imageService) {
 
         this.userService = userService;
@@ -63,11 +66,16 @@ public class UserController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER', 'USER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER', 'USER', 'WAITER') and @guard.canEditUser(#user.id)")
     @ResponseBody
     public ResponseEntity<?> updateUser(@RequestBody User user){
         List<User> existingUsers = userService.findAllUsers();
         User existingUser = userService.findUserById(user.getId());
+        // Seuls l'admin et le gérant (pour ses serveurs) peuvent activer / désactiver un compte
+        if (existingUser != null && !guard.isAdmin()
+                && (java.util.Objects.equals(user.getId(), guard.currentUserId()) || !guard.currentRoles().contains("ROLE_PROVIDER"))) {
+            user.setActivated(existingUser.isActivated());
+        }
          existingUsers.remove(existingUser);
          for (User u : existingUsers){
              if (u.getUsername().equals(user.getUsername())){
@@ -89,13 +97,14 @@ public class UserController {
     }
 
     @PutMapping("/chnagelang/{id}/{lang}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER', 'USER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROVIDER', 'USER', 'WAITER') and @guard.canEditUser(#id)")
     @ResponseBody
     public void disableUser(@PathVariable("id") long id,@PathVariable("lang") String lang){
         userService.ChangeLang(id,lang); 
     }
 
     @PostMapping("/{sid}/add-image")
+    @PreAuthorize("@guard.canEditUser(#sid)")
     public ResponseEntity<?> addImage(@PathVariable Long sid, @RequestParam("image") MultipartFile multipartFile) {
         try {
             User user = userService.findUserById(sid);

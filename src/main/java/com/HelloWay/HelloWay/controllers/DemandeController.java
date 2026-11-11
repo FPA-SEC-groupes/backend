@@ -25,6 +25,7 @@ public class DemandeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Demande> getDemandeById(@PathVariable Long id) {
         Optional<Demande> demande = demandeService.findById(id);
         return demande.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
@@ -33,6 +34,7 @@ public class DemandeController {
     
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Demande> updateDemande(@PathVariable Long id, @RequestBody Demande demandeDetails) {
         Optional<Demande> existingDemande = demandeService.findById(id);
         if (existingDemande.isPresent()) {
@@ -55,6 +57,7 @@ public class DemandeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Void> deleteDemande(@PathVariable Long id) {
         demandeService.deleteById(id);
         return ResponseEntity.noContent().build();

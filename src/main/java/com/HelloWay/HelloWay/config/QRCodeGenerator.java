@@ -11,7 +11,6 @@ import lombok.Data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,12 +19,13 @@ public class QRCodeGenerator {
     private static final int QR_CODE_WIDTH = 300;
     private static final int QR_CODE_HEIGHT = 300;
 
-    public static byte[] generateQRCodeImage(Long tableIdentifier, Long zoneId) throws WriterException, IOException {
+    public static byte[] generateQRCodeImage(Long tableIdentifier, String qrToken, Long zoneId) throws WriterException, IOException {
         Map<EncodeHintType, ErrorCorrectionLevel> hints = new HashMap<>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        String likeToken = tableIdentifier.toString() + '-' + LocalDateTime.now() + '-' + zoneId ;
+        // Format : idTable-jetonSecret-idZone (le jeton empêche de fabriquer un QR pour une autre table)
+        String likeToken = tableIdentifier.toString() + '-' + qrToken + '-' + zoneId ;
         BitMatrix bitMatrix = qrCodeWriter.encode(likeToken, BarcodeFormat.QR_CODE, QR_CODE_WIDTH, QR_CODE_HEIGHT, hints);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

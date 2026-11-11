@@ -59,7 +59,7 @@ public class ShiftSystemController {
         return shiftSystemService.updateShiftsByDate(shiftUpdateDTOs);
     }
     @PutMapping("/updateDayOff")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.staffUser(#request.waiterId)")
     public int updateDayOff(@RequestBody UpdateDayOffRequest request) {
         LocalDate start = LocalDate.parse(request.getStartDate());
         DayOfWeek newDay = DayOfWeek.valueOf(request.getNewDayOff().toUpperCase());

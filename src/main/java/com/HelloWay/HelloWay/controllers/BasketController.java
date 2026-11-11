@@ -180,7 +180,7 @@ public class BasketController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.basket(#basket.id_basket)")
     @ResponseBody
     public void updateBasket(@RequestBody Basket basket){
         basketService.updateBasket(basket); }

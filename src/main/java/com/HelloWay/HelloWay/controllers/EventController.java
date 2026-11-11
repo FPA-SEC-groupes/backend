@@ -73,7 +73,7 @@ public class EventController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('PROVIDER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Event createEvent(@RequestBody Event event) {
         return eventService.createEvent(event);
     }
@@ -153,7 +153,7 @@ public class EventController {
     }
 
     @PostMapping("/promotion")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Promotion createPromotion(@RequestBody Promotion promotion) {
         return eventService.createPromotion(promotion);
     }
@@ -222,7 +222,7 @@ public class EventController {
 
 
     @PostMapping("/party")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Party createParty(@RequestBody Party party) {
         return eventService.createParty(party);
     }
@@ -309,6 +309,7 @@ public class EventController {
 
 
     @PutMapping("/update/promotion")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.event(#promotion.idEvent)")
     @ResponseBody
     public Event updatePromotion(@RequestBody Promotion promotion){
         Promotion existedPromotion = (Promotion) eventService.findEventById(promotion.getIdEvent());
@@ -317,6 +318,7 @@ public class EventController {
         return eventService.updateEvent(promotion); }
 
         @PutMapping("/update")
+        @PreAuthorize("hasAnyRole('PROVIDER') and @guard.event(#event.idEvent) and @guard.space(#event.idSpace)")
         @ResponseBody
         public ResponseEntity<?> updateEvent(@RequestBody EventDTO event) {
             try {

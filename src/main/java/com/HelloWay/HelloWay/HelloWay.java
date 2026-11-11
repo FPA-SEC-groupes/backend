@@ -1,5 +1,6 @@
 package com.HelloWay.HelloWay;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration;
@@ -23,15 +24,10 @@ public class HelloWay {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsFilter corsFilter(@Value("${app.cors.allowed-origins}") String allowedOrigins) {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://192.168.1.193",
-                "http://localhost:3001",
-                "http://localhost:3002"
-        ));
+        corsConfiguration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).collect(java.util.stream.Collectors.toList()));
         corsConfiguration.setAllowedHeaders(Arrays.asList(
                 "Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Authorization", "Origin, Accept", "X-Requested-With",
@@ -42,7 +38,7 @@ public class HelloWay {
                 "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"
         ));
         corsConfiguration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

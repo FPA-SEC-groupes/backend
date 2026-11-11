@@ -1,3 +1,14 @@
-echo "target/*.jar" >> .gitignore
 # Added by code-review-graph
 .code-review-graph/
+
+# Build
+target/
+
+# Secrets (never commit) — see .env.example
+.env
+env
+secrets/
+*firebase-adminsdk*.json
+
+# IDE
+.vscode/

@@ -51,7 +51,7 @@ public class CategorieController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.category(#categorie.id_category)")
     @ResponseBody
     public Categorie updateCategorie(@RequestBody Categorie categorie){
         return categorieService.updateCategorie(categorie); }

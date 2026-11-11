@@ -7,6 +7,7 @@ import com.HelloWay.HelloWay.services.RestrictionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,30 +21,35 @@ public class RestrictionsController {
     private RestrictionsService restrictionsService;
 
     @GetMapping
-    public ResponseEntity<List<Restrictions>> getAllRestrictions() {
+
+    @PreAuthorize("hasAnyRole('ADMIN')")    public ResponseEntity<List<Restrictions>> getAllRestrictions() {
         List<Restrictions> restrictions = restrictionsService.getAllRestrictions();
         return new ResponseEntity<>(restrictions, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<Restrictions> getRestrictionsById(@PathVariable Long id) {
         Optional<Restrictions> restrictions = restrictionsService.getRestrictionsById(id);
         return restrictions.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER') and @guard.reservation(#restrictions.reservationId)")
     public ResponseEntity<Restrictions> createRestrictions(@RequestBody RestrictionsDTO restrictions) {
         Restrictions createdRestrictions = restrictionsService.createRestrictions(restrictions);
         return new ResponseEntity<>(createdRestrictions, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<Restrictions> updateRestrictions(@PathVariable Long id, @RequestBody RestrictionsDTO restrictionsDTO) {
         Restrictions updatedRestrictions = restrictionsService.updateRestrictions(id, restrictionsDTO);
         return new ResponseEntity<>(updatedRestrictions, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
     public ResponseEntity<Void> deleteRestrictions(@PathVariable Long id) {
         restrictionsService.deleteRestrictions(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

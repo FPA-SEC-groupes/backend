@@ -73,7 +73,7 @@ public class ProductController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
+    @PreAuthorize("hasAnyRole('PROVIDER','WAITER') and @guard.product(#product.idProduct)")
     @ResponseBody
     public Product updateProduct(@RequestBody Product product) {
        return productService.updateProduct(product);
@@ -122,6 +122,7 @@ public class ProductController {
     }
 
     @PostMapping("/add/id_categorie/{id_categorie}/{percentage}")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     @ResponseBody
     public ResponseEntity<?> addNewProductByIdCategorie(@RequestBody Product product, @PathVariable Long id_categorie,@PathVariable Long percentage) {
         if (productService.productExistsByTitleInCategorie(product, id_categorie)){
@@ -255,7 +256,7 @@ public class ProductController {
     }
 
     @PutMapping("/updateOrder")
-    @PreAuthorize("hasAnyRole('PROVIDER','WAITER', 'USER', 'GUEST')")
+    @PreAuthorize("hasAnyRole('PROVIDER','WAITER')")
     public ResponseEntity<?> updateProductOrder(@RequestBody List<ProductOrderUpdate> productOrderUpdates) {
         try {
             productService.updateProductOrder(productOrderUpdates);

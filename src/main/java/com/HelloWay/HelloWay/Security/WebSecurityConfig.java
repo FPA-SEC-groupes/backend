@@ -49,14 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public QrCodeAuthFilter qrCodeAuthFilter() throws Exception {
-        QrCodeAuthFilter filter = new QrCodeAuthFilter(authenticationManager());
-        filter.setAuthenticationManager(authenticationManagerBean());
-        filter.setFilterProcessesUrl("/api/auth/login-qr");
-        return filter;
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
@@ -64,8 +56,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and()
             .authorizeRequests()
             .antMatchers("/api/auth/**").permitAll()
-            .antMatchers("/api/test/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/auth/login-qr").permitAll()
             .antMatchers(HttpMethod.GET, "/api/spaces/all/dto").permitAll()
             .antMatchers("/photos/**").permitAll()  // Allow public access to the photos directory
             .antMatchers("/ws/**").permitAll()  // Allow WebSocket connections

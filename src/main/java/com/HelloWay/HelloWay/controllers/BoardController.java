@@ -75,7 +75,7 @@ public class BoardController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.board(#board.idTable)")
     @ResponseBody
     public Board updateBoard(@RequestBody Board board){
       return   boardService.updateBoard(board); }
@@ -97,6 +97,7 @@ public class BoardController {
     }
 
     @PutMapping("/{id}/activate")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<Board> updateActivatedStatus(
             @PathVariable Long id, @RequestParam boolean activated) {
         Optional<Board> updatedBoard = boardService.updateActivatedStatus(id, activated);

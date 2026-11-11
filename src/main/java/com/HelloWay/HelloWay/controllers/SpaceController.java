@@ -110,7 +110,7 @@ public class SpaceController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROVIDER') and @guard.space(#space.id_space)")
     @ResponseBody
     public Space updateSpace(@RequestBody Space space){
         return spaceService.updateSpace(space); }

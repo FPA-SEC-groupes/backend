@@ -44,7 +44,7 @@ public class PrimaryMaterialController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<PrimaryMaterial> createPrimaryMaterial(@RequestBody PrimaryMaterial primaryMaterial) {
         PrimaryMaterial createdPrimaryMaterial = primaryMaterialService.createPrimaryMaterial(primaryMaterial);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPrimaryMaterial);

@@ -20,12 +20,13 @@ public class WifiController {
     private WifiService wifiService;
 
    @PostMapping
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.space(#wifiDTO.spaceId)")
     public List<WifiDTO> addWifi(@Valid @RequestBody WifiDTO wifiDTO) { // Changed parameter type to WifiDTO
         return wifiService.saveWifis(wifiDTO);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('PROVIDER', 'USER', 'GUEST')")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<Wifi> getWifiById(@PathVariable Long id) {
         return wifiService.getWifiById(id)
                 .map(ResponseEntity::ok)
@@ -35,16 +36,19 @@ public class WifiController {
     
 
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public List<Wifi> getAllWifis() {
         return wifiService.getAllWifis();
     }
 
     @PutMapping("/")
+    @PreAuthorize("hasAnyRole('PROVIDER') and @guard.wifi(#wifi.id)")
     public Wifi updateWifi(@RequestBody Wifi wifi) {
         return wifiService.updateWifi(wifi);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PROVIDER')")
     public ResponseEntity<Void> deleteWifi(@PathVariable Long id) {
         wifiService.deleteWifi(id);
         return ResponseEntity.ok().build();

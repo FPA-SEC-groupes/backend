@@ -34,7 +34,8 @@ public class ShiftController {
     }
 
     @GetMapping
-    public List<Shift> getAllShifts() {
+
+    @PreAuthorize("hasAnyRole('ADMIN')")    public List<Shift> getAllShifts() {
         return shiftService.getAllShifts();
     }
 
@@ -44,12 +45,14 @@ public class ShiftController {
     }
 
     @PutMapping("/{shiftId}")
+    @PreAuthorize("hasAnyRole('WAITER','PROVIDER')")
     public Shift updateShift(@PathVariable Long shiftId, @RequestBody ShiftRequest shiftRequest) {
         LocalTime endTime = shiftRequest.getEndTime();
         return shiftService.updateShift(shiftId, endTime);
     }
 
     @DeleteMapping("/{shiftId}")
+    @PreAuthorize("hasAnyRole('WAITER','PROVIDER')")
     public void deleteShift(@PathVariable Long shiftId) {
         shiftService.deleteShift(shiftId);
     }
